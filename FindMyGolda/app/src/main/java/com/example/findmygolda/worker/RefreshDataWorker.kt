@@ -15,7 +15,6 @@ class RefreshDataWorker(appContext: Context, params: WorkerParameters) :
         val repository = BranchesRepository(database)
         try {
             repository.refreshBranches( )
-            //Timber.d("Work request for sync is run")
         } catch (e: HttpException) {
             return Result.retry()
         }

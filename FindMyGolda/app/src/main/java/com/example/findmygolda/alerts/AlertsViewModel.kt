@@ -11,13 +11,6 @@ class AlertsViewModel(
     application: Application
 ) : AndroidViewModel(application)  {
 
-    private var viewModelJob = Job()
     val alerts = database.getAllAlerts()
-
-
-    override fun onCleared() {
-        super.onCleared()
-        viewModelJob.cancel()
-    }
 
 }

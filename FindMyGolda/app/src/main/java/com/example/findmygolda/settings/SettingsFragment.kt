@@ -11,20 +11,20 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         val radiusPreference: SeekBarPreference? = findPreference("radiusFromBranch")
         radiusPreference?.apply {
-            summary = this.value.times(100).toString() + " Meters"
+            summary = this.value.times(100).toString() + getString(R.string.meters)
 
             setOnPreferenceChangeListener { preference, newValue ->
-                preference.summary = (newValue as Int).times(100).toString() + " Meters"
+                preference.summary = (newValue as Int).times(100).toString() + getString(R.string.meters)
                 true
             }
         }
 
         val timePreference: SeekBarPreference? = findPreference("timeBetweenNotifications")
         timePreference?.apply {
-            summary = this.value.times(5).toString() + " Minutes"
+            summary = this.value.times(5).toString() + getString(R.string.minutes)
 
             setOnPreferenceChangeListener { preference, newValue ->
-                preference.summary = (newValue as Int).times(5).toString() + " Minute"
+                preference.summary = (newValue as Int).times(5).toString() + getString(R.string.minutes)
                 true
             }
         }

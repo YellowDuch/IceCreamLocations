@@ -49,7 +49,6 @@ class BranchAdapter(val clickListener: BranchClickListener) : ListAdapter<Branch
 
     }
 
-
     class BranchClickListener(val clickListener: (branchId: Long) -> Unit) {
         fun onClick(branch: BranchEntity) = clickListener(branch.id.toLong())
     }
@@ -65,6 +64,5 @@ class BranchDiffCallback : DiffUtil.ItemCallback<BranchEntity>() {
     override fun areContentsTheSame(oldItem: BranchEntity, newItem: BranchEntity): Boolean {
         return oldItem == newItem
     }
-
 
 }

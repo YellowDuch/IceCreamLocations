@@ -19,9 +19,7 @@ class AlertManager(val application: Application, val branchManager: BranchManage
     private val maxDistanceFromBranch = preferences.getInt("radiusFromBranch", 5).times(100)
     private val minTimeBetweenAlerts = parseMinutesToMilliseconds(preferences.getInt("timeBetweenNotifications", 1).times(5))
 
-
     override fun LocationChanged(location: Location) {
-        // Every time location change this method called
         alertIfNeeded(location)
     }
 

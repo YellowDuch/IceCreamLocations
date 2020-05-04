@@ -29,17 +29,16 @@ class AlertAdapter: RecyclerView.Adapter<AlertAdapter.ViewHolder>() {
     }
 
     class ViewHolder private constructor(itemView: View) : RecyclerView.ViewHolder(itemView){
-        val alertTitle: TextView = itemView.findViewById(R.id.alert_title)
-        val alertDiscription: TextView = itemView.findViewById(R.id.alert_discription)
-        val alertTime: TextView = itemView.findViewById(R.id.alert_time)
+        private val alertTitle: TextView = itemView.findViewById(R.id.alert_title)
+        private val alertDiscription: TextView = itemView.findViewById(R.id.alert_discription)
+        private val alertTime: TextView = itemView.findViewById(R.id.alert_time)
 
         fun bind(
             item: AlertEntity
         ) {
-            val res = itemView.context.resources
             alertTitle.text = item.title
             alertDiscription.text = item.description
-            alertTime.text = convertLongToDateString(item.time)
+            alertTime.text = convertDate(item.time)
         }
 
         companion object {
@@ -55,7 +54,7 @@ class AlertAdapter: RecyclerView.Adapter<AlertAdapter.ViewHolder>() {
             }
         }
 
-        private fun convertLongToDateString(systemTime: Long): String {
+        private fun convertDate(systemTime: Long): String {
             return SimpleDateFormat("HH:mm'\n'dd-MM-yy'\n'")
                 .format(systemTime).toString()
         }

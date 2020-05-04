@@ -42,7 +42,6 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
                 setupNavigation()
             }
         } else {
-            // If there is no permissions ask for them
             permissionManager = PermissionsManager(this)
             permissionManager.requestLocationPermissions(this)
         }
@@ -50,7 +49,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
 
     override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {
         Toast.makeText(applicationContext,
-            "This app needs location permission to be able to show your location on the map",
+            getString(R.string.appNeedLocationPermission),
             Toast.LENGTH_SHORT).show()
     }
 
@@ -68,16 +67,8 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
         permissionManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    /**
-     * Called when the hamburger menu or back button are pressed on the Toolbar
-     *
-     * Delegate this to Navigation.
-     */
     override fun onSupportNavigateUp() = navigateUp(findNavController(R.id.myNavHostFragment), binding.drawerLayout)
 
-    /**
-     * Setup Navigation for this Activity
-     */
     private fun setupNavigation() {
         // first find the nav controller
         val navController = findNavController(R.id.myNavHostFragment)
@@ -95,6 +86,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
             binding.heroImage.visibility = View.VISIBLE
         }
     }
+
      fun isLocationEnabled(mContext: Context): Boolean {
         val lm = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return lm.isProviderEnabled(LocationManager.GPS_PROVIDER) || lm.isProviderEnabled(
@@ -102,14 +94,14 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
     }
 
     private fun showLocationIsDisabledAlert() {
-        alert("We can't show your position because you disabled the location service for your device.") {
+        alert(getString(R.string.cannotShowYourPositionMessage)) {
             yesButton {
                 finish()
                 moveTaskToBack(true)
                 android.os.Process.killProcess(android.os.Process.myPid())
                 System.exit(1)
             }
-            neutralPressed("Settings") {
+            neutralPressed(getString(R.string.settings)) {
                 startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
             }
         }.show()

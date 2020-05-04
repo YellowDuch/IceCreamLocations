@@ -12,7 +12,6 @@ class LocationAdapter(val application: Application,
                   ) {
     private lateinit var locationEngine: LocationEngine
     private val callback = LocationChangeListen()
-
     private val _currentLocation = MutableLiveData<Location?>()
     val currentLocation: LiveData<Location?>
         get() = _currentLocation
@@ -32,7 +31,6 @@ class LocationAdapter(val application: Application,
         locationEngine.getLastLocation(callback)
     }
 
-
     private inner class LocationChangeListen :
         LocationEngineCallback<LocationEngineResult> {
         override fun onSuccess(result: LocationEngineResult?) {
@@ -42,13 +40,9 @@ class LocationAdapter(val application: Application,
                 val newLocation = Location(result.lastLocation)
                 listenToLocationChange.LocationChanged(newLocation)
                 _currentLocation.value = newLocation
-//                mapboxMap.locationComponent.forceLocationUpdate(newLocation)
-//                viewModel.checkBranchDistance(newLocation)
-//                location = newLocation
             }
         }
 
         override fun onFailure(exception: Exception) {}
     }
-
 }
