@@ -31,20 +31,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        if (PermissionsManager.areLocationPermissionsGranted(this)) {
-            if (!isLocationEnabled(applicationContext)) {
-                showLocationIsDisabledAlert()
-            } else {
-                branchManager = BranchManager(application)
-                alerManager = AlertManager(application, branchManager)
-                binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-                setupNavigation()
-            }
-        } else {
-            permissionManager = PermissionsManager(this)
-            permissionManager.requestLocationPermissions(this)
-        }
+        askForPermissions()
     }
 
     override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {
@@ -55,7 +42,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
 
     override fun onPermissionResult(granted: Boolean) {
         if (granted) {
-            setContentView(R.layout.activity_main)
+            askForPermissions()
         } else {
             finish()
         }
@@ -105,5 +92,25 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
                 startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
             }
         }.show()
+    }
+
+    private fun initGlobalVariables(){
+        branchManager = BranchManager(application)
+        alerManager = AlertManager(application, branchManager)
+    }
+
+    private fun askForPermissions(){
+        if (PermissionsManager.areLocationPermissionsGranted(this)) {
+            if (!isLocationEnabled(applicationContext)) {
+                showLocationIsDisabledAlert()
+            } else {
+                initGlobalVariables()
+                binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+                setupNavigation()
+            }
+        } else {
+            permissionManager = PermissionsManager(this)
+            permissionManager.requestLocationPermissions(this)
+        }
     }
 }

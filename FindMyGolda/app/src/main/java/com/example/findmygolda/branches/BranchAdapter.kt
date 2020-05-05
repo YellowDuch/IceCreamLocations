@@ -15,6 +15,7 @@ class BranchAdapter(val clickListener: BranchClickListener) : ListAdapter<Branch
             field = value
             notifyDataSetChanged()
         }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):
             ViewHolder {
         return ViewHolder.from(parent)

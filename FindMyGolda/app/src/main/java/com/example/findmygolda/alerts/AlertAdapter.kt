@@ -1,21 +1,26 @@
 package com.example.findmygolda.alerts
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.findmygolda.R
 import com.example.findmygolda.database.AlertEntity
-import java.text.SimpleDateFormat
+import com.example.findmygolda.databinding.ListAlertItemBinding
 
-class AlertAdapter: RecyclerView.Adapter<AlertAdapter.ViewHolder>() {
+class AlertAdapter: ListAdapter<AlertEntity, AlertAdapter.ViewHolder>(AlertDiffCallback())  {
 
     var data =  listOf<AlertEntity>()
         set(value) {
             field = value
             notifyDataSetChanged()
         }
+
+    override fun onCreateViewHolder(
+        parent: ViewGroup, viewType: Int): ViewHolder {
+        return ViewHolder.from(parent)
+    }
+
     override fun getItemCount() = data.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -23,42 +28,33 @@ class AlertAdapter: RecyclerView.Adapter<AlertAdapter.ViewHolder>() {
         holder.bind(item)
     }
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder.from(parent)
-    }
-
-    class ViewHolder private constructor(itemView: View) : RecyclerView.ViewHolder(itemView){
-        private val alertTitle: TextView = itemView.findViewById(R.id.alert_title)
-        private val alertDiscription: TextView = itemView.findViewById(R.id.alert_discription)
-        private val alertTime: TextView = itemView.findViewById(R.id.alert_time)
-
+    class ViewHolder private constructor(val binding: ListAlertItemBinding) : RecyclerView.ViewHolder(binding.root){
         fun bind(
             item: AlertEntity
         ) {
-            alertTitle.text = item.title
-            alertDiscription.text = item.description
-            alertTime.text = convertDate(item.time)
+            binding.alert = item
+            binding.executePendingBindings()
         }
 
         companion object {
             fun from(parent: ViewGroup): ViewHolder {
                 val layoutInflater =
                     LayoutInflater.from(parent.context)
-                val view = layoutInflater
-                    .inflate(
-                        R.layout.list_alert_item,
-                        parent, false
-                    )
-                return ViewHolder(view)
+                val binding = ListAlertItemBinding.inflate(layoutInflater, parent, false)
+
+                return ViewHolder(binding)
             }
         }
+    }
+}
 
-        private fun convertDate(systemTime: Long): String {
-            return SimpleDateFormat("HH:mm'\n'dd-MM-yy'\n'")
-                .format(systemTime).toString()
-        }
+class AlertDiffCallback : DiffUtil.ItemCallback<AlertEntity>() {
 
+    override fun areItemsTheSame(oldItem: AlertEntity, newItem: AlertEntity): Boolean {
+        return oldItem.id == newItem.id
     }
 
+    override fun areContentsTheSame(oldItem: AlertEntity, newItem: AlertEntity): Boolean {
+        return oldItem == newItem
+    }
 }
