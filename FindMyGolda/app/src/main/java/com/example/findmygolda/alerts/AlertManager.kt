@@ -22,7 +22,7 @@ class AlertManager(val application: Application, val branchManager: BranchManage
     private val minTimeBetweenAlerts = parseMinutesToMilliseconds(preferences.getInt("timeBetweenNotifications", 1).times(5))
     private val notificationHelper = NotificationHelper(application.applicationContext)
 
-    override fun LocationChanged(location: Location) {
+    override fun locationChanged(location: Location) {
         alertIfNeeded(location)
     }
 

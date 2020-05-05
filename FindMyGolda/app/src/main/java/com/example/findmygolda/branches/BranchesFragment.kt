@@ -1,5 +1,7 @@
 package com.example.findmygolda.branches
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -35,8 +37,10 @@ class BranchesFragment : Fragment() {
             ViewModelProviders.of(
                 this, viewModelFactory).get(BranchesViewModel::class.java)
         binding.setLifecycleOwner(this)
-        adapter =BranchAdapter(BranchAdapter.BranchClickListener { nightId ->
-            Toast.makeText(context, "${nightId}", Toast.LENGTH_LONG).show()
+        adapter =BranchAdapter(BranchAdapter.BranchClickListener { branchId ->
+            val intent = Intent(Intent.ACTION_DIAL)
+            intent.data = Uri.parse("tel:<$branchId>")
+            startActivity(intent)
         })
         binding.branchesList.adapter = adapter
         val chipGroup = binding.chipGroup

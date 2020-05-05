@@ -92,7 +92,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
         }
     }
 
-    override fun LocationChanged(location: Location) {
+    override fun locationChanged(location: Location) {
         map.locationComponent.forceLocationUpdate(location)
         if (location != null) {
             currentLocation = location

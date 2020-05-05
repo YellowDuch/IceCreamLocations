@@ -50,8 +50,8 @@ class BranchAdapter(val clickListener: BranchClickListener) : ListAdapter<Branch
 
     }
 
-    class BranchClickListener(val clickListener: (branchId: Long) -> Unit) {
-        fun onClick(branch: BranchEntity) = clickListener(branch.id.toLong())
+    class BranchClickListener(val clickListener: (branchPhone: String) -> Unit) {
+        fun onClick(branch: BranchEntity) = clickListener(branch.phone)
     }
 }
 
