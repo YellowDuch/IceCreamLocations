@@ -27,9 +27,7 @@ class AlertsFragment : Fragment() {
             inflater, R.layout.fragment_alerts, container, false)
 
         val application = requireNotNull(this.activity).application
-
         val dataSource = (AlertDatabase.getInstance(application)).alertDatabaseDAO
-
         val viewModelFactory = AlertViewModelFactory(dataSource, application)
 
         val alertsTrackerViewModel =

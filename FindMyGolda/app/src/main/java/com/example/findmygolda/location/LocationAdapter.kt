@@ -7,12 +7,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.mapbox.android.core.location.*
 
-class LocationAdapter(val application: Application,
-                      val listenToLocationChange:ILocationChanged
-                  ) {
+class LocationAdapter(val application: Application) {
     private lateinit var locationEngine: LocationEngine
     private val callback = LocationChangeListen()
     private val _currentLocation = MutableLiveData<Location?>()
+    private val locationChangedInterested = mutableListOf<ILocationChanged>()
     val currentLocation: LiveData<Location?>
         get() = _currentLocation
 
@@ -31,6 +30,10 @@ class LocationAdapter(val application: Application,
         locationEngine.getLastLocation(callback)
     }
 
+    fun subscribeToLocationChangeEvent(interested:ILocationChanged){
+        locationChangedInterested.add(interested)
+    }
+
     private inner class LocationChangeListen :
         LocationEngineCallback<LocationEngineResult> {
         override fun onSuccess(result: LocationEngineResult?) {
@@ -38,7 +41,8 @@ class LocationAdapter(val application: Application,
 
             if (result.lastLocation != null) {
                 val newLocation = Location(result.lastLocation)
-                listenToLocationChange.LocationChanged(newLocation)
+                locationChangedInterested.forEach{it.LocationChanged(newLocation)}
+                //listenToLocationChange.LocationChanged(newLocation)
                 _currentLocation.value = newLocation
             }
         }

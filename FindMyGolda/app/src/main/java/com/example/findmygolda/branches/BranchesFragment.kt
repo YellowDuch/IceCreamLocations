@@ -12,11 +12,9 @@ import androidx.lifecycle.ViewModelProviders
 
 import com.example.findmygolda.R
 import com.example.findmygolda.database.AlertDatabase
-import com.example.findmygolda.databinding.FragmentAlertsBinding
 import com.example.findmygolda.databinding.FragmentBranchesBinding
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
-import kotlinx.android.synthetic.main.fragment_branches.*
 
 
 class BranchesFragment : Fragment() {
@@ -31,26 +29,18 @@ class BranchesFragment : Fragment() {
             inflater, R.layout.fragment_branches, container, false)
 
         val application = requireNotNull(this.activity).application
-
         val dataSource = (AlertDatabase.getInstance(application)).branchDatabaseDAO
-
         val viewModelFactory = BranchViewModelFactorty(dataSource, application)
-
         banchViewModel =
             ViewModelProviders.of(
                 this, viewModelFactory).get(BranchesViewModel::class.java)
-
         binding.setLifecycleOwner(this)
-        //binding.alertsViewModel = alertsTrackerViewModel
-
         adapter =BranchAdapter(BranchAdapter.BranchClickListener { nightId ->
             Toast.makeText(context, "${nightId}", Toast.LENGTH_LONG).show()
         })
         binding.branchesList.adapter = adapter
-
         val chipGroup = binding.chipGroup
-        setLisetenerOnChips(chipGroup)
-
+        setListenerOnChips(chipGroup)
         banchViewModel.branches.observe(viewLifecycleOwner, Observer {
             it?.let {
                // binding.isThereNotifications = it.isNotEmpty()
@@ -58,14 +48,12 @@ class BranchesFragment : Fragment() {
             }
         })
 
-
         return binding.root
     }
 
-    private fun setLisetenerOnChips(chipGroup: ChipGroup) {
+    private fun setListenerOnChips(chipGroup: ChipGroup) {
         for (index in 0 until chipGroup.childCount) {
             val chip: Chip = chipGroup.getChildAt(index) as Chip
-            // Set the chip checked change listener
             chip.setOnCheckedChangeListener { view, isChecked ->
                 if (isChecked) {
                     Toast.makeText(context, view.text.toString(), Toast.LENGTH_LONG).show()

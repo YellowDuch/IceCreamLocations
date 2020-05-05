@@ -1,8 +1,10 @@
 package com.example.findmygolda.alerts
 
 import android.app.Application
+import android.graphics.BitmapFactory
 import android.location.Location
 import androidx.preference.PreferenceManager
+import com.example.findmygolda.R
 import com.example.findmygolda.database.AlertDatabase
 import com.example.findmygolda.database.AlertEntity
 import com.example.findmygolda.location.ILocationChanged
@@ -18,6 +20,7 @@ class AlertManager(val application: Application, val branchManager: BranchManage
     private val preferences = PreferenceManager.getDefaultSharedPreferences(application)
     private val maxDistanceFromBranch = preferences.getInt("radiusFromBranch", 5).times(100)
     private val minTimeBetweenAlerts = parseMinutesToMilliseconds(preferences.getInt("timeBetweenNotifications", 1).times(5))
+    private val notificationHelper = NotificationHelper(application.applicationContext)
 
     override fun LocationChanged(location: Location) {
         alertIfNeeded(location)
@@ -25,34 +28,40 @@ class AlertManager(val application: Application, val branchManager: BranchManage
 
     private fun alertIfNeeded(location: Location){
         val branches = branchManager.branches.value
-        val dataSource = (AlertDatabase.getInstance(application)).alertDatabaseDAO
         branches?.forEach{
             if(branchManager.isDistanceInRange(location, it, maxDistanceFromBranch)){
                 coroutineScope.launch{
                     withContext(Dispatchers.IO){
                         val lastAlert = dataSource.getLastAlertOfBranch(it.id.toInt())
-                        if(hasTimePast(lastAlert)){
-                            dataSource.insert(
-                                AlertEntity(title = it.name,
-                                    description = it.discounts,
-                                    branchId = it.id.toInt())
-                            )
-                            NotificationHelper(application.applicationContext).createNotification(it.name, it.discounts)
+                        if(hasTimePast(lastAlert?.time,System.currentTimeMillis(), minTimeBetweenAlerts)){
+                            notify(it.name, it.discounts, it.id.toInt())
                         }
                     }
                 }
             }
         }
-
     }
 
-    private fun hasTimePast(lastAlert : AlertEntity?): Boolean {
-        if (lastAlert == null)
+    private fun hasTimePast(startedTime: Long?, finishedTime:Long, maxDifference:Long): Boolean {
+        if (startedTime == null)
             return true
-        return (System.currentTimeMillis() - lastAlert.time) >= minTimeBetweenAlerts
+        return (finishedTime - startedTime) >= maxDifference
     }
 
     private fun parseMinutesToMilliseconds(minutes : Int) : Long{
         return (minutes * 60000).toLong()
+    }
+
+    private fun notify(name:String, discounts:String, branchId:Int){
+        val icon = BitmapFactory.decodeResource(
+          application.resources,
+          R.drawable.golda_imag)
+
+        dataSource.insert(
+            AlertEntity(title = name,
+                description = discounts,
+                branchId = branchId)
+        )
+        notificationHelper.notify(name, discounts, R.drawable.golda_imag, icon)
     }
 }

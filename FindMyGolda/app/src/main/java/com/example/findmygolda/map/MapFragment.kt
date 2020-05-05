@@ -15,6 +15,7 @@ import com.example.findmygolda.MainActivity
 import com.example.findmygolda.R
 import com.example.findmygolda.database.BranchEntity
 import com.example.findmygolda.databinding.FragmentMapBinding
+import com.example.findmygolda.location.ILocationChanged
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
@@ -32,7 +33,7 @@ import com.mapbox.mapboxsdk.maps.Style
 
 const val DEFAULT_MAP_ZOOM = 15.0
 
-class MapFragment : Fragment(), OnMapReadyCallback {
+class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
     lateinit var mapView: MapView
     lateinit var mapViewModel: MapViewModel
     lateinit var map: MapboxMap
@@ -44,15 +45,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        savedInstanceState: Bundle?): View? {
         val activity = activity as Context
         Mapbox.getInstance(activity, getString(R.string.mapbox_access_token))
         application = requireNotNull(this.activity).application
-        val application = requireNotNull(this.activity).application
         mainActivity = activity as MainActivity
-        val viewModelFactory = MapViewModelFactory(application,
-            mainActivity.alerManager)
+        val viewModelFactory = MapViewModelFactory(requireNotNull(this.activity).application)
         mapViewModel =
             ViewModelProviders.of(
                 this, viewModelFactory).get(MapViewModel::class.java)
@@ -78,24 +76,26 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         map = mapboxMap
         mainActivity.branchManager.branches.observe(viewLifecycleOwner, Observer { branches ->
             branches.forEach{
-                addGoldaMarker(it)
+                mapViewModel.addGoldaMarker(it,map)
             }
         })
 
         mapboxMap.setStyle(Style.MAPBOX_STREETS) {
             initializeLocationComponent(it)
-            mapViewModel.locationManager.currentLocation.observe(viewLifecycleOwner, Observer { newLocation ->
-                map.locationComponent.forceLocationUpdate(newLocation)
-                if (newLocation != null) {
-                    currentLocation = newLocation
-                }
-            })
+            mainActivity.locationAdapter.subscribeToLocationChangeEvent(this)
             mapViewModel.focusOnUserLocation.observe(viewLifecycleOwner, Observer {
                 if (it == true) {
-                    setCameraPosition(currentLocation)
+                    mapViewModel.setCameraPosition(currentLocation,map)
                     mapViewModel.doneFocusOnUserLocation()
                 }
             })
+        }
+    }
+
+    override fun LocationChanged(location: Location) {
+        map.locationComponent.forceLocationUpdate(location)
+        if (location != null) {
+            currentLocation = location
         }
     }
 
@@ -116,18 +116,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             cameraMode = CameraMode.TRACKING
             renderMode = RenderMode.COMPASS
         }
-    }
-
-    private fun setCameraPosition(location: Location) {
-        map.animateCamera(
-            CameraUpdateFactory.newLatLngZoom(
-                LatLng(location.latitude,
-                    location.longitude), DEFAULT_MAP_ZOOM))
-    }
-
-    private fun addGoldaMarker(branch: BranchEntity){
-        val point = LatLng(branch.latitude, branch.longtitude)
-        map.addMarker(MarkerOptions().setTitle(branch.name).setSnippet(branch.address).position(point))
     }
 
     override fun onStart() {

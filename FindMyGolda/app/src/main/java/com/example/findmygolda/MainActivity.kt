@@ -28,6 +28,8 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
     lateinit var binding: ActivityMainBinding
     lateinit var branchManager :BranchManager
     lateinit var alerManager : AlertManager
+    lateinit var locationAdapter: LocationAdapter
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,6 +99,8 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
     private fun initGlobalVariables(){
         branchManager = BranchManager(application)
         alerManager = AlertManager(application, branchManager)
+        locationAdapter = LocationAdapter(application)
+        locationAdapter.subscribeToLocationChangeEvent(alerManager)
     }
 
     private fun askForPermissions(){
