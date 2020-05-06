@@ -33,7 +33,6 @@ class BranchManager(val application: Application) {
             } catch (e: Exception) {
                 // Probably no internet connection
             }
-
         }
     }
 

@@ -7,17 +7,21 @@
         <variable
             name="alert"
             type="com.example.findmygolda.database.AlertEntity"/>
+        <variable
+            name="clickListener"
+            type="com.example.findmygolda.alerts.AlertAdapter.AlertClickListener" />
     </data>
 
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:layout_margin="15dp"
-        android:contentDescription="icecreamicon"
+        android:contentDescription="@string/branndImage"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -30,6 +34,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:text="@{alert.title}"
+        tools:text="Golda Holon"
         android:textSize="18sp"
         app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toTopOf="parent" />
@@ -42,6 +47,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         android:text="@{alert.description}"
+        tools:text="Ehud Manor 27, Holon"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toBottomOf="@+id/alert_title" />
@@ -50,11 +56,27 @@
         android:id="@+id/alert_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
+        android:lines="2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:sleepDurationFormatted="@{alert}"
+        tools:text="15:23 \n 15-4-2020" />
+
+    <ImageButton
+        android:id="@+id/shareButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:background="@null"
+        android:contentDescription="@string/shareButton"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/alert_time"
+        app:srcCompat="?attr/actionModeShareDrawable"
+        android:onClick="@{() -> clickListener.onClick(alert)}"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

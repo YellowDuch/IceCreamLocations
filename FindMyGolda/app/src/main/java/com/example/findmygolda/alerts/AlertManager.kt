@@ -11,7 +11,7 @@ import com.example.findmygolda.location.ILocationChanged
 import com.example.findmygolda.network.BranchManager
 import kotlinx.coroutines.*
 
-class AlertManager(val application: Application, val branchManager: BranchManager):ILocationChanged {
+class AlertManager(val application: Application, private val branchManager: BranchManager):ILocationChanged {
     private val dataSource = (AlertDatabase.getInstance(application)).alertDatabaseDAO
     val alerts = dataSource.getAllAlerts()
     private var alertManagerJob = Job()

@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.findmygolda.database.AlertEntity
 import com.example.findmygolda.databinding.ListAlertItemBinding
 
-class AlertAdapter: ListAdapter<AlertEntity, AlertAdapter.ViewHolder>(AlertDiffCallback())  {
+class AlertAdapter(val clickListener: AlertClickListener): ListAdapter<AlertEntity, AlertAdapter.ViewHolder>(AlertDiffCallback())  {
 
     var data =  listOf<AlertEntity>()
         set(value) {
@@ -25,14 +25,16 @@ class AlertAdapter: ListAdapter<AlertEntity, AlertAdapter.ViewHolder>(AlertDiffC
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = data[position]
-        holder.bind(item)
+        holder.bind(item, clickListener)
     }
 
     class ViewHolder private constructor(val binding: ListAlertItemBinding) : RecyclerView.ViewHolder(binding.root){
         fun bind(
-            item: AlertEntity
+            item: AlertEntity,
+            clickListener: AlertClickListener
         ) {
             binding.alert = item
+            binding.clickListener = clickListener
             binding.executePendingBindings()
         }
 
@@ -45,6 +47,10 @@ class AlertAdapter: ListAdapter<AlertEntity, AlertAdapter.ViewHolder>(AlertDiffC
                 return ViewHolder(binding)
             }
         }
+    }
+
+    class AlertClickListener(val clickListener: (alert: AlertEntity) -> Unit) {
+        fun onClick(alert: AlertEntity) = clickListener(alert)
     }
 }
 

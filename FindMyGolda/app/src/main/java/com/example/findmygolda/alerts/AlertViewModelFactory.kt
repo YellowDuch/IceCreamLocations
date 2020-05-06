@@ -6,14 +6,12 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.findmygolda.database.AlertDatabaseDAO
 
 class AlertViewModelFactory(
-    private val dataSource: AlertDatabaseDAO,
-    private val application: Application
-) : ViewModelProvider.Factory {
+    private val alertManager: AlertManager) : ViewModelProvider.Factory {
 
     @Suppress("unchecked_cast")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AlertsViewModel::class.java)) {
-            return AlertsViewModel(dataSource, application) as T
+            return AlertsViewModel(alertManager) as T
         }
 
         throw IllegalArgumentException("Unknown ViewModel class")

@@ -25,7 +25,6 @@ class BranchesFragment : Fragment() {
     private  lateinit var adapter: BranchAdapter
     private lateinit var mainActivity: MainActivity
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -33,8 +32,6 @@ class BranchesFragment : Fragment() {
         val binding: FragmentBranchesBinding = DataBindingUtil.inflate(
             inflater, R.layout.fragment_branches, container, false)
         mainActivity = activity as MainActivity
-        val application = requireNotNull(this.activity).application
-        val dataSource = (AlertDatabase.getInstance(application)).branchDatabaseDAO
         val viewModelFactory = BranchViewModelFactorty(mainActivity.branchManager, mainActivity.locationAdapter)
 
         banchViewModel =
@@ -64,7 +61,6 @@ class BranchesFragment : Fragment() {
             val chip: Chip = chipGroup.getChildAt(index) as Chip
             chip.setOnCheckedChangeListener { view, isChecked ->
                 if (isChecked) {
-                    Toast.makeText(context, view.text.toString(), Toast.LENGTH_LONG).show()
                     banchViewModel.chipPicked(view.text.toString())
                 }
             }
