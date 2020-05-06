@@ -13,4 +13,5 @@
     <string name="minutes">\" Minutes\"</string>
     <string name="shareButton">Share button</string>
     <string name="branndImage">Brand image</string>
+    <string name="markAsReadButton">markAsReadButton</string>
 </resources>

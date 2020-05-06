@@ -10,5 +10,6 @@ data class AlertEntity(
     val time: Long = System.currentTimeMillis(),
     val title: String,
     val description: String,
-    val branchId : Int
+    val branchId: Int,
+    val isRead: Boolean = false
 )
