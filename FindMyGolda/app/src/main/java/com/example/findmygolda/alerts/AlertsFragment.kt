@@ -33,13 +33,15 @@ class AlertsFragment : Fragment() {
         binding.setLifecycleOwner(this)
         binding.alertsViewModel = alertsTrackerViewModel
         val adapter = AlertAdapter(AlertAdapter.AlertClickListener{alert ->
-            val share = Intent.createChooser(Intent().apply {
+            val sendIntent: Intent = Intent().apply {
                 action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_TEXT, alert.description + " at " + alert.title)
-                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT,  alert.description + " at " + alert.title)
                 putExtra(Intent.EXTRA_TITLE, alert.title)
-            }, null)
-            startActivity(share)
+                type = "text/plain"
+            }
+
+            val shareIntent = Intent.createChooser(sendIntent, null)
+            startActivity(shareIntent)
         })
 
         binding.alertsList.adapter = adapter
