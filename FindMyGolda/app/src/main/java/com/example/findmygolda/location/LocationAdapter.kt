@@ -9,6 +9,7 @@ class LocationAdapter(val application: Application) {
     private lateinit var locationEngine: LocationEngine
     private val callback = LocationChangeListen()
     private val locationChangedInterested = mutableListOf<ILocationChanged>()
+    var lastLocation: Location? = null
 
     init {
         initLocationEngine()
@@ -36,6 +37,7 @@ class LocationAdapter(val application: Application) {
 
             if (result.lastLocation != null) {
                 val newLocation = Location(result.lastLocation)
+                lastLocation = newLocation
                 locationChangedInterested.forEach{it.locationChanged(newLocation)}
             }
         }

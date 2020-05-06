@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.example.findmygolda.MainActivity
 
 import com.example.findmygolda.R
 import com.example.findmygolda.database.AlertDatabase
@@ -22,6 +23,8 @@ import com.google.android.material.chip.ChipGroup
 class BranchesFragment : Fragment() {
     private lateinit var banchViewModel : BranchesViewModel
     private  lateinit var adapter: BranchAdapter
+    private lateinit var mainActivity: MainActivity
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,10 +32,11 @@ class BranchesFragment : Fragment() {
     ): View? {
         val binding: FragmentBranchesBinding = DataBindingUtil.inflate(
             inflater, R.layout.fragment_branches, container, false)
-
+        mainActivity = activity as MainActivity
         val application = requireNotNull(this.activity).application
         val dataSource = (AlertDatabase.getInstance(application)).branchDatabaseDAO
-        val viewModelFactory = BranchViewModelFactorty(dataSource, application)
+        val viewModelFactory = BranchViewModelFactorty(mainActivity.branchManager, mainActivity.locationAdapter)
+
         banchViewModel =
             ViewModelProviders.of(
                 this, viewModelFactory).get(BranchesViewModel::class.java)
@@ -45,7 +49,7 @@ class BranchesFragment : Fragment() {
         binding.branchesList.adapter = adapter
         val chipGroup = binding.chipGroup
         setListenerOnChips(chipGroup)
-        banchViewModel.branches.observe(viewLifecycleOwner, Observer {
+        banchViewModel.filteredBranches.observe(viewLifecycleOwner, Observer {
             it?.let {
                // binding.isThereNotifications = it.isNotEmpty()
                 adapter.data = it
@@ -61,6 +65,7 @@ class BranchesFragment : Fragment() {
             chip.setOnCheckedChangeListener { view, isChecked ->
                 if (isChecked) {
                     Toast.makeText(context, view.text.toString(), Toast.LENGTH_LONG).show()
+                    banchViewModel.chipPicked(view.text.toString())
                 }
             }
         }
