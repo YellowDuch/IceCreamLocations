@@ -10,8 +10,11 @@
             name="alert"
             type="com.example.findmygolda.database.AlertEntity"/>
         <variable
-            name="clickListener"
-            type="com.example.findmygolda.alerts.AlertAdapter.AlertClickListener" />
+            name="shareClickListener"
+            type="com.example.findmygolda.alerts.AlertAdapter.ShareClickListener" />
+        <variable
+            name="readClickListener"
+            type="com.example.findmygolda.alerts.AlertAdapter.ReadClickListener" />
     </data>
 
 <androidx.constraintlayout.widget.ConstraintLayout
@@ -78,7 +81,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/alert_time"
         app:srcCompat="?attr/actionModeShareDrawable"
-        android:onClick="@{() -> clickListener.onClick(alert)}"
+        android:onClick="@{() -> shareClickListener.onClick(alert)}"
         />
 
     <ImageView
@@ -90,6 +93,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/shareButton"
         app:layout_constraintTop_toBottomOf="@+id/alert_time"
+        android:onClick="@{() -> readClickListener.onClick(alert)}"
         app:srcCompat="@drawable/check_mark_not_read" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
