@@ -14,4 +14,6 @@
     <string name="shareButton">Share button</string>
     <string name="branndImage">Brand image</string>
     <string name="markAsReadButton">markAsReadButton</string>
+    <string name="alerts">Alerts</string>
+    <string name="branches">Branches</string>
 </resources>

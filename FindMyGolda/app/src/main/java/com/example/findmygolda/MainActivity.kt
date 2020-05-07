@@ -10,14 +10,18 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.NavDestination
+import androidx.navigation.Navigation
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI.navigateUp
+import androidx.navigation.ui.NavigationUI.onNavDestinationSelected
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.findmygolda.alerts.AlertManager
 import com.example.findmygolda.databinding.ActivityMainBinding
 import com.example.findmygolda.location.LocationAdapter
 import com.example.findmygolda.network.BranchManager
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import org.jetbrains.anko.alert
@@ -31,9 +35,52 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
     lateinit var locationAdapter: LocationAdapter
 
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         askForPermissions()
+        createBottomNavigation()
+
+    }
+
+    private fun createBottomNavigation() {
+        val bottomNavigation = binding.bottomNavigation
+        val onBottomNavigationSelect =
+            BottomNavigationView.OnNavigationItemSelectedListener { item ->
+                when (item.itemId) {
+                    R.id.settingsFragment -> {
+                        onNavDestinationSelected(
+                            item,
+                            Navigation.findNavController(this, R.id.myNavHostFragment)
+                        )
+                        return@OnNavigationItemSelectedListener true
+                    }
+                    R.id.alertsFragment -> {
+                        onNavDestinationSelected(
+                            item,
+                            Navigation.findNavController(this, R.id.myNavHostFragment)
+                        )
+                        return@OnNavigationItemSelectedListener true
+                    }
+                    R.id.branchesFragment -> {
+                        onNavDestinationSelected(
+                            item,
+                            Navigation.findNavController(this, R.id.myNavHostFragment)
+                        )
+                        return@OnNavigationItemSelectedListener true
+                    }
+                    else -> {
+                        return@OnNavigationItemSelectedListener false
+                    }
+                }
+            }
+        bottomNavigation.setupWithNavController(
+            Navigation.findNavController(
+                this,
+                R.id.myNavHostFragment
+            )
+        )
+        bottomNavigation.setOnNavigationItemSelectedListener(onBottomNavigationSelect)
     }
 
     override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {
@@ -117,4 +164,8 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
             permissionManager.requestLocationPermissions(this)
         }
     }
+
+
 }
+
+
