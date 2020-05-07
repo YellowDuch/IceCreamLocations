@@ -67,7 +67,7 @@
         android:lines="2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:sleepDurationFormatted="@{alert}"
+        app:dateFormat="@{alert}"
         tools:text="15:23 \n 15-4-2020" />
 
     <ImageButton
@@ -93,6 +93,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/shareButton"
         app:layout_constraintTop_toBottomOf="@+id/alert_time"
+        app:checkMarakImage="@{alert}"
         android:onClick="@{() -> readClickListener.onClick(alert)}"
         app:srcCompat="@drawable/check_mark_not_read" />
 

@@ -34,8 +34,7 @@ class AlertsFragment : Fragment() {
             startActivity(shareIntent)
             },
             AlertAdapter.ReadClickListener{alert ->
-                val shareIntent =  ShareIntent().getShareIntent(alert.description, alert.title)
-                startActivity(shareIntent)
+                alertViewModel.updateAlert(alert)
             })
         binding.alertsList.adapter = adapter
         alertViewModel.alerts.observe(viewLifecycleOwner, Observer {
