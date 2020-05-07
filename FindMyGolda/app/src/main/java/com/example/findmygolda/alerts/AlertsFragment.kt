@@ -29,10 +29,13 @@ class AlertsFragment : Fragment() {
 
         binding.lifecycleOwner = this
         binding.alertsViewModel = alertViewModel
-        val adapter = AlertAdapter(AlertAdapter.AlertClickListener{alert ->
+        val adapter = AlertAdapter(AlertAdapter.ShareClickListener{ alert ->
             val shareIntent =  ShareIntent().getShareIntent(alert.description, alert.title)
             startActivity(shareIntent)
-        })
+            },
+            AlertAdapter.ReadClickListener{alert ->
+                alertViewModel.updateAlert(alert)
+            })
         binding.alertsList.adapter = adapter
         alertViewModel.alerts.observe(viewLifecycleOwner, Observer {
             it?.let {

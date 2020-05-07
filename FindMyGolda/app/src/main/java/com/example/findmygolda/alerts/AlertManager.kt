@@ -65,4 +65,19 @@ class AlertManager(val application: Application, private val branchManager: Bran
         )
         notificationHelper.notify(name, discounts, R.drawable.golda_imag, icon)
     }
+
+    fun updateAlert(alert: AlertEntity){
+        coroutineScope.launch{
+            withContext(Dispatchers.IO){
+                dataSource.insert(
+                    AlertEntity(alert.id,
+                        alert.time,
+                        alert.title,
+                        alert.description,
+                        alert.branchId,
+                        !alert.isRead)
+                )
+            }
+        }
+    }
 }

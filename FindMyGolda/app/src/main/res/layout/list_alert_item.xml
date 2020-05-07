@@ -10,14 +10,18 @@
             name="alert"
             type="com.example.findmygolda.database.AlertEntity"/>
         <variable
-            name="clickListener"
-            type="com.example.findmygolda.alerts.AlertAdapter.AlertClickListener" />
+            name="shareClickListener"
+            type="com.example.findmygolda.alerts.AlertAdapter.ShareClickListener" />
+        <variable
+            name="readClickListener"
+            type="com.example.findmygolda.alerts.AlertAdapter.ReadClickListener" />
     </data>
 
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#D5EBF9FF">
+    android:background="@{alert.isRead ? android.graphics.Color.parseColor(`#FFFFFF`) : android.graphics.Color.parseColor(`#D5EBF9FF`)}"
+    >
 
     <ImageView
         android:id="@+id/imageView"
@@ -64,7 +68,7 @@
         android:lines="2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:sleepDurationFormatted="@{alert}"
+        app:dateFormat="@{alert}"
         tools:text="15:23 \n 15-4-2020" />
 
     <ImageButton
@@ -78,7 +82,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/alert_time"
         app:srcCompat="?attr/actionModeShareDrawable"
-        android:onClick="@{() -> clickListener.onClick(alert)}"
+        android:onClick="@{() -> shareClickListener.onClick(alert)}"
         />
 
     <ImageView
@@ -90,6 +94,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/shareButton"
         app:layout_constraintTop_toBottomOf="@+id/alert_time"
+        app:checkMarakImage="@{alert}"
+        android:onClick="@{() -> readClickListener.onClick(alert)}"
         app:srcCompat="@drawable/check_mark_not_read" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

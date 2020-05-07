@@ -8,7 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.findmygolda.database.AlertEntity
 import com.example.findmygolda.databinding.ListAlertItemBinding
 
-class AlertAdapter(val clickListener: AlertClickListener): ListAdapter<AlertEntity, AlertAdapter.ViewHolder>(AlertDiffCallback())  {
+class AlertAdapter(val shareClickListener: ShareClickListener,
+                   val readClickListener: ReadClickListener): ListAdapter<AlertEntity, AlertAdapter.ViewHolder>(AlertDiffCallback())  {
 
     var data =  listOf<AlertEntity>()
         set(value) {
@@ -25,16 +26,18 @@ class AlertAdapter(val clickListener: AlertClickListener): ListAdapter<AlertEnti
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = data[position]
-        holder.bind(item, clickListener)
+        holder.bind(item, shareClickListener, readClickListener)
     }
 
     class ViewHolder private constructor(val binding: ListAlertItemBinding) : RecyclerView.ViewHolder(binding.root){
         fun bind(
             item: AlertEntity,
-            clickListener: AlertClickListener
+            shareClickListener: ShareClickListener,
+            readClickListener: ReadClickListener
         ) {
             binding.alert = item
-            binding.clickListener = clickListener
+            binding.shareClickListener = shareClickListener
+            binding.readClickListener = readClickListener
             binding.executePendingBindings()
         }
 
@@ -49,7 +52,11 @@ class AlertAdapter(val clickListener: AlertClickListener): ListAdapter<AlertEnti
         }
     }
 
-    class AlertClickListener(val clickListener: (alert: AlertEntity) -> Unit) {
+    class ShareClickListener(val clickListener: (alert: AlertEntity) -> Unit) {
+        fun onClick(alert: AlertEntity) = clickListener(alert)
+    }
+
+    class ReadClickListener(val clickListener: (alert: AlertEntity) -> Unit) {
         fun onClick(alert: AlertEntity) = clickListener(alert)
     }
 }
