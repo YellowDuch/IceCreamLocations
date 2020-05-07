@@ -60,7 +60,8 @@ class AlertManager(val application: Application, private val branchManager: Bran
         dataSource.insert(
             AlertEntity(title = name,
                 description = discounts,
-                branchId = branchId)
+                branchId = branchId,
+                isRead = false)
         )
         notificationHelper.notify(name, discounts, R.drawable.golda_imag, icon)
     }

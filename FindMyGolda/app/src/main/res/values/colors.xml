@@ -8,6 +8,6 @@
     <color name="secondaryDarkColor">#0039cb</color>
     <color name="primaryTextColor">#000000</color>
     <color name="secondaryTextColor">#ffffff</color>
-
-
+    <color name="unreadAlert">#D5EBF9FF</color>
+    <color name="readAlert">#ffffff</color>
 </resources>

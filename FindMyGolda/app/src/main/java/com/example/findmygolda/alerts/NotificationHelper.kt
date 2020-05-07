@@ -40,13 +40,8 @@ class NotificationHelper(val context: Context) {
       flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
     }
     val pendingIntentBackToTheApp: PendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
-    val sendIntent: Intent = Intent().apply {
-      action = Intent.ACTION_SEND
-      putExtra(Intent.EXTRA_TEXT, "$content at $title")
-      putExtra(Intent.EXTRA_TITLE, title)
-      type = "text/plain"
-    }
-    val shareIntent = Intent.createChooser(sendIntent, null)
+    val shareIntent = ShareIntent().getShareIntent(title, content)
+
     val sharePendingIntent = PendingIntent.getActivity(context,0,shareIntent,0)
     val notificationManager = NotificationManagerCompat.from(context)
     val notification = NotificationCompat.Builder(context, CHANNEL_ID)
