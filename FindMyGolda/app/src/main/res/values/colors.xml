@@ -5,7 +5,7 @@
     <color name="primaryDarkColor">#8d8d8d</color>
     <color name="secondaryColor">#efefef</color>
     <color name="secondaryLightColor">#768fff</color>
-    <color name="secondaryDarkColor">#0039cb</color>
+    <color name="secondaryDarkColor">#0F2765</color>
     <color name="primaryTextColor">#000000</color>
     <color name="secondaryTextColor">#ffffff</color>
     <color name="unreadAlert">#D5EBF9FF</color>

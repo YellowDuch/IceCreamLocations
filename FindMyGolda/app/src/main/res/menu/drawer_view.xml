@@ -12,4 +12,9 @@
         android:id="@+id/branchesFragment"
         android:icon="@drawable/ic_map_black_24dp"
         android:title="@string/branches" />
+
+    <item
+        android:id="@+id/mapFragment"
+        android:icon="@drawable/ic_home_black_24dp"
+        android:title="@string/home" />
 </menu>

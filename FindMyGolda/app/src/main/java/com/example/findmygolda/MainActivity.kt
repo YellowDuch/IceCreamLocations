@@ -12,7 +12,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.navigation.NavDestination
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI.navigateUp
 import androidx.navigation.ui.NavigationUI.onNavDestinationSelected
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -34,13 +33,11 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
     lateinit var alerManager : AlertManager
     lateinit var locationAdapter: LocationAdapter
 
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         askForPermissions()
+        setupNavigation()
         createBottomNavigation()
-
     }
 
     private fun createBottomNavigation() {
@@ -63,6 +60,13 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
                         return@OnNavigationItemSelectedListener true
                     }
                     R.id.branchesFragment -> {
+                        onNavDestinationSelected(
+                            item,
+                            Navigation.findNavController(this, R.id.myNavHostFragment)
+                        )
+                        return@OnNavigationItemSelectedListener true
+                    }
+                    R.id.mapFragment -> {
                         onNavDestinationSelected(
                             item,
                             Navigation.findNavController(this, R.id.myNavHostFragment)
@@ -157,14 +161,12 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
             } else {
                 initGlobalVariables()
                 binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-                setupNavigation()
             }
         } else {
             permissionManager = PermissionsManager(this)
             permissionManager.requestLocationPermissions(this)
         }
     }
-
 
 }
 
