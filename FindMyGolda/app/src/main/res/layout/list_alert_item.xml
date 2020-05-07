@@ -20,7 +20,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#D5EBF9FF">
+    android:background="@{alert.isRead ? android.graphics.Color.parseColor(`#FFFFFF`) : android.graphics.Color.parseColor(`#D5EBF9FF`)}"
+    >
 
     <ImageView
         android:id="@+id/imageView"
