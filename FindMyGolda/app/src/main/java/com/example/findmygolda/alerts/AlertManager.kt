@@ -80,4 +80,12 @@ class AlertManager(val application: Application, private val branchManager: Bran
             }
         }
     }
+
+    fun deleteAlert(alert: AlertEntity){
+        coroutineScope.launch{
+            withContext(Dispatchers.IO){
+                dataSource.delete(alert)
+            }
+        }
+    }
 }

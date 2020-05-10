@@ -15,6 +15,9 @@
         <variable
             name="readClickListener"
             type="com.example.findmygolda.alerts.AlertAdapter.ReadClickListener" />
+        <variable
+            name="deleteClickListener"
+            type="com.example.findmygolda.alerts.AlertAdapter.DeleteAlertClickListener" />
     </data>
 
 <androidx.constraintlayout.widget.ConstraintLayout
@@ -61,15 +64,14 @@
 
     <TextView
         android:id="@+id/alert_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_width="118dp"
+        android:layout_height="19dp"
+        android:layout_marginStart="16dp"
         android:lines="2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:dateFormat="@{alert}"
-        tools:text="15:23 \n 15-4-2020" />
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toBottomOf="@+id/alert_title"
+        tools:text="15:23 15-4-2020" />
 
     <ImageButton
         android:id="@+id/shareButton"
@@ -97,6 +99,18 @@
         app:checkMarakImage="@{alert}"
         android:onClick="@{() -> readClickListener.onClick(alert)}"
         app:srcCompat="@drawable/check_mark_not_read" />
+
+    <ImageView
+        android:id="@+id/deleteAlert"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:contentDescription="@string/trashImage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_delete_black_24dp"
+        android:onClick="@{() -> deleteClickListener.onClick(alert)}"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

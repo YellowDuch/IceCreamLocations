@@ -35,7 +35,11 @@ class AlertsFragment : Fragment() {
             },
             AlertAdapter.ReadClickListener{alert ->
                 alertViewModel.updateAlert(alert)
-            })
+            },
+            AlertAdapter.DeleteAlertClickListener{alert ->
+                alertViewModel.deleteAlert(alert)
+            }
+        )
         binding.alertsList.adapter = adapter
         alertViewModel.alerts.observe(viewLifecycleOwner, Observer {
             it?.let {

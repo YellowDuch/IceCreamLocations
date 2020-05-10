@@ -21,6 +21,6 @@ fun ImageView.setCheckMarkImage(item: AlertEntity) {
 }
 
 private fun convertDate(systemTime: Long): String {
-    return SimpleDateFormat("HH:mm'\n'dd-MM-yy'\n'")
+    return SimpleDateFormat("HH:mm dd-MM-yy")
         .format(systemTime).toString()
 }
