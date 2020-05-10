@@ -5,7 +5,9 @@ import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.findmygolda.R
 import com.example.findmygolda.database.BranchEntity
+import com.mapbox.mapboxsdk.annotations.IconFactory
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -44,8 +46,9 @@ class MapViewModel(val application: Application) : ViewModel() {
     }
 
     fun addGoldaMarker(branch: BranchEntity, map: MapboxMap){
+        val icon = IconFactory.getInstance(application).fromResource(R.drawable.golda_marker)
         val point = LatLng(branch.latitude, branch.longtitude)
-        map.addMarker(MarkerOptions().setTitle(branch.name).setSnippet(branch.address).position(point))
+        map.addMarker(MarkerOptions().setTitle(branch.name).setSnippet(branch.address).position(point).icon(icon))
     }
 
 }

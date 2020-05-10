@@ -1,8 +1,10 @@
 package com.example.findmygolda.map
 
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -26,6 +28,11 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory
+import com.mapbox.mapboxsdk.style.layers.SymbolLayer
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
+import java.net.URI
+import java.net.URISyntaxException
 
 const val DEFAULT_MAP_ZOOM = 15.0
 
@@ -85,7 +92,23 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
                     mapViewModel.doneFocusOnUserLocation()
                 }
             })
+
+            try {
+                val geoJsonUrl = URI("https://wow-final.firebaseio.com/anita.json")
+                val geoJsonSource = GeoJsonSource("geojson-source", geoJsonUrl)
+                it.addSource(geoJsonSource)
+
+                val myImag = resources.getDrawable(R.drawable.anita_marker)
+                it.addImage("myImage",myImag)
+                val myLayer = SymbolLayer("my.layer.id", geoJsonSource.id)
+                myLayer.setProperties(PropertyFactory.iconImage("myImage"))
+                it.addLayer(myLayer)
+            } catch (exception: URISyntaxException) {
+                Log.d(TAG, "exception")
+            }
+
         }
+
     }
 
     override fun locationChanged(location: Location) {
