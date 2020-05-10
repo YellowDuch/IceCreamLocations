@@ -5,14 +5,11 @@ import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.findmygolda.alerts.AlertManager
 import com.example.findmygolda.database.BranchEntity
-import com.example.findmygolda.location.LocationAdapter
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.Style
 
 class MapViewModel(val application: Application) : ViewModel() {
 

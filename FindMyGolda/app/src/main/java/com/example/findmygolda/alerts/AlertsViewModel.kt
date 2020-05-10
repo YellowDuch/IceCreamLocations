@@ -9,4 +9,8 @@ class AlertsViewModel(val alertManager: AlertManager) : ViewModel()  {
     fun updateAlert(alert:AlertEntity){
         alertManager.updateAlert(alert)
     }
+
+    fun deleteAlert(alert: AlertEntity){
+        alertManager.deleteAlert(alert)
+    }
 }
