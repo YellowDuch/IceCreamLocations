@@ -1,20 +1,18 @@
 package com.example.findmygolda
 
+import android.content.ClipData
 import android.content.Context
 import android.content.Intent
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
-import android.view.View
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.navigation.NavDestination
 import androidx.navigation.Navigation
-import androidx.navigation.findNavController
-import androidx.navigation.ui.NavigationUI.navigateUp
 import androidx.navigation.ui.NavigationUI.onNavDestinationSelected
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.findmygolda.alerts.AlertManager
 import com.example.findmygolda.databinding.ActivityMainBinding
@@ -36,7 +34,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         askForPermissions()
-        setupNavigation()
+        setupOptionMenu()
         createBottomNavigation()
     }
 
@@ -107,24 +105,32 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
         permissionManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    override fun onSupportNavigateUp() = navigateUp(findNavController(R.id.myNavHostFragment), binding.drawerLayout)
-
-    private fun setupNavigation() {
-        // first find the nav controller
-        val navController = findNavController(R.id.myNavHostFragment)
-        setSupportActionBar(binding.toolbar)
-
-        // then setup the action bar, tell it about the DrawerLayout
-        setupActionBarWithNavController(navController, binding.drawerLayout)
-
-        // finally setup the left drawer (called a NavigationView)
-        binding.navigationView.setupWithNavController(navController)
-
-        navController.addOnDestinationChangedListener { _, destination: NavDestination, _ ->
-            val toolBar = supportActionBar ?: return@addOnDestinationChangedListener
-            toolBar.setDisplayShowTitleEnabled(false)
-            binding.heroImage.visibility = View.VISIBLE
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.golda_check -> {
+                Toast.makeText(getApplicationContext(),"golda layer",Toast.LENGTH_SHORT).show()
+                item.isChecked = !item.isChecked
+                return true
+            }
+            R.id.anita_check -> {
+                Toast.makeText(getApplicationContext(),"anita layer",Toast.LENGTH_SHORT).show()
+                item.isChecked = !item.isChecked
+                return true
+            }
         }
+        return super.onOptionsItemSelected(item)
+    }
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val menuInflater = menuInflater
+        menuInflater.inflate(R.menu.top_map_layer_settings,menu)
+
+        return true
+    }
+
+    private fun setupOptionMenu() {
+        val toolbar = binding.toolbar
+        toolbar.title = ""
+        setSupportActionBar(toolbar)
     }
 
      fun isLocationEnabled(mContext: Context): Boolean {

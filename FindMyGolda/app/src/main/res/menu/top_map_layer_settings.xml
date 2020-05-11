@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group>
+        <item
+            android:id="@+id/golda_check"
+            android:checkable="true"
+            app:actionViewClass="android.widget.CheckBox"
+            android:title="Golda" />
+        <item
+            android:id="@+id/anita_check"
+            android:checkable="true"
+            app:actionViewClass="android.widget.CheckBox"
+            android:title="Anita" />
+    </group>
+
+</menu>
