@@ -1,6 +1,5 @@
 package com.example.findmygolda
 
-import android.content.ClipData
 import android.content.Context
 import android.content.Intent
 import android.location.LocationManager
@@ -34,8 +33,6 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         askForPermissions()
-        setupOptionMenu()
-        createBottomNavigation()
     }
 
     private fun createBottomNavigation() {
@@ -167,6 +164,8 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
             } else {
                 initGlobalVariables()
                 binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+                setupOptionMenu()
+                createBottomNavigation()
             }
         } else {
             permissionManager = PermissionsManager(this)

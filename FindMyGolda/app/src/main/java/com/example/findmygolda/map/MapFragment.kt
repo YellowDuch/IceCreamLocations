@@ -75,7 +75,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
             }
         })
 
-        val mapLayerRepository = MapLayerRepository()
+        //val mapLayerRepository = MapLayerRepository()
         //Toast.makeText(getApplicationContext(),mapLayerRepository.getSurce(),Toast.LENGTH_SHORT).show()
         return binding.root
     }
