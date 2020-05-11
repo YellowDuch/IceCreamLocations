@@ -9,16 +9,19 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.NavHostFragment
 import com.example.findmygolda.MainActivity
+import com.example.findmygolda.MapLayerRepository
 import com.example.findmygolda.R
 import com.example.findmygolda.databinding.FragmentMapBinding
 import com.example.findmygolda.location.ILocationChanged
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.Mapbox.getApplicationContext
 import com.mapbox.mapboxsdk.location.LocationComponent
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
 import com.mapbox.mapboxsdk.location.LocationComponentOptions
@@ -72,6 +75,8 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
             }
         })
 
+        val mapLayerRepository = MapLayerRepository()
+        //Toast.makeText(getApplicationContext(),mapLayerRepository.getSurce(),Toast.LENGTH_SHORT).show()
         return binding.root
     }
 
@@ -99,10 +104,10 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
                 it.addSource(geoJsonSource)
 
                 val myImag = resources.getDrawable(R.drawable.anita_marker)
-                it.addImage("myImage",myImag)
+                it.addImage("myImage",myImag)//after observe
                 val myLayer = SymbolLayer("my.layer.id", geoJsonSource.id)
-                myLayer.setProperties(PropertyFactory.iconImage("myImage"))
-                it.addLayer(myLayer)
+                myLayer.setProperties(PropertyFactory.iconImage("myImage"))// need after observe
+                it.addLayer(myLayer)// after observe
             } catch (exception: URISyntaxException) {
                 Log.d(TAG, "exception")
             }

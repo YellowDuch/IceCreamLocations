@@ -5,6 +5,7 @@ import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.findmygolda.MapLayerRepository
 import com.example.findmygolda.R
 import com.example.findmygolda.database.BranchEntity
 import com.mapbox.mapboxsdk.annotations.IconFactory
@@ -21,6 +22,9 @@ class MapViewModel(val application: Application) : ViewModel() {
     private val _navigateToAlertsFragment = MutableLiveData<Boolean?>()
     val navigateToAlertsFragment: LiveData<Boolean?>
         get() = _navigateToAlertsFragment
+    val mapLayerRepository = MapLayerRepository()
+    val mapSource = mapLayerRepository.mapSource
+    val mapLayer = mapLayerRepository.mapLayer
 
     fun onAlertsButtonClicked(){
         _navigateToAlertsFragment.value = true
