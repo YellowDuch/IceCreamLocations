@@ -166,6 +166,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
                 binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
                 setupOptionMenu()
                 createBottomNavigation()
+                MapLayerRepository(this)
             }
         } else {
             permissionManager = PermissionsManager(this)

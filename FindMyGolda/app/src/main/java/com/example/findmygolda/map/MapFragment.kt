@@ -2,6 +2,7 @@ package com.example.findmygolda.map
 
 import android.content.ContentValues.TAG
 import android.content.Context
+import android.content.SharedPreferences
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -47,6 +48,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
     private lateinit var application: Context
     private lateinit var currentLocation: Location
     private lateinit var mainActivity: MainActivity
+    private var geoJson: String? = ""
 
 
     override fun onCreateView(
@@ -56,6 +58,8 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
         Mapbox.getInstance(activity, getString(R.string.mapbox_access_token))
         application = requireNotNull(this.activity).application
         mainActivity = activity as MainActivity
+        val sharedPreference: SharedPreferences =  mainActivity.getSharedPreferences("geoJson", Context.MODE_PRIVATE)
+        geoJson = sharedPreference.getString("mapJeoJson","noLayer")
         val viewModelFactory = MapViewModelFactory(requireNotNull(this.activity).application)
         mapViewModel =
             ViewModelProviders.of(
@@ -99,15 +103,15 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
             })
 
             try {
-                val geoJsonUrl = URI("https://wow-final.firebaseio.com/anita.json")
-                val geoJsonSource = GeoJsonSource("geojson-source", geoJsonUrl)
+                val geoJsonSource = GeoJsonSource("geojson-source")
+                geoJsonSource.setGeoJson(geoJson)
                 it.addSource(geoJsonSource)
 
                 val myImag = resources.getDrawable(R.drawable.anita_marker)
-                it.addImage("myImage",myImag)//after observe
+                it.addImage("myImage",myImag)
                 val myLayer = SymbolLayer("my.layer.id", geoJsonSource.id)
-                myLayer.setProperties(PropertyFactory.iconImage("myImage"))// need after observe
-                it.addLayer(myLayer)// after observe
+                myLayer.setProperties(PropertyFactory.iconImage("myImage"))
+                it.addLayer(myLayer)
             } catch (exception: URISyntaxException) {
                 Log.d(TAG, "exception")
             }

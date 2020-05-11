@@ -1,25 +1,16 @@
 package com.example.findmygolda
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.content.Context
+import android.content.SharedPreferences
 import com.example.findmygolda.network.LayerApi
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory
-import com.mapbox.mapboxsdk.style.layers.SymbolLayer
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import kotlinx.coroutines.*
 import java.lang.Exception
 
-class MapLayerRepository {
-    private val _mapSource = MutableLiveData<GeoJsonSource?>()
-    val mapSource: LiveData<GeoJsonSource?>
-        get() = _mapSource
-    private val _mapLayer = MutableLiveData<SymbolLayer?>()
-    val mapLayer: LiveData<SymbolLayer?>
-        get() = _mapLayer
+class MapLayerRepository(val mainActivity: MainActivity) {
     private var mapLayerJob = Job()
     private val coroutineScope = CoroutineScope(
         mapLayerJob + Dispatchers.Main )
-
+    private val sharedPreference: SharedPreferences =  mainActivity.getSharedPreferences("geoJson", Context.MODE_PRIVATE)
     init {
         refreshRepository()
     }
@@ -28,9 +19,9 @@ class MapLayerRepository {
         withContext(Dispatchers.IO) {
             val getLayerDeferred = LayerApi.retrofitService.getProperties()
             val geoJson = getLayerDeferred.await()
-            val geoJsonSource = GeoJsonSource("geojson-source", geoJson)
-            _mapSource.value = geoJsonSource
-            _mapLayer.value = SymbolLayer("my.layer.id", geoJsonSource.id)
+            var editor = sharedPreference.edit()
+            editor.putString("mapJeoJson",geoJson)
+            editor.commit()
         }
     }
 
