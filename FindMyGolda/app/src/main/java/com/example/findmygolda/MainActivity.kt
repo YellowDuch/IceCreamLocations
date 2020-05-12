@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.location.LocationManager
 import android.os.Bundle
+import android.os.Environment
 import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
@@ -22,6 +23,7 @@ import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.yesButton
+import java.io.*
 
 class MainActivity : AppCompatActivity(), PermissionsListener {
     lateinit var permissionManager: PermissionsManager
@@ -29,6 +31,8 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
     lateinit var branchManager :BranchManager
     lateinit var alerManager : AlertManager
     lateinit var locationAdapter: LocationAdapter
+    lateinit var mapLayerRepository: MapLayerRepository
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -166,7 +170,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
                 binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
                 setupOptionMenu()
                 createBottomNavigation()
-                MapLayerRepository(this)
+                mapLayerRepository = MapLayerRepository(this)
             }
         } else {
             permissionManager = PermissionsManager(this)

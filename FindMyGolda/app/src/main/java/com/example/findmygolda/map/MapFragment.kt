@@ -2,7 +2,6 @@ package com.example.findmygolda.map
 
 import android.content.ContentValues.TAG
 import android.content.Context
-import android.content.SharedPreferences
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -10,19 +9,16 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.NavHostFragment
 import com.example.findmygolda.MainActivity
-import com.example.findmygolda.MapLayerRepository
 import com.example.findmygolda.R
 import com.example.findmygolda.databinding.FragmentMapBinding
 import com.example.findmygolda.location.ILocationChanged
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.Mapbox
-import com.mapbox.mapboxsdk.Mapbox.getApplicationContext
 import com.mapbox.mapboxsdk.location.LocationComponent
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
 import com.mapbox.mapboxsdk.location.LocationComponentOptions
@@ -35,7 +31,6 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
-import java.net.URI
 import java.net.URISyntaxException
 
 const val DEFAULT_MAP_ZOOM = 15.0
@@ -48,8 +43,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
     private lateinit var application: Context
     private lateinit var currentLocation: Location
     private lateinit var mainActivity: MainActivity
-    private var geoJson: String? = ""
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,8 +51,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
         Mapbox.getInstance(activity, getString(R.string.mapbox_access_token))
         application = requireNotNull(this.activity).application
         mainActivity = activity as MainActivity
-        val sharedPreference: SharedPreferences =  mainActivity.getSharedPreferences("geoJson", Context.MODE_PRIVATE)
-        geoJson = sharedPreference.getString("mapJeoJson","noLayer")
         val viewModelFactory = MapViewModelFactory(requireNotNull(this.activity).application)
         mapViewModel =
             ViewModelProviders.of(
@@ -79,8 +70,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
             }
         })
 
-        //val mapLayerRepository = MapLayerRepository()
-        //Toast.makeText(getApplicationContext(),mapLayerRepository.getSurce(),Toast.LENGTH_SHORT).show()
         return binding.root
     }
 
@@ -92,8 +81,8 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
             }
         })
 
-        mapboxMap.setStyle(Style.MAPBOX_STREETS) {
-            initializeLocationComponent(it)
+        mapboxMap.setStyle(Style.MAPBOX_STREETS) {style->
+            initializeLocationComponent(style)
             mainActivity.locationAdapter.subscribeToLocationChangeEvent(this)
             mapViewModel.focusOnUserLocation.observe(viewLifecycleOwner, Observer {
                 if (it == true) {
@@ -101,23 +90,24 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
                     mapViewModel.doneFocusOnUserLocation()
                 }
             })
+            mainActivity.mapLayerRepository.geojson.observe(viewLifecycleOwner, Observer {
+                if (it != null) {
+                    try {
+                        val geoJsonSource = GeoJsonSource("geojson-source")
+                        geoJsonSource.setGeoJson(it)
+                        style.addSource(geoJsonSource)
 
-            try {
-                val geoJsonSource = GeoJsonSource("geojson-source")
-                geoJsonSource.setGeoJson(geoJson)
-                it.addSource(geoJsonSource)
-
-                val myImag = resources.getDrawable(R.drawable.anita_marker)
-                it.addImage("myImage",myImag)
-                val myLayer = SymbolLayer("my.layer.id", geoJsonSource.id)
-                myLayer.setProperties(PropertyFactory.iconImage("myImage"))
-                it.addLayer(myLayer)
-            } catch (exception: URISyntaxException) {
-                Log.d(TAG, "exception")
-            }
-
+                        val myImag = resources.getDrawable(R.drawable.anita_marker)
+                        style.addImage("myImage",myImag)
+                        val myLayer = SymbolLayer("my.layer.id", geoJsonSource.id)
+                        myLayer.setProperties(PropertyFactory.iconImage("myImage"))
+                        style.addLayer(myLayer)
+                    } catch (exception: URISyntaxException) {
+                        Log.d(TAG, "exception")
+                    }
+                }
+            })
         }
-
     }
 
     override fun locationChanged(location: Location) {
