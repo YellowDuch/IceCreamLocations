@@ -4,13 +4,14 @@ import android.content.Context
 import android.content.Intent
 import android.location.LocationManager
 import android.os.Bundle
-import android.os.Environment
 import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
@@ -23,16 +24,14 @@ import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.yesButton
-import java.io.*
 
 class MainActivity : AppCompatActivity(), PermissionsListener {
     lateinit var permissionManager: PermissionsManager
     lateinit var binding: ActivityMainBinding
     lateinit var branchManager :BranchManager
-    lateinit var alerManager : AlertManager
+    lateinit var alertManager : AlertManager
     lateinit var locationAdapter: LocationAdapter
     lateinit var mapLayerRepository: MapLayerRepository
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,28 +105,6 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
         permissionManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.golda_check -> {
-                Toast.makeText(getApplicationContext(),"golda layer",Toast.LENGTH_SHORT).show()
-                item.isChecked = !item.isChecked
-                return true
-            }
-            R.id.anita_check -> {
-                Toast.makeText(getApplicationContext(),"anita layer",Toast.LENGTH_SHORT).show()
-                item.isChecked = !item.isChecked
-                return true
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        val menuInflater = menuInflater
-        menuInflater.inflate(R.menu.top_map_layer_settings,menu)
-
-        return true
-    }
-
     private fun setupOptionMenu() {
         val toolbar = binding.toolbar
         toolbar.title = ""
@@ -156,9 +133,9 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
 
     private fun initGlobalVariables(){
         branchManager = BranchManager(application)
-        alerManager = AlertManager(application, branchManager)
+        alertManager = AlertManager(application, branchManager)
         locationAdapter = LocationAdapter(application)
-        locationAdapter.subscribeToLocationChangeEvent(alerManager)
+        locationAdapter.subscribeToLocationChangeEvent(alertManager)
     }
 
     private fun askForPermissions(){

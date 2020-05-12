@@ -1,7 +1,6 @@
 package com.example.findmygolda
 
 import android.content.Context
-import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.findmygolda.network.LayerApi
@@ -13,7 +12,6 @@ class MapLayerRepository(val mainActivity: MainActivity) {
     private var mapLayerJob = Job()
     private val coroutineScope = CoroutineScope(
         mapLayerJob + Dispatchers.Main )
-    private val sharedPreference: SharedPreferences =  mainActivity.getSharedPreferences("geoJson", Context.MODE_PRIVATE)
     private val _geojson = MutableLiveData<String?>()
     val geojson: LiveData<String?>
         get() = _geojson

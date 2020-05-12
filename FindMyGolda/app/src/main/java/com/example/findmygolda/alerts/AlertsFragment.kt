@@ -22,7 +22,7 @@ class AlertsFragment : Fragment() {
         val binding: FragmentAlertsBinding = DataBindingUtil.inflate(
             inflater, R.layout.fragment_alerts, container, false)
         mainActivity = activity as MainActivity
-        val viewModelFactory = AlertViewModelFactory(mainActivity.alerManager)
+        val viewModelFactory = AlertViewModelFactory(mainActivity.alertManager)
         val alertViewModel =
             ViewModelProviders.of(
                 this, viewModelFactory).get(AlertsViewModel::class.java)

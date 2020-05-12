@@ -5,11 +5,13 @@
             android:id="@+id/golda_check"
             android:checkable="true"
             app:actionViewClass="android.widget.CheckBox"
+            android:checked="true"
             android:title="Golda" />
         <item
             android:id="@+id/anita_check"
             android:checkable="true"
             app:actionViewClass="android.widget.CheckBox"
+            android:checked="true"
             android:title="Anita" />
     </group>
 
