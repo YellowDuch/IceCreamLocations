@@ -13,7 +13,7 @@ class BranchManager(val application: Application) {
     val branches = branchRepository.branches
     private var branchManagerJob = Job()
     private val coroutineScope = CoroutineScope(
-        branchManagerJob + Dispatchers.Main )
+        branchManagerJob + Dispatchers.Main)
 
     init {
         refreshRepository()

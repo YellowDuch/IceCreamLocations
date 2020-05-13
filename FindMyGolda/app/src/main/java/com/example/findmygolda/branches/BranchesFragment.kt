@@ -17,7 +17,7 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 
 class BranchesFragment : Fragment() {
-    private lateinit var banchViewModel : BranchesViewModel
+    private lateinit var branchViewModel : BranchesViewModel
     private  lateinit var adapter: BranchAdapter
     private lateinit var mainActivity: MainActivity
 
@@ -29,7 +29,7 @@ class BranchesFragment : Fragment() {
             inflater, R.layout.fragment_branches, container, false)
         mainActivity = activity as MainActivity
         val viewModelFactory = BranchViewModelFactorty(mainActivity.branchManager, mainActivity.locationAdapter)
-        banchViewModel =
+        branchViewModel =
             ViewModelProviders.of(
                 this, viewModelFactory).get(BranchesViewModel::class.java)
         binding.lifecycleOwner = this
@@ -41,7 +41,7 @@ class BranchesFragment : Fragment() {
         binding.branchesList.adapter = adapter
         val chipGroup = binding.chipGroup
         setListenerOnChips(chipGroup)
-        banchViewModel.filteredBranches.observe(viewLifecycleOwner, Observer {
+        branchViewModel.filteredBranches.observe(viewLifecycleOwner, Observer {
             it?.let {
                 adapter.data = it
             }
@@ -55,7 +55,7 @@ class BranchesFragment : Fragment() {
             val chip: Chip = chipGroup.getChildAt(index) as Chip
             chip.setOnCheckedChangeListener { view, isChecked ->
                 if (isChecked) {
-                    banchViewModel.chipPicked(view.text.toString())
+                    branchViewModel.chipPicked(view.text.toString())
                 }
             }
         }

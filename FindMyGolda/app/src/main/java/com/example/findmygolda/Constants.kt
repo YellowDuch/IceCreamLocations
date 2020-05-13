@@ -20,7 +20,6 @@ class Constants {
         const val CHANNEL_ID = "com.example.findMyGolda.branchDetails"
         const val GROUP_ID = "com.example.findMyGolda"
         const val CHANNEL_NAME = "Golda notifications"
-
-
+        const val MAP_BOX_TOKEN = "pk.eyJ1IjoibW9yc2t5MiIsImEiOiJjazhlN21tMG4xM2R3M2xtajcxM2s0NW10In0.8TX4Iy3nPrjw9KJR3WzN0w"
     }
 }

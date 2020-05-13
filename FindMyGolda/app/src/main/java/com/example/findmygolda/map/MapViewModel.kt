@@ -1,7 +1,6 @@
 package com.example.findmygolda.map
 
 import android.app.Application
-
 import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

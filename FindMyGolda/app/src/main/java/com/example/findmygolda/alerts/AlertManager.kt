@@ -18,7 +18,7 @@ class AlertManager(val application: Application, private val branchManager: Bran
     val alerts = dataSource.getAllAlerts()
     private var alertManagerJob = Job()
     private val coroutineScope = CoroutineScope(
-        alertManagerJob + Dispatchers.Main )
+        alertManagerJob + Dispatchers.Main)
     private val preferences = PreferenceManager.getDefaultSharedPreferences(application)
     private val maxDistanceFromBranch = preferences.getInt(PREFERENCE_RADIUS_FROM_BRANCH, 5).times(100)
     private val minTimeBetweenAlerts = parseMinutesToMilliseconds(preferences.getInt(PREFERENCE_TIME_BETWEEN_NOTIFICATIONS, 1).times(5))

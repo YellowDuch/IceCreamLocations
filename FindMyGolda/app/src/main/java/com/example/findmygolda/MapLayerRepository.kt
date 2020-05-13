@@ -58,7 +58,7 @@ class MapLayerRepository(val mainActivity: MainActivity) {
         return  inputString
     }
 
-    fun fileExist(fname: String?): Boolean {
+    private fun fileExist(fname: String?): Boolean {
         val file: File = mainActivity.baseContext.getFileStreamPath(fname)
         return file.exists()
     }

@@ -10,7 +10,6 @@ import com.example.findmygolda.R
 class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.app_preferences, rootKey)
-
         val radiusPreference: SeekBarPreference? = findPreference(PREFERENCE_RADIUS_FROM_BRANCH)
         radiusPreference?.apply {
             summary = this.value.times(100).toString() + getString(R.string.meters)

@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.NavHostFragment
 import com.example.findmygolda.Constants.Companion.ANITA_LAYER_ID
 import com.example.findmygolda.Constants.Companion.ANITA_SOURCE_ID
+import com.example.findmygolda.Constants.Companion.MAP_BOX_TOKEN
 import com.example.findmygolda.MainActivity
 import com.example.findmygolda.R
 import com.example.findmygolda.database.BranchEntity
@@ -75,7 +76,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
         savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
         val activity = activity as Context
-        Mapbox.getInstance(activity, getString(R.string.mapbox_access_token))
+        Mapbox.getInstance(activity, MAP_BOX_TOKEN)
         application = requireNotNull(this.activity).application
         mainActivity = activity as MainActivity
         val viewModelFactory = MapViewModelFactory(requireNotNull(this.activity).application)
@@ -115,6 +116,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
             mainActivity.mapLayerRepository.geojson.observe(viewLifecycleOwner, Observer { geoJson ->
                 if (geoJson != null) {
                     try {
+                        mapViewModel.removeMapLayer(mapStyle, ANITA_LAYER_ID, ANITA_SOURCE_ID)
                         mapViewModel.addMapLayer(geoJson, style)
                         this.geoJson = geoJson
                     } catch (exception: URISyntaxException) {
