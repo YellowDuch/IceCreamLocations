@@ -5,13 +5,9 @@ import android.content.Intent
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
-import android.view.Menu
-import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
@@ -26,7 +22,7 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.yesButton
 
 class MainActivity : AppCompatActivity(), PermissionsListener {
-    lateinit var permissionManager: PermissionsManager
+    private lateinit var permissionManager: PermissionsManager
     lateinit var binding: ActivityMainBinding
     lateinit var branchManager :BranchManager
     lateinit var alertManager : AlertManager
@@ -111,9 +107,9 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
         setSupportActionBar(toolbar)
     }
 
-     fun isLocationEnabled(mContext: Context): Boolean {
-        val lm = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return lm.isProviderEnabled(LocationManager.GPS_PROVIDER) || lm.isProviderEnabled(
+     private fun isLocationEnabled(mContext: Context): Boolean {
+        val locationManager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
             LocationManager.NETWORK_PROVIDER)
     }
 
@@ -136,6 +132,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
         alertManager = AlertManager(application, branchManager)
         locationAdapter = LocationAdapter(application)
         locationAdapter.subscribeToLocationChangeEvent(alertManager)
+        mapLayerRepository = MapLayerRepository(this)
     }
 
     private fun askForPermissions(){
@@ -147,7 +144,6 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
                 binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
                 setupOptionMenu()
                 createBottomNavigation()
-                mapLayerRepository = MapLayerRepository(this)
             }
         } else {
             permissionManager = PermissionsManager(this)

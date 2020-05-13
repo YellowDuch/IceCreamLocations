@@ -5,9 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.findmygolda.network.LayerApi
 import kotlinx.coroutines.*
-import java.io.*
-import java.lang.Exception
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 
+const val ANITA_GEO_FILE_NAME = "AnitaGeoJson"
 class MapLayerRepository(val mainActivity: MainActivity) {
     private var mapLayerJob = Job()
     private val coroutineScope = CoroutineScope(
@@ -15,16 +17,20 @@ class MapLayerRepository(val mainActivity: MainActivity) {
     private val _geojson = MutableLiveData<String?>()
     val geojson: LiveData<String?>
         get() = _geojson
+
     init {
-        // TODO: If file exist load from file
-        refreshRepository()
+        if(fileExist(ANITA_GEO_FILE_NAME)){
+            _geojson.value = getFileContent(ANITA_GEO_FILE_NAME)
+        } else {
+            refreshRepository()
+        }
     }
 
     private suspend fun refreshLayer() {
         withContext(Dispatchers.IO) {
             val getLayerDeferred = LayerApi.retrofitService.getProperties()
             val geoJson = getLayerDeferred.await()
-            writeGeoJsonFile("AnitaGeoJson", geoJson)
+            writeGeoJsonFile(ANITA_GEO_FILE_NAME, geoJson)
         }
     }
 
@@ -32,7 +38,7 @@ class MapLayerRepository(val mainActivity: MainActivity) {
         coroutineScope.launch {
             try {
                 refreshLayer()
-                _geojson.value = getFileContent("AnitaGeoJson")
+                _geojson.value = getFileContent(ANITA_GEO_FILE_NAME)
             } catch (e: Exception) {
                 // Probably no internet connection
             }
@@ -49,7 +55,12 @@ class MapLayerRepository(val mainActivity: MainActivity) {
         val charset = Charsets.UTF_8
         val file: FileInputStream = mainActivity.openFileInput(fileName)
         var inputString = file.readBytes().toString(charset)
-        file.close()
+        //file.close()
         return  inputString
+    }
+
+    fun fileExist(fname: String?): Boolean {
+        val file: File = mainActivity.baseContext.getFileStreamPath(fname)
+        return file.exists()
     }
 }
