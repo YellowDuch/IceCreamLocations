@@ -6,7 +6,6 @@ import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -36,8 +35,6 @@ const val DEFAULT_MAP_ZOOM = 15.0
 const val ANITA_LAYER_ID = "anitaLayer"
 const val ANITA_SOURCE_ID = "anitaSource"
 
-
-
 class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
     lateinit var mapView: MapView
     lateinit var mapViewModel: MapViewModel
@@ -49,7 +46,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
     private lateinit var geoJson: String
     private lateinit var mapStyle: Style
 
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.top_map_layer_settings,menu)
     }
@@ -58,14 +54,19 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
         when (item.itemId) {
             R.id.golda_check -> {
                 item.isChecked = !item.isChecked
+                if(!item.isChecked){
+
+                } else {
+
+                }
                 return true
             }
             R.id.anita_check -> {
                 item.isChecked = !item.isChecked
                 if(!item.isChecked){
-                    removeMapLayer(mapStyle, ANITA_LAYER_ID, ANITA_SOURCE_ID)
+                    mapViewModel.removeMapLayer(mapStyle, ANITA_LAYER_ID, ANITA_SOURCE_ID)
                 } else {
-                    addMapLayer(geoJson, mapStyle)
+                    mapViewModel.addMapLayer(geoJson, mapStyle)
                 }
                 return true
             }
@@ -118,7 +119,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
             mainActivity.mapLayerRepository.geojson.observe(viewLifecycleOwner, Observer { geoJson ->
                 if (geoJson != null) {
                     try {
-                        addMapLayer(geoJson, style)
+                        mapViewModel.addMapLayer(geoJson, style)
                         this.geoJson = geoJson
                     } catch (exception: URISyntaxException) {
                         Log.d(TAG, "exception")
@@ -133,23 +134,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
         }
     }
 
-    private fun addMapLayer(geoJson: String?, style: Style) {
-        val geoJsonSource = GeoJsonSource("anitaSource")
-        geoJsonSource.setGeoJson(geoJson)
-        style.addSource(geoJsonSource)
-
-        val anitaMarkerImage = resources.getDrawable(R.drawable.anita_marker)
-        style.addImage("myImage", anitaMarkerImage)
-        val myLayer = SymbolLayer("anitaLayer", geoJsonSource.id)
-        myLayer.setProperties(PropertyFactory.iconImage("myImage"))
-        style.addLayer(myLayer)
-    }
-
-    private fun removeMapLayer(style: Style, layerId: String, sourceId: String){
-        style.removeLayer(layerId)
-        style.removeSource(sourceId)
-    }
-
     override fun locationChanged(location: Location) {
         map.locationComponent.forceLocationUpdate(location)
         if (location != null) {
@@ -162,12 +146,10 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
         val customLocationComponentOptions = LocationComponentOptions.builder(application)
             .trackingGesturesManagement(true)
             .build()
-
         val locationComponentActivationOptions =
             LocationComponentActivationOptions.builder(application, loadedMapStyle)
                 .locationComponentOptions(customLocationComponentOptions)
                 .build()
-
         map.locationComponent.apply {
             activateLocationComponent(locationComponentActivationOptions)
             isLocationComponentEnabled = true

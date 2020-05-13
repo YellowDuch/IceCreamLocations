@@ -15,6 +15,10 @@ import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
+import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory
+import com.mapbox.mapboxsdk.style.layers.SymbolLayer
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 
 class MapViewModel(val application: Application) : ViewModel() {
 
@@ -52,6 +56,22 @@ class MapViewModel(val application: Application) : ViewModel() {
         val icon = IconFactory.getInstance(application).fromResource(R.drawable.golda_marker)
         val point = LatLng(branch.latitude, branch.longtitude)
         map.addMarker(MarkerOptions().setTitle(branch.name).setSnippet(branch.address).position(point).icon(icon))
+    }
+
+    fun addMapLayer(geoJson: String?, style: Style) {
+        val geoJsonSource = GeoJsonSource("anitaSource")
+        geoJsonSource.setGeoJson(geoJson)
+        style.addSource(geoJsonSource)
+        val anitaMarkerImage = application.resources.getDrawable(R.drawable.anita_marker)
+        style.addImage("myImage", anitaMarkerImage)
+        val myLayer = SymbolLayer("anitaLayer", geoJsonSource.id)
+        myLayer.setProperties(PropertyFactory.iconImage("myImage"))
+        style.addLayer(myLayer)
+    }
+
+    fun removeMapLayer(style: Style, layerId: String, sourceId: String){
+        style.removeLayer(layerId)
+        style.removeSource(sourceId)
     }
 
 }
