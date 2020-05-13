@@ -1,14 +1,11 @@
 package com.example.findmygolda.branches
 
-import android.app.Application
 import android.location.Location
-import android.view.View
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.findmygolda.MainActivity
-import com.example.findmygolda.database.BranchDatabaseDAO
+import com.example.findmygolda.Constants.Companion.CHIP_TITTLE_A_TO_Z
+import com.example.findmygolda.Constants.Companion.CHIP_TITTLE_DISTANCE
 import com.example.findmygolda.database.BranchEntity
 import com.example.findmygolda.location.ILocationChanged
 import com.example.findmygolda.location.LocationAdapter
@@ -30,11 +27,11 @@ class BranchesViewModel( branchManager: BranchManager,
     }
 
     fun chipPicked(chipTitle: String){
-        if (chipTitle == "A-Z") {
+        if (chipTitle == CHIP_TITTLE_A_TO_Z) {
             _filteredBranches.value = _filteredBranches.value?.sortAtoZ()
         }
 
-        if (chipTitle == "Distance") {
+        if (chipTitle == CHIP_TITTLE_DISTANCE) {
              _filteredBranches.value = _filteredBranches.value?.sortByLocation()
         }
     }

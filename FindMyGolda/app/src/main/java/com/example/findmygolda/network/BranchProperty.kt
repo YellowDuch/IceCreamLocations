@@ -1,7 +1,5 @@
 package com.example.findmygolda.network
 
-import com.squareup.moshi.Json
-
 data class BranchProperty(
     val address: String,
     val discounts: String,

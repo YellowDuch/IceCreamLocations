@@ -2,8 +2,9 @@ package com.example.findmygolda.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.findmygolda.Constants.Companion.BRANCHES_TABLE_NAME
 
-@Entity(tableName = "branches")
+@Entity(tableName = BRANCHES_TABLE_NAME)
 data class BranchEntity constructor(
     @PrimaryKey
     val id: String,

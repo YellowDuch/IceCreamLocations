@@ -1,13 +1,15 @@
 package com.example.findmygolda.map
 
 import android.app.Application
-import android.content.Context
-import android.content.SharedPreferences
+
 import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.preference.PreferenceManager
+import com.example.findmygolda.Constants.Companion.ANITA_LAYER_ID
+import com.example.findmygolda.Constants.Companion.ANITA_MARKER_IMAGE_ID
+import com.example.findmygolda.Constants.Companion.ANITA_SOURCE_ID
+import com.example.findmygolda.Constants.Companion.DEFAULT_MAP_ZOOM
 import com.example.findmygolda.R
 import com.example.findmygolda.database.BranchEntity
 import com.mapbox.mapboxsdk.annotations.IconFactory
@@ -72,9 +74,9 @@ class MapViewModel(val application: Application) : ViewModel() {
         geoJsonSource.setGeoJson(geoJson)
         style.addSource(geoJsonSource)
         val anitaMarkerImage = application.resources.getDrawable(R.drawable.anita_marker)
-        style.addImage("myImage", anitaMarkerImage)
+        style.addImage(ANITA_MARKER_IMAGE_ID, anitaMarkerImage)
         val myLayer = SymbolLayer(ANITA_LAYER_ID, geoJsonSource.id)
-        myLayer.setProperties(PropertyFactory.iconImage("myImage"))
+        myLayer.setProperties(PropertyFactory.iconImage(ANITA_MARKER_IMAGE_ID))
         style.addLayer(myLayer)
     }
 

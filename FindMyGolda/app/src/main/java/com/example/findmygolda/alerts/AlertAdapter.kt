@@ -8,9 +8,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.findmygolda.database.AlertEntity
 import com.example.findmygolda.databinding.ListAlertItemBinding
 
-class AlertAdapter(val shareClickListener: ShareClickListener,
-                   val readClickListener: ReadClickListener,
-                    val deleteAlertClickListener: DeleteAlertClickListener): ListAdapter<AlertEntity, AlertAdapter.ViewHolder>(AlertDiffCallback())  {
+class AlertAdapter(
+    private val shareClickListener: ShareClickListener,
+    private val readClickListener: ReadClickListener,
+    private val deleteAlertClickListener: DeleteAlertClickListener): ListAdapter<AlertEntity, AlertAdapter.ViewHolder>(AlertDiffCallback())  {
 
     var data =  listOf<AlertEntity>()
         set(value) {

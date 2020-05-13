@@ -11,6 +11,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.NavHostFragment
+import com.example.findmygolda.Constants.Companion.ANITA_LAYER_ID
+import com.example.findmygolda.Constants.Companion.ANITA_SOURCE_ID
 import com.example.findmygolda.MainActivity
 import com.example.findmygolda.R
 import com.example.findmygolda.database.BranchEntity
@@ -28,10 +30,6 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
 import java.net.URISyntaxException
-
-const val DEFAULT_MAP_ZOOM = 15.0
-const val ANITA_LAYER_ID = "anitaLayer"
-const val ANITA_SOURCE_ID = "anitaSource"
 
 class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
     lateinit var mapView: MapView
