@@ -11,6 +11,7 @@ import androidx.preference.PreferenceManager
 import com.example.findmygolda.R
 import com.example.findmygolda.database.BranchEntity
 import com.mapbox.mapboxsdk.annotations.IconFactory
+import com.mapbox.mapboxsdk.annotations.Marker
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -28,6 +29,7 @@ class MapViewModel(val application: Application) : ViewModel() {
     private val _navigateToAlertsFragment = MutableLiveData<Boolean?>()
     val navigateToAlertsFragment: LiveData<Boolean?>
         get() = _navigateToAlertsFragment
+    private val markers = mutableListOf<Marker>()
 
     fun onAlertsButtonClicked(){
         _navigateToAlertsFragment.value = true
@@ -55,16 +57,23 @@ class MapViewModel(val application: Application) : ViewModel() {
     fun addGoldaMarker(branch: BranchEntity, map: MapboxMap){
         val icon = IconFactory.getInstance(application).fromResource(R.drawable.golda_marker)
         val point = LatLng(branch.latitude, branch.longtitude)
-        map.addMarker(MarkerOptions().setTitle(branch.name).setSnippet(branch.address).position(point).icon(icon))
+        val marker = map.addMarker(MarkerOptions().setTitle(branch.name).setSnippet(branch.address).position(point).icon(icon))
+        markers.add(marker)
+    }
+
+    fun removeAllMarkers(){
+       markers.forEach{ marker ->
+           marker.remove()
+       }
     }
 
     fun addMapLayer(geoJson: String?, style: Style) {
-        val geoJsonSource = GeoJsonSource("anitaSource")
+        val geoJsonSource = GeoJsonSource(ANITA_SOURCE_ID)
         geoJsonSource.setGeoJson(geoJson)
         style.addSource(geoJsonSource)
         val anitaMarkerImage = application.resources.getDrawable(R.drawable.anita_marker)
         style.addImage("myImage", anitaMarkerImage)
-        val myLayer = SymbolLayer("anitaLayer", geoJsonSource.id)
+        val myLayer = SymbolLayer(ANITA_LAYER_ID, geoJsonSource.id)
         myLayer.setProperties(PropertyFactory.iconImage("myImage"))
         style.addLayer(myLayer)
     }
@@ -73,5 +82,4 @@ class MapViewModel(val application: Application) : ViewModel() {
         style.removeLayer(layerId)
         style.removeSource(sourceId)
     }
-
 }

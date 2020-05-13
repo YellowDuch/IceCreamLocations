@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.NavHostFragment
 import com.example.findmygolda.MainActivity
 import com.example.findmygolda.R
+import com.example.findmygolda.database.BranchEntity
 import com.example.findmygolda.databinding.FragmentMapBinding
 import com.example.findmygolda.location.ILocationChanged
 import com.mapbox.android.core.permissions.PermissionsManager
@@ -55,9 +56,9 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
             R.id.golda_check -> {
                 item.isChecked = !item.isChecked
                 if(!item.isChecked){
-
+                    mapViewModel.removeAllMarkers()
                 } else {
-
+                    mainActivity.branchManager.branches.value?.let { addMarkers(it) }
                 }
                 return true
             }
@@ -127,9 +128,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
                 }
             })
             mainActivity.branchManager.branches.observe(viewLifecycleOwner, Observer { branches ->
-                branches.forEach{
-                    mapViewModel.addGoldaMarker(it,map)
-                }
+                addMarkers(branches)
             })
         }
     }
@@ -138,6 +137,12 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
         map.locationComponent.forceLocationUpdate(location)
         if (location != null) {
             currentLocation = location
+        }
+    }
+
+    private fun addMarkers(branches: List<BranchEntity>){
+        branches.forEach{
+            mapViewModel.addGoldaMarker(it,map)
         }
     }
 
