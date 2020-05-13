@@ -5,16 +5,11 @@ import android.content.Intent
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.navigation.NavDestination
 import androidx.navigation.Navigation
-import androidx.navigation.findNavController
-import androidx.navigation.ui.NavigationUI.navigateUp
 import androidx.navigation.ui.NavigationUI.onNavDestinationSelected
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.findmygolda.alerts.AlertManager
 import com.example.findmygolda.databinding.ActivityMainBinding
@@ -27,17 +22,16 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.yesButton
 
 class MainActivity : AppCompatActivity(), PermissionsListener {
-    lateinit var permissionManager: PermissionsManager
+    private lateinit var permissionManager: PermissionsManager
     lateinit var binding: ActivityMainBinding
     lateinit var branchManager :BranchManager
-    lateinit var alerManager : AlertManager
+    lateinit var alertManager : AlertManager
     lateinit var locationAdapter: LocationAdapter
+    lateinit var mapLayerRepository: MapLayerRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         askForPermissions()
-        setupNavigation()
-        createBottomNavigation()
     }
 
     private fun createBottomNavigation() {
@@ -107,29 +101,15 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
         permissionManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    override fun onSupportNavigateUp() = navigateUp(findNavController(R.id.myNavHostFragment), binding.drawerLayout)
-
-    private fun setupNavigation() {
-        // first find the nav controller
-        val navController = findNavController(R.id.myNavHostFragment)
-        setSupportActionBar(binding.toolbar)
-
-        // then setup the action bar, tell it about the DrawerLayout
-        setupActionBarWithNavController(navController, binding.drawerLayout)
-
-        // finally setup the left drawer (called a NavigationView)
-        binding.navigationView.setupWithNavController(navController)
-
-        navController.addOnDestinationChangedListener { _, destination: NavDestination, _ ->
-            val toolBar = supportActionBar ?: return@addOnDestinationChangedListener
-            toolBar.setDisplayShowTitleEnabled(false)
-            binding.heroImage.visibility = View.VISIBLE
-        }
+    private fun setupOptionMenu() {
+        val toolbar = binding.toolbar
+        toolbar.title = ""
+        setSupportActionBar(toolbar)
     }
 
-     fun isLocationEnabled(mContext: Context): Boolean {
-        val lm = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return lm.isProviderEnabled(LocationManager.GPS_PROVIDER) || lm.isProviderEnabled(
+     private fun isLocationEnabled(mContext: Context): Boolean {
+        val locationManager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
             LocationManager.NETWORK_PROVIDER)
     }
 
@@ -149,9 +129,10 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
 
     private fun initGlobalVariables(){
         branchManager = BranchManager(application)
-        alerManager = AlertManager(application, branchManager)
+        alertManager = AlertManager(application, branchManager)
         locationAdapter = LocationAdapter(application)
-        locationAdapter.subscribeToLocationChangeEvent(alerManager)
+        locationAdapter.subscribeToLocationChangeEvent(alertManager)
+        mapLayerRepository = MapLayerRepository(this)
     }
 
     private fun askForPermissions(){
@@ -161,6 +142,8 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
             } else {
                 initGlobalVariables()
                 binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+                setupOptionMenu()
+                createBottomNavigation()
             }
         } else {
             permissionManager = PermissionsManager(this)
