@@ -4,6 +4,11 @@ import android.app.Application
 import android.graphics.BitmapFactory
 import android.location.Location
 import androidx.preference.PreferenceManager
+import com.example.findmygolda.Constants.Companion.DEFAULT_DISTANCE_TO_BRANCH
+import com.example.findmygolda.Constants.Companion.DEFAULT_TIME_BETWEEN_ALERTS
+import com.example.findmygolda.Constants.Companion.HUNDREDS_METERS
+import com.example.findmygolda.Constants.Companion.MINUTES_TO_MILLISECONDS
+import com.example.findmygolda.Constants.Companion.MIN_TIME_BETWEEN_NOTIFICATIONS
 import com.example.findmygolda.Constants.Companion.PREFERENCE_RADIUS_FROM_BRANCH
 import com.example.findmygolda.Constants.Companion.PREFERENCE_TIME_BETWEEN_NOTIFICATIONS
 import com.example.findmygolda.R
@@ -20,8 +25,9 @@ class AlertManager(val application: Application, private val branchManager: Bran
     private val coroutineScope = CoroutineScope(
         alertManagerJob + Dispatchers.Main)
     private val preferences = PreferenceManager.getDefaultSharedPreferences(application)
-    private val maxDistanceFromBranch = preferences.getInt(PREFERENCE_RADIUS_FROM_BRANCH, 5).times(100)
-    private val minTimeBetweenAlerts = parseMinutesToMilliseconds(preferences.getInt(PREFERENCE_TIME_BETWEEN_NOTIFICATIONS, 1).times(5))
+    private val maxDistanceFromBranch = preferences.getInt(PREFERENCE_RADIUS_FROM_BRANCH, DEFAULT_DISTANCE_TO_BRANCH).times(HUNDREDS_METERS)
+    private val minTimeBetweenAlerts = parseMinutesToMilliseconds(preferences.getInt(PREFERENCE_TIME_BETWEEN_NOTIFICATIONS,
+        DEFAULT_TIME_BETWEEN_ALERTS).times(MIN_TIME_BETWEEN_NOTIFICATIONS))
     private val notificationHelper = NotificationHelper(application.applicationContext)
 
     override fun locationChanged(location: Location) {
@@ -51,7 +57,7 @@ class AlertManager(val application: Application, private val branchManager: Bran
     }
 
     private fun parseMinutesToMilliseconds(minutes : Int) : Long{
-        return (minutes * 60000).toLong()
+        return (minutes * MINUTES_TO_MILLISECONDS).toLong()
     }
 
     private fun notify(name:String, discounts:String, branchId:Int){

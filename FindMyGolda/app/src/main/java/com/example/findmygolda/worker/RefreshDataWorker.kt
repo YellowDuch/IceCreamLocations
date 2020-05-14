@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.findmygolda.BranchesRepository
+import com.example.findmygolda.Constants.Companion.WORKER_WORK_NAME
 import com.example.findmygolda.database.AlertDatabase
 import retrofit2.HttpException
 
@@ -22,6 +23,6 @@ class RefreshDataWorker(appContext: Context, params: WorkerParameters) :
     }
 
     companion object {
-        const val WORK_NAME = "com.example.android.FindMyGolda.RefreshDataWorker"
+        const val WORK_NAME = WORKER_WORK_NAME
     }
 }

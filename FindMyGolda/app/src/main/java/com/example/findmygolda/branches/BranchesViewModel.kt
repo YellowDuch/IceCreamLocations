@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.findmygolda.Constants.Companion.CHIP_TITTLE_A_TO_Z
 import com.example.findmygolda.Constants.Companion.CHIP_TITTLE_DISTANCE
+import com.example.findmygolda.Constants.Companion.LOCATION_NAME
 import com.example.findmygolda.database.BranchEntity
 import com.example.findmygolda.location.ILocationChanged
 import com.example.findmygolda.location.LocationAdapter
@@ -45,7 +46,7 @@ class BranchesViewModel( branchManager: BranchManager,
         this.sortedBy { it?.name }
 
     private fun branchLocation(branch: BranchEntity): Location {
-        val branchLocation = Location("branchLocation")
+        val branchLocation = Location(LOCATION_NAME)
         branchLocation.longitude = branch.longtitude
         branchLocation.latitude = branch.latitude
         return branchLocation

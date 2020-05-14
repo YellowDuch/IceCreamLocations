@@ -13,6 +13,7 @@ import com.example.findmygolda.ActionReceiver.ActionReceiver
 import com.example.findmygolda.Constants.Companion.CHANNEL_ID
 import com.example.findmygolda.Constants.Companion.CHANNEL_NAME
 import com.example.findmygolda.Constants.Companion.GROUP_ID
+import com.example.findmygolda.Constants.Companion.NOTIFICATION_CHANEL_DESCRIPTION
 import com.example.findmygolda.MainActivity
 import com.example.findmygolda.R
 
@@ -23,7 +24,7 @@ class NotificationHelper(val context: Context) {
   private fun createChannel() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       val importance = NotificationManager.IMPORTANCE_HIGH
-      val descriptionText = "Golda notifications"
+      val descriptionText = NOTIFICATION_CHANEL_DESCRIPTION
       val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, importance).apply {
         description = descriptionText
       }
@@ -58,7 +59,7 @@ class NotificationHelper(val context: Context) {
       .setGroup(GROUP_ID)
       .setPriority(NotificationCompat.PRIORITY_DEFAULT)
       .setContentIntent(pendingIntentBackToTheApp)
-      .addAction(R.drawable.mapbox_logo_icon, "Share",
+      .addAction(R.drawable.mapbox_logo_icon, context.getString(R.string.shareActionButton),
         sharePendingIntent)
       .addAction(R.drawable.mapbox_logo_icon, "Mark as read",
         pendingIntentMarkAsRead)
