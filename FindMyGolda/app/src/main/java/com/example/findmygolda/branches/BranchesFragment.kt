@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.example.findmygolda.Constants.Companion.FIRST_CHIP_INDEX
 import com.example.findmygolda.MainActivity
 import com.example.findmygolda.R
 import com.example.findmygolda.databinding.FragmentBranchesBinding
@@ -51,7 +52,7 @@ class BranchesFragment : Fragment() {
     }
 
     private fun setListenerOnChips(chipGroup: ChipGroup) {
-        for (index in 0 until chipGroup.childCount) {
+        for (index in FIRST_CHIP_INDEX until chipGroup.childCount) {
             val chip: Chip = chipGroup.getChildAt(index) as Chip
             chip.setOnCheckedChangeListener { view, isChecked ->
                 if (isChecked) {

@@ -1,6 +1,7 @@
 package com.example.findmygolda.network
 
 import com.example.findmygolda.Constants
+import com.example.findmygolda.Constants.Companion.GOLDA_API_URL
 import com.example.findmygolda.database.BranchEntity
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.squareup.moshi.Moshi
@@ -22,7 +23,7 @@ private val retrofit = Retrofit.Builder()
     .build()
 
 interface BranchesApiService {
-    @GET("golda.json")
+    @GET(GOLDA_API_URL)
     fun getProperties():
             Deferred<List<BranchEntity>>
 }

@@ -1,6 +1,7 @@
 package com.example.findmygolda.network
 
 import com.example.findmygolda.Constants
+import com.example.findmygolda.Constants.Companion.ANITA_API_URL
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import kotlinx.coroutines.Deferred
 import retrofit2.Retrofit
@@ -14,7 +15,7 @@ private val retrofit = Retrofit.Builder()
     .build()
 
 interface MapLayerApiService {
-    @GET("anita.json")
+    @GET(ANITA_API_URL)
     fun getProperties():
             Deferred<String>
 }

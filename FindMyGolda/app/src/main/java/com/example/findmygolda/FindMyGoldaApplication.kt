@@ -46,7 +46,6 @@ class FindMyGoldaApplication:Application() {
 
     private fun delayedInit() {
         applicationScope.launch {
-            //Timber.plant(Timber.DebugTree())
             setupRecurringWork()
         }
     }
