@@ -9,6 +9,7 @@ import android.graphics.Bitmap
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.example.findmygolda.ActionReceiver.ActionReceiver
 import com.example.findmygolda.Constants.Companion.CHANNEL_ID
 import com.example.findmygolda.Constants.Companion.CHANNEL_NAME
 import com.example.findmygolda.Constants.Companion.GROUP_ID
@@ -36,6 +37,14 @@ class NotificationHelper(val context: Context) {
     val intent = Intent(context, MainActivity::class.java).apply {
       flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
     }
+
+    val markAsReadIntent = Intent(context,ActionReceiver::class.java)
+    markAsReadIntent.putExtra("action", "markAsRead")
+    val pendingIntentMarkAsRead = PendingIntent.getBroadcast(context,
+                                  1,
+                                  markAsReadIntent,
+                                  PendingIntent.FLAG_UPDATE_CURRENT)
+
     val pendingIntentBackToTheApp: PendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
     val shareIntent = ShareIntent().getShareIntent(title, content)
     val sharePendingIntent = PendingIntent.getActivity(context,0,shareIntent,0)
@@ -51,6 +60,8 @@ class NotificationHelper(val context: Context) {
       .setContentIntent(pendingIntentBackToTheApp)
       .addAction(R.drawable.mapbox_logo_icon, "Share",
         sharePendingIntent)
+      .addAction(R.drawable.mapbox_logo_icon, "Mark as read",
+        pendingIntentMarkAsRead)
       .setAutoCancel(true)
       .build()
     notificationManager.notify(noificationId, notification)
