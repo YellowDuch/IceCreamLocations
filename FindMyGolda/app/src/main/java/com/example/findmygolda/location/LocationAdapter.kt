@@ -3,6 +3,8 @@ package com.example.findmygolda.location
 import android.app.Application
 import android.location.Location
 import android.os.Looper
+import com.example.findmygolda.Constants.Companion.INTERVAL_CHECK_LOCATION
+import com.example.findmygolda.Constants.Companion.MAX_RESPONSE_TIME
 import com.mapbox.android.core.location.*
 
 class LocationAdapter(val application: Application) {
@@ -18,9 +20,9 @@ class LocationAdapter(val application: Application) {
     private fun initLocationEngine() {
         locationEngine = LocationEngineProvider.getBestLocationEngine(application)
         val request = LocationEngineRequest
-            .Builder(1000)
+            .Builder(INTERVAL_CHECK_LOCATION)
             .setPriority(LocationEngineRequest.PRIORITY_HIGH_ACCURACY)
-            .setMaxWaitTime(5000)
+            .setMaxWaitTime(MAX_RESPONSE_TIME)
             .build()
         locationEngine.requestLocationUpdates(request, callback, Looper.myLooper())
         locationEngine.getLastLocation(callback)

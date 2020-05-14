@@ -7,21 +7,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.findmygolda.MainActivity
-
 import com.example.findmygolda.R
-import com.example.findmygolda.database.AlertDatabase
 import com.example.findmygolda.databinding.FragmentBranchesBinding
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 
-
 class BranchesFragment : Fragment() {
-    private lateinit var banchViewModel : BranchesViewModel
+    private lateinit var branchViewModel : BranchesViewModel
     private  lateinit var adapter: BranchAdapter
     private lateinit var mainActivity: MainActivity
 
@@ -33,11 +29,10 @@ class BranchesFragment : Fragment() {
             inflater, R.layout.fragment_branches, container, false)
         mainActivity = activity as MainActivity
         val viewModelFactory = BranchViewModelFactorty(mainActivity.branchManager, mainActivity.locationAdapter)
-
-        banchViewModel =
+        branchViewModel =
             ViewModelProviders.of(
                 this, viewModelFactory).get(BranchesViewModel::class.java)
-        binding.setLifecycleOwner(this)
+        binding.lifecycleOwner = this
         adapter =BranchAdapter(BranchAdapter.BranchClickListener { branchId ->
             val intent = Intent(Intent.ACTION_DIAL)
             intent.data = Uri.parse("tel:<$branchId>")
@@ -46,9 +41,8 @@ class BranchesFragment : Fragment() {
         binding.branchesList.adapter = adapter
         val chipGroup = binding.chipGroup
         setListenerOnChips(chipGroup)
-        banchViewModel.filteredBranches.observe(viewLifecycleOwner, Observer {
+        branchViewModel.filteredBranches.observe(viewLifecycleOwner, Observer {
             it?.let {
-               // binding.isThereNotifications = it.isNotEmpty()
                 adapter.data = it
             }
         })
@@ -61,11 +55,10 @@ class BranchesFragment : Fragment() {
             val chip: Chip = chipGroup.getChildAt(index) as Chip
             chip.setOnCheckedChangeListener { view, isChecked ->
                 if (isChecked) {
-                    banchViewModel.chipPicked(view.text.toString())
+                    branchViewModel.chipPicked(view.text.toString())
                 }
             }
         }
     }
-
 
 }

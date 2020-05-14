@@ -3,12 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".branches.BranchesFragment">
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/chipGroup"
             android:layout_width="match_parent"
@@ -21,7 +18,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:singleLine="true"
             app:singleSelection="true">
-
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipDistance"
                 style="@style/Widget.MaterialComponents.Chip.Choice"
@@ -32,7 +28,6 @@
                 android:focusable="true"
                 android:text="Distance"
                 app:chipBackgroundColor="@color/chip_bg_states" />
-
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipAtoZ"
                 style="@style/Widget.MaterialComponents.Chip.Choice"
@@ -42,11 +37,8 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:text="A-Z"
-
                 app:chipBackgroundColor="@color/chip_bg_states" />
-
         </com.google.android.material.chip.ChipGroup>
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/branches_list"
             android:layout_width="0dp"
@@ -60,6 +52,5 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/chipGroup" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

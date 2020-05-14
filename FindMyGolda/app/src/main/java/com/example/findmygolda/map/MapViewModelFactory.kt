@@ -3,8 +3,6 @@ package com.example.findmygolda.map
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.findmygolda.alerts.AlertManager
-import com.mapbox.mapboxsdk.maps.MapboxMap
 
 class MapViewModelFactory(
     private val application: Application) : ViewModelProvider.Factory {

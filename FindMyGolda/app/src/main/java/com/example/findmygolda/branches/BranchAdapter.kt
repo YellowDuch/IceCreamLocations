@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.findmygolda.database.BranchEntity
 import com.example.findmygolda.databinding.ListBranchItemBinding
 
-class BranchAdapter(val clickListener: BranchClickListener) : ListAdapter<BranchEntity, BranchAdapter.ViewHolder>(BranchDiffCallback()) {
+class BranchAdapter(private val clickListener: BranchClickListener) : ListAdapter<BranchEntity, BranchAdapter.ViewHolder>(BranchDiffCallback()) {
 
     var data =  listOf<BranchEntity>()
         set(value) {
@@ -60,7 +60,6 @@ class BranchDiffCallback : DiffUtil.ItemCallback<BranchEntity>() {
     override fun areItemsTheSame(oldItem: BranchEntity, newItem: BranchEntity): Boolean {
         return oldItem.id == newItem.id
     }
-
 
     override fun areContentsTheSame(oldItem: BranchEntity, newItem: BranchEntity): Boolean {
         return oldItem == newItem

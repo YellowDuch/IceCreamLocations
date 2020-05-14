@@ -1,17 +1,16 @@
 package com.example.findmygolda.network
 
+import com.example.findmygolda.Constants
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import kotlinx.coroutines.Deferred
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.GET
 
-private const val BASE_URL = "https://wow-final.firebaseio.com/"
-
 private val retrofit = Retrofit.Builder()
     .addConverterFactory(ScalarsConverterFactory.create())
     .addCallAdapterFactory(CoroutineCallAdapterFactory())
-    .baseUrl(BASE_URL)
+    .baseUrl(Constants.BASE_URL)
     .build()
 
 interface MapLayerApiService {

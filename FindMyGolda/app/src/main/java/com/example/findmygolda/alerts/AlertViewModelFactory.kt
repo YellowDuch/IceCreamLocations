@@ -1,9 +1,7 @@
 package com.example.findmygolda.alerts
 
-import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.findmygolda.database.AlertDatabaseDAO
 
 class AlertViewModelFactory(
     private val alertManager: AlertManager) : ViewModelProvider.Factory {

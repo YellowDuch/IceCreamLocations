@@ -9,13 +9,11 @@ import android.graphics.Bitmap
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.example.findmygolda.Constants.Companion.CHANNEL_ID
+import com.example.findmygolda.Constants.Companion.CHANNEL_NAME
+import com.example.findmygolda.Constants.Companion.GROUP_ID
 import com.example.findmygolda.MainActivity
 import com.example.findmygolda.R
-
-
-const val CHANNEL_ID = "com.example.findMyGolda.branchDetails"
-const val GROUP_ID = "com.example.findMyGolda"
-const val CHANNEL_NAME = "Golda notifications"
 
 class NotificationHelper(val context: Context) {
 
@@ -31,7 +29,6 @@ class NotificationHelper(val context: Context) {
       val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
       notificationManager.createNotificationChannel(channel)
     }
-
   }
 
   fun notify(title: String, content: String,smallIcon: Int, icon: Bitmap) {
@@ -41,11 +38,10 @@ class NotificationHelper(val context: Context) {
     }
     val pendingIntentBackToTheApp: PendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
     val shareIntent = ShareIntent().getShareIntent(title, content)
-
     val sharePendingIntent = PendingIntent.getActivity(context,0,shareIntent,0)
     val notificationManager = NotificationManagerCompat.from(context)
     val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-      .setSmallIcon(R.drawable.golda_imag)
+      .setSmallIcon(smallIcon)
       .setLargeIcon(icon)
       .setContentTitle(title)
       .setContentText(content)

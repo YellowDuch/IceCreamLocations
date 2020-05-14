@@ -2,8 +2,9 @@ package com.example.findmygolda.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.findmygolda.Constants.Companion.ALERTS_TABLE_NAME
 
-@Entity(tableName = "alerts")
+@Entity(tableName = ALERTS_TABLE_NAME)
 data class AlertEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,

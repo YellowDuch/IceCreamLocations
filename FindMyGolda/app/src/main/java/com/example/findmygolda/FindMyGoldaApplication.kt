@@ -15,7 +15,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
-
 class FindMyGoldaApplication:Application() {
     private val applicationScope = CoroutineScope(Dispatchers.Default)
 

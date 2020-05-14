@@ -4,6 +4,8 @@ import android.app.Application
 import android.graphics.BitmapFactory
 import android.location.Location
 import androidx.preference.PreferenceManager
+import com.example.findmygolda.Constants.Companion.PREFERENCE_RADIUS_FROM_BRANCH
+import com.example.findmygolda.Constants.Companion.PREFERENCE_TIME_BETWEEN_NOTIFICATIONS
 import com.example.findmygolda.R
 import com.example.findmygolda.database.AlertDatabase
 import com.example.findmygolda.database.AlertEntity
@@ -16,10 +18,10 @@ class AlertManager(val application: Application, private val branchManager: Bran
     val alerts = dataSource.getAllAlerts()
     private var alertManagerJob = Job()
     private val coroutineScope = CoroutineScope(
-        alertManagerJob + Dispatchers.Main )
+        alertManagerJob + Dispatchers.Main)
     private val preferences = PreferenceManager.getDefaultSharedPreferences(application)
-    private val maxDistanceFromBranch = preferences.getInt("radiusFromBranch", 5).times(100)
-    private val minTimeBetweenAlerts = parseMinutesToMilliseconds(preferences.getInt("timeBetweenNotifications", 1).times(5))
+    private val maxDistanceFromBranch = preferences.getInt(PREFERENCE_RADIUS_FROM_BRANCH, 5).times(100)
+    private val minTimeBetweenAlerts = parseMinutesToMilliseconds(preferences.getInt(PREFERENCE_TIME_BETWEEN_NOTIFICATIONS, 1).times(5))
     private val notificationHelper = NotificationHelper(application.applicationContext)
 
     override fun locationChanged(location: Location) {
