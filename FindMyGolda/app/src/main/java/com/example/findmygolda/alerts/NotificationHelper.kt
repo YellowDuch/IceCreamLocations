@@ -93,4 +93,10 @@ class NotificationHelper(val context: Context) {
       PendingIntent.FLAG_UPDATE_CURRENT
     )
   }
+
+  fun cancelNotification(context: Context, notifyId: Int) {
+    val notificationService = Context.NOTIFICATION_SERVICE
+    val notificationManager = context.getSystemService(notificationService) as NotificationManager
+    notificationManager.cancel(notifyId)
+  }
 }

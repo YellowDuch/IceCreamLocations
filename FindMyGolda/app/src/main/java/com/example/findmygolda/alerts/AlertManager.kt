@@ -109,6 +109,7 @@ class AlertManager(val context: Context):ILocationChanged {
         coroutineScope.launch{
             withContext(Dispatchers.IO){
                 dataSource.delete(alert)
+                notificationHelper.cancelNotification(context, alert.id.toInt())
             }
         }
     }
