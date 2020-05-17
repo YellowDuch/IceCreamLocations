@@ -32,5 +32,7 @@ class Constants {
         const val GOLDA_API_URL = "golda.json"
         const val ANITA_API_URL = " anita.json"
         const val WORKER_WORK_NAME = "com.example.android.FindMyGolda.RefreshDataWorker"
+        const val REQUEST_CODE_PENDING_INTENT_MARK_AS_READ = 1
+        const val REQUEST_CODE_PENDING_INTENT_DELETE_ALERT = 2
     }
 }
