@@ -18,4 +18,5 @@
     <string name="home">Home</string>
     <string name="trashImage">Trash image</string>
     <string name="shareActionButton">Share</string>
+    <string name="MarkAsRead">Mark as read</string>
 </resources>

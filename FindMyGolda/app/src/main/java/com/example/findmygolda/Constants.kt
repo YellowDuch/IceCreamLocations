@@ -34,5 +34,9 @@ class Constants {
         const val WORKER_WORK_NAME = "com.example.android.FindMyGolda.RefreshDataWorker"
         const val REQUEST_CODE_PENDING_INTENT_MARK_AS_READ = 1
         const val REQUEST_CODE_PENDING_INTENT_DELETE_ALERT = 2
+        const val ALERT_ID_KEY = "alertId"
+        const val ACTION = "action"
+        const val ACTION_DELETE = "delete"
+        const val ACTION_MARK_AS_READ = "markAsRead"
     }
 }

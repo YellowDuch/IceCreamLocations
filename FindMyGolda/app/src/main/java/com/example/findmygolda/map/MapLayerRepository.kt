@@ -1,8 +1,10 @@
-package com.example.findmygolda
+package com.example.findmygolda.map
 
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.findmygolda.Constants
+import com.example.findmygolda.MainActivity
 import com.example.findmygolda.network.LayerApi
 import kotlinx.coroutines.*
 import java.io.File

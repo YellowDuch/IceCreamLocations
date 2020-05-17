@@ -10,6 +10,10 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.example.findmygolda.ActionReceiver.ActionReceiver
+import com.example.findmygolda.Constants.Companion.ACTION
+import com.example.findmygolda.Constants.Companion.ACTION_DELETE
+import com.example.findmygolda.Constants.Companion.ACTION_MARK_AS_READ
+import com.example.findmygolda.Constants.Companion.ALERT_ID_KEY
 import com.example.findmygolda.Constants.Companion.CHANNEL_ID
 import com.example.findmygolda.Constants.Companion.CHANNEL_NAME
 import com.example.findmygolda.Constants.Companion.GROUP_ID
@@ -20,6 +24,10 @@ import com.example.findmygolda.MainActivity
 import com.example.findmygolda.R
 
 class NotificationHelper(val context: Context) {
+
+  init {
+      createChannel()
+  }
 
   private fun createChannel() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -34,7 +42,6 @@ class NotificationHelper(val context: Context) {
   }
 
   fun notify(title: String, content: String,smallIcon: Int, icon: Bitmap, alertId: Long) {
-    createChannel()
     val notificationManager = NotificationManagerCompat.from(context)
     val notification = NotificationCompat.Builder(context, CHANNEL_ID)
       .setSmallIcon(smallIcon)
@@ -47,7 +54,7 @@ class NotificationHelper(val context: Context) {
       .setContentIntent(getBackToAppIntent())
       .addAction(R.drawable.mapbox_logo_icon, context.getString(R.string.shareActionButton),
         getShareIntent(title, content))
-      .addAction(R.drawable.mapbox_logo_icon, "Mark as read",
+      .addAction(R.drawable.mapbox_logo_icon, context.getString(R.string.MarkAsRead),
         getPendingIntentMarkAsRead(alertId))
       .setDeleteIntent(getPendingIntentDeleteAlert(alertId))
       .setAutoCancel(true)
@@ -72,8 +79,8 @@ class NotificationHelper(val context: Context) {
 
   private fun getPendingIntentDeleteAlert(alertId: Long): PendingIntent? {
     val deleteNotification = Intent(context, ActionReceiver::class.java)
-    deleteNotification.putExtra("action", "delete")
-    deleteNotification.putExtra("alertId", alertId)
+    deleteNotification.putExtra(ACTION, ACTION_DELETE)
+    deleteNotification.putExtra(ALERT_ID_KEY, alertId)
     return PendingIntent.getBroadcast(
       context,
       REQUEST_CODE_PENDING_INTENT_DELETE_ALERT,
@@ -84,8 +91,8 @@ class NotificationHelper(val context: Context) {
 
   private fun getPendingIntentMarkAsRead(alertId: Long): PendingIntent? {
     val markAsReadIntent = Intent(context, ActionReceiver::class.java)
-    markAsReadIntent.putExtra("action", "markAsRead")
-    markAsReadIntent.putExtra("alertId", alertId)
+    markAsReadIntent.putExtra(ACTION, ACTION_MARK_AS_READ)
+    markAsReadIntent.putExtra(ALERT_ID_KEY, alertId)
     return PendingIntent.getBroadcast(
       context,
       REQUEST_CODE_PENDING_INTENT_MARK_AS_READ,

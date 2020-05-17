@@ -1,16 +1,17 @@
-package com.example.findmygolda.network
+package com.example.findmygolda.branches
 
-import android.app.Application
 import android.content.Context
 import android.location.Location
-import com.example.findmygolda.BranchesRepository
 import com.example.findmygolda.database.AlertDatabase
 import com.example.findmygolda.database.BranchEntity
 import kotlinx.coroutines.*
 import java.lang.Exception
 
 class BranchManager(val context: Context) {
-    private val branchRepository = BranchesRepository(AlertDatabase.getInstance(context))
+    private val branchRepository =
+        BranchesRepository(
+            AlertDatabase.getInstance(context)
+        )
     val branches = branchRepository.branches
     private var branchManagerJob = Job()
     private val coroutineScope = CoroutineScope(
@@ -43,10 +44,12 @@ class BranchManager(val context: Context) {
 
         fun getInstance(context: Context): BranchManager {
             synchronized(this) {
-                var instance = INSTANCE
+                var instance =
+                    INSTANCE
 
                 if (instance == null) {
-                    instance = BranchManager(context)
+                    instance =
+                        BranchManager(context)
                     INSTANCE = instance
                 }
                 return instance

@@ -14,7 +14,8 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.findmygolda.alerts.AlertManager
 import com.example.findmygolda.databinding.ActivityMainBinding
 import com.example.findmygolda.location.LocationAdapter
-import com.example.findmygolda.network.BranchManager
+import com.example.findmygolda.branches.BranchManager
+import com.example.findmygolda.map.MapLayerRepository
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
@@ -24,7 +25,7 @@ import org.jetbrains.anko.yesButton
 class MainActivity : AppCompatActivity(), PermissionsListener {
     private lateinit var permissionManager: PermissionsManager
     lateinit var binding: ActivityMainBinding
-    lateinit var branchManager :BranchManager
+    lateinit var branchManager : BranchManager
     lateinit var alertManager : AlertManager
     lateinit var locationAdapter: LocationAdapter
     lateinit var mapLayerRepository: MapLayerRepository

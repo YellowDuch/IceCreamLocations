@@ -1,4 +1,4 @@
-package com.example.findmygolda
+package com.example.findmygolda.branches
 
 import androidx.lifecycle.LiveData
 import com.example.findmygolda.database.AlertDatabase

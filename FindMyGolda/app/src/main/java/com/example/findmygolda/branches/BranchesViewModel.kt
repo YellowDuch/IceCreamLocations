@@ -10,10 +10,9 @@ import com.example.findmygolda.Constants.Companion.LOCATION_NAME
 import com.example.findmygolda.database.BranchEntity
 import com.example.findmygolda.location.ILocationChanged
 import com.example.findmygolda.location.LocationAdapter
-import com.example.findmygolda.network.BranchManager
 
-class BranchesViewModel( branchManager: BranchManager,
-                         locationAdapter: LocationAdapter
+class BranchesViewModel(branchManager: BranchManager,
+                        locationAdapter: LocationAdapter
 ): ViewModel(),ILocationChanged {
 
     private val _filteredBranches = MutableLiveData<List<BranchEntity>>()

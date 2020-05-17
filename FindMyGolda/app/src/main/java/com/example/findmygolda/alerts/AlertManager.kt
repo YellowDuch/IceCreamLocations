@@ -15,7 +15,7 @@ import com.example.findmygolda.R
 import com.example.findmygolda.database.AlertDatabase
 import com.example.findmygolda.database.AlertEntity
 import com.example.findmygolda.location.ILocationChanged
-import com.example.findmygolda.network.BranchManager
+import com.example.findmygolda.branches.BranchManager
 import kotlinx.coroutines.*
 
 class AlertManager(val context: Context):ILocationChanged {

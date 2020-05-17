@@ -3,7 +3,7 @@ package com.example.findmygolda.worker
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.example.findmygolda.BranchesRepository
+import com.example.findmygolda.branches.BranchesRepository
 import com.example.findmygolda.Constants.Companion.WORKER_WORK_NAME
 import com.example.findmygolda.database.AlertDatabase
 import retrofit2.HttpException
@@ -13,7 +13,8 @@ class RefreshDataWorker(appContext: Context, params: WorkerParameters) :
 
     override suspend fun doWork(): Result {
         val database = AlertDatabase.getInstance(applicationContext)
-        val repository = BranchesRepository(database)
+        val repository =
+            BranchesRepository(database)
         try {
             repository.refreshBranches( )
         } catch (e: HttpException) {
