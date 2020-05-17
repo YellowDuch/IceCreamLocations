@@ -1,6 +1,7 @@
 package com.example.findmygolda.network
 
 import android.app.Application
+import android.content.Context
 import android.location.Location
 import com.example.findmygolda.BranchesRepository
 import com.example.findmygolda.database.AlertDatabase
@@ -8,8 +9,8 @@ import com.example.findmygolda.database.BranchEntity
 import kotlinx.coroutines.*
 import java.lang.Exception
 
-class BranchManager(val application: Application) {
-    private val branchRepository = BranchesRepository(AlertDatabase.getInstance(application))
+class BranchManager(val context: Context) {
+    private val branchRepository = BranchesRepository(AlertDatabase.getInstance(context))
     val branches = branchRepository.branches
     private var branchManagerJob = Job()
     private val coroutineScope = CoroutineScope(
@@ -32,6 +33,23 @@ class BranchManager(val application: Application) {
                 branchRepository.refreshBranches()
             } catch (e: Exception) {
                 // Probably no internet connection
+            }
+        }
+    }
+
+    companion object {
+        @Volatile
+        private var INSTANCE: BranchManager? = null
+
+        fun getInstance(context: Context): BranchManager {
+            synchronized(this) {
+                var instance = INSTANCE
+
+                if (instance == null) {
+                    instance = BranchManager(context)
+                    INSTANCE = instance
+                }
+                return instance
             }
         }
     }

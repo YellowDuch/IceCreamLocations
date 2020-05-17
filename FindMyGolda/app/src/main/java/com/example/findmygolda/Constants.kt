@@ -32,7 +32,5 @@ class Constants {
         const val GOLDA_API_URL = "golda.json"
         const val ANITA_API_URL = " anita.json"
         const val WORKER_WORK_NAME = "com.example.android.FindMyGolda.RefreshDataWorker"
-
-
     }
 }

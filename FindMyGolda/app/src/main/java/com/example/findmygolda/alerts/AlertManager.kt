@@ -1,6 +1,6 @@
 package com.example.findmygolda.alerts
 
-import android.app.Application
+import android.content.Context
 import android.graphics.BitmapFactory
 import android.location.Location
 import androidx.preference.PreferenceManager
@@ -18,17 +18,18 @@ import com.example.findmygolda.location.ILocationChanged
 import com.example.findmygolda.network.BranchManager
 import kotlinx.coroutines.*
 
-class AlertManager(val application: Application, private val branchManager: BranchManager):ILocationChanged {
-    private val dataSource = (AlertDatabase.getInstance(application)).alertDatabaseDAO
+class AlertManager(val context: Context):ILocationChanged {
+    private val branchManager = BranchManager.getInstance(context)
+    private val dataSource = (AlertDatabase.getInstance(context)).alertDatabaseDAO
     val alerts = dataSource.getAllAlerts()
     private var alertManagerJob = Job()
     private val coroutineScope = CoroutineScope(
         alertManagerJob + Dispatchers.Main)
-    private val preferences = PreferenceManager.getDefaultSharedPreferences(application)
+    private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
     private val maxDistanceFromBranch = preferences.getInt(PREFERENCE_RADIUS_FROM_BRANCH, DEFAULT_DISTANCE_TO_BRANCH).times(HUNDREDS_METERS)
     private val minTimeBetweenAlerts = parseMinutesToMilliseconds(preferences.getInt(PREFERENCE_TIME_BETWEEN_NOTIFICATIONS,
         DEFAULT_TIME_BETWEEN_ALERTS).times(MIN_TIME_BETWEEN_NOTIFICATIONS))
-    private val notificationHelper = NotificationHelper(application.applicationContext)
+    private val notificationHelper = NotificationHelper(context.applicationContext)
 
     override fun locationChanged(location: Location) {
         alertIfNeeded(location)
@@ -62,19 +63,19 @@ class AlertManager(val application: Application, private val branchManager: Bran
 
     private fun notify(name:String, discounts:String, branchId:Int){
         val icon = BitmapFactory.decodeResource(
-          application.resources,
+            context.resources,
           R.drawable.golda_imag)
 
-        dataSource.insert(
+       val alertId =  dataSource.insert(
             AlertEntity(title = name,
                 description = discounts,
                 branchId = branchId,
                 isRead = false)
         )
-        notificationHelper.notify(name, discounts, R.drawable.golda_imag, icon)
+        notificationHelper.notify(name, discounts, R.drawable.golda_imag, icon, alertId)
     }
 
-    fun updateAlert(alert: AlertEntity){
+    fun changeIsReadStatus(alert: AlertEntity){
         coroutineScope.launch{
             withContext(Dispatchers.IO){
                 dataSource.insert(
@@ -89,10 +90,46 @@ class AlertManager(val application: Application, private val branchManager: Bran
         }
     }
 
+    fun markAsRead(alert: AlertEntity){
+        coroutineScope.launch{
+            withContext(Dispatchers.IO){
+                dataSource.insert(
+                    AlertEntity(alert.id,
+                        alert.time,
+                        alert.title,
+                        alert.description,
+                        alert.branchId,
+                        true)
+                )
+            }
+        }
+    }
+
     fun deleteAlert(alert: AlertEntity){
         coroutineScope.launch{
             withContext(Dispatchers.IO){
                 dataSource.delete(alert)
+            }
+        }
+    }
+
+    fun getAlert(id: Long): AlertEntity? {
+        return dataSource.getAlertById(id)
+    }
+
+    companion object {
+        @Volatile
+        private var INSTANCE: AlertManager? = null
+
+        fun getInstance(context: Context): AlertManager {
+            synchronized(this) {
+                var instance = INSTANCE
+
+                if (instance == null) {
+                    instance = AlertManager(context)
+                    INSTANCE = instance
+                }
+                return instance
             }
         }
     }

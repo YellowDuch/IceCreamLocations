@@ -34,7 +34,7 @@ class AlertsFragment : Fragment() {
             startActivity(shareIntent)
             },
             AlertAdapter.ReadClickListener{alert ->
-                alertViewModel.updateAlert(alert)
+                alertViewModel.changeIsReadStatus(alert)
             },
             AlertAdapter.DeleteAlertClickListener{alert ->
                 alertViewModel.deleteAlert(alert)

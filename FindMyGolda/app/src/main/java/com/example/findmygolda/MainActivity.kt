@@ -128,8 +128,8 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
     }
 
     private fun initGlobalVariables(){
-        branchManager = BranchManager(application)
-        alertManager = AlertManager(application, branchManager)
+        branchManager = BranchManager.getInstance(applicationContext)
+        alertManager = AlertManager.getInstance(applicationContext)
         locationAdapter = LocationAdapter(application)
         locationAdapter.subscribeToLocationChangeEvent(alertManager)
         mapLayerRepository = MapLayerRepository(this)

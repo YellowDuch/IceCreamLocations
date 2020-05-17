@@ -19,8 +19,6 @@ import com.example.findmygolda.R
 
 class NotificationHelper(val context: Context) {
 
-  var noificationId = 1
-
   private fun createChannel() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       val importance = NotificationManager.IMPORTANCE_HIGH
@@ -33,7 +31,7 @@ class NotificationHelper(val context: Context) {
     }
   }
 
-  fun notify(title: String, content: String,smallIcon: Int, icon: Bitmap) {
+  fun notify(title: String, content: String,smallIcon: Int, icon: Bitmap, alertId: Long) {
     createChannel()
     val intent = Intent(context, MainActivity::class.java).apply {
       flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -41,6 +39,8 @@ class NotificationHelper(val context: Context) {
 
     val markAsReadIntent = Intent(context,ActionReceiver::class.java)
     markAsReadIntent.putExtra("action", "markAsRead")
+    markAsReadIntent.putExtra("alertId", alertId)
+
     val pendingIntentMarkAsRead = PendingIntent.getBroadcast(context,
                                   1,
                                   markAsReadIntent,
@@ -65,8 +65,7 @@ class NotificationHelper(val context: Context) {
         pendingIntentMarkAsRead)
       .setAutoCancel(true)
       .build()
-    notificationManager.notify(noificationId, notification)
-    noificationId ++
+    notificationManager.notify(alertId.toInt(), notification)
   }
 
 }
