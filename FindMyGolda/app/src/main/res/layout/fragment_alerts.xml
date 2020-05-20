@@ -25,7 +25,7 @@
             android:includeFontPadding="false"
             android:text="@string/noNewAlertsMessage"
             android:textSize="24sp"
-            android:visibility="@{!isThereNotifications ? View.VISIBLE : View.GONE}"
+            android:visibility="@{isThereNotifications ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
