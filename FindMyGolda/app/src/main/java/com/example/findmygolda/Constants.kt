@@ -1,5 +1,7 @@
 package com.example.findmygolda
 
+import android.graphics.BitmapFactory
+
 class Constants {
     companion object {
         const val ANITA_GEO_FILE_NAME = "AnitaGeoJson"
@@ -22,7 +24,7 @@ class Constants {
         const val CHANNEL_NAME = "Golda notifications"
         const val MAP_BOX_TOKEN = "pk.eyJ1IjoibW9yc2t5MiIsImEiOiJjazhlN21tMG4xM2R3M2xtajcxM2s0NW10In0.8TX4Iy3nPrjw9KJR3WzN0w"
         const val HUNDREDS_METERS = 100
-        const val MIN_TIME_BETWEEN_NOTIFICATIONS = 5
+        const val SIZE_OF_JUMP = 5
         const val FIRST_CHIP_INDEX = 0
         const val NOTIFICATION_CHANEL_DESCRIPTION = "Golda notifications"
         const val DEFAULT_DISTANCE_TO_BRANCH = 5
@@ -38,5 +40,6 @@ class Constants {
         const val ACTION = "action"
         const val ACTION_DELETE = "delete"
         const val ACTION_MARK_AS_READ = "markAsRead"
+        const val NOTIFICATION_IMAGE_ICON = R.drawable.golda_imag
     }
 }
