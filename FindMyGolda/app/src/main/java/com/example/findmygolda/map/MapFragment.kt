@@ -14,11 +14,12 @@ import androidx.navigation.fragment.NavHostFragment
 import com.example.findmygolda.Constants.Companion.ANITA_LAYER_ID
 import com.example.findmygolda.Constants.Companion.ANITA_SOURCE_ID
 import com.example.findmygolda.Constants.Companion.MAP_BOX_TOKEN
-import com.example.findmygolda.MainActivity
 import com.example.findmygolda.R
+import com.example.findmygolda.branches.BranchManager
 import com.example.findmygolda.database.BranchEntity
 import com.example.findmygolda.databinding.FragmentMapBinding
 import com.example.findmygolda.location.ILocationChanged
+import com.example.findmygolda.location.LocationAdapter
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.location.LocationComponent
@@ -39,9 +40,11 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
     var locationComponent: LocationComponent? = null
     private lateinit var application: Context
     private lateinit var currentLocation: Location
-    private lateinit var mainActivity: MainActivity
     private lateinit var geoJson: String
     private lateinit var mapStyle: Style
+    private lateinit var branchManager: BranchManager
+    private lateinit var locationAdapter: LocationAdapter
+    private lateinit var mapLayerRepository: MapLayerRepository
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.top_map_layer_settings,menu)
@@ -54,7 +57,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
                 if(!item.isChecked){
                     mapViewModel.removeAllMarkers()
                 } else {
-                    mainActivity.branchManager.branches.value?.let { addMarkers(it) }
+                    branchManager.branches.value?.let { addMarkers(it) }
                 }
                 return true
             }
@@ -78,7 +81,9 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
         val activity = activity as Context
         Mapbox.getInstance(activity, MAP_BOX_TOKEN)
         application = requireNotNull(this.activity).application
-        mainActivity = activity as MainActivity
+        branchManager = BranchManager.getInstance(requireNotNull(this.activity).application)
+        locationAdapter = LocationAdapter.getInstance(requireNotNull(this.activity).application)
+        mapLayerRepository = MapLayerRepository.getInstance(requireNotNull(this.activity).application)
         val viewModelFactory = MapViewModelFactory(requireNotNull(this.activity).application)
         mapViewModel =
             ViewModelProviders.of(
@@ -106,14 +111,14 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
         mapboxMap.setStyle(Style.MAPBOX_STREETS) {style->
             mapStyle = style
             initializeLocationComponent(style)
-            mainActivity.locationAdapter.subscribeToLocationChangeEvent(this)
+            locationAdapter.subscribeToLocationChangeEvent(this)
             mapViewModel.focusOnUserLocation.observe(viewLifecycleOwner, Observer {
                 if (it == true) {
-                    mapViewModel.setCameraPosition(currentLocation,map)
+                    mapViewModel.setCameraPosition(locationAdapter.lastLocation,map)
                     mapViewModel.doneFocusOnUserLocation()
                 }
             })
-            mainActivity.mapLayerRepository.geojson.observe(viewLifecycleOwner, Observer { geoJson ->
+            mapLayerRepository.geojson.observe(viewLifecycleOwner, Observer { geoJson ->
                 if (geoJson != null) {
                     try {
                         mapViewModel.removeMapLayer(mapStyle, ANITA_LAYER_ID, ANITA_SOURCE_ID)
@@ -124,7 +129,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
                     }
                 }
             })
-            mainActivity.branchManager.branches.observe(viewLifecycleOwner, Observer { branches ->
+            branchManager.branches.observe(viewLifecycleOwner, Observer { branches ->
                 addMarkers(branches)
             })
         }

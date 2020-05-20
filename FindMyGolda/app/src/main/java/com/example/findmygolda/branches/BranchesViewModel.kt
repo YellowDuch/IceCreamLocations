@@ -1,5 +1,6 @@
 package com.example.findmygolda.branches
 
+import android.app.Application
 import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,10 +12,10 @@ import com.example.findmygolda.database.BranchEntity
 import com.example.findmygolda.location.ILocationChanged
 import com.example.findmygolda.location.LocationAdapter
 
-class BranchesViewModel(branchManager: BranchManager,
-                        locationAdapter: LocationAdapter
+class BranchesViewModel(application: Application
 ): ViewModel(),ILocationChanged {
-
+    private val branchManager = BranchManager.getInstance(application)
+    private val locationAdapter = LocationAdapter.getInstance(application)
     private val _filteredBranches = MutableLiveData<List<BranchEntity>>()
     val filteredBranches: LiveData<List<BranchEntity>>
         get() = _filteredBranches

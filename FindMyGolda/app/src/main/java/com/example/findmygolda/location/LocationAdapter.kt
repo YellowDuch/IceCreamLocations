@@ -1,13 +1,13 @@
 package com.example.findmygolda.location
 
-import android.app.Application
+import android.content.Context
 import android.location.Location
 import android.os.Looper
 import com.example.findmygolda.Constants.Companion.INTERVAL_CHECK_LOCATION
 import com.example.findmygolda.Constants.Companion.MAX_RESPONSE_TIME
 import com.mapbox.android.core.location.*
 
-class LocationAdapter(val application: Application) {
+class LocationAdapter(val context: Context) {
     private lateinit var locationEngine: LocationEngine
     private val callback = LocationChangeListen()
     private val locationChangedInterested = mutableListOf<ILocationChanged>()
@@ -18,7 +18,7 @@ class LocationAdapter(val application: Application) {
     }
 
     private fun initLocationEngine() {
-        locationEngine = LocationEngineProvider.getBestLocationEngine(application)
+        locationEngine = LocationEngineProvider.getBestLocationEngine(context)
         val request = LocationEngineRequest
             .Builder(INTERVAL_CHECK_LOCATION)
             .setPriority(LocationEngineRequest.PRIORITY_HIGH_ACCURACY)
@@ -45,5 +45,24 @@ class LocationAdapter(val application: Application) {
         }
 
         override fun onFailure(exception: Exception) {}
+    }
+
+    companion object {
+        @Volatile
+        private var INSTANCE: LocationAdapter? = null
+
+        fun getInstance(context: Context): LocationAdapter {
+            synchronized(this) {
+                var instance =
+                    INSTANCE
+
+                if (instance == null) {
+                    instance =
+                        LocationAdapter(context)
+                    INSTANCE = instance
+                }
+                return instance
+            }
+        }
     }
 }

@@ -48,11 +48,13 @@ class MapViewModel(val application: Application) : ViewModel() {
         _focusOnUserLocation.value = false;
     }
 
-    fun setCameraPosition(location: Location, map:MapboxMap) {
-        map.animateCamera(
-            CameraUpdateFactory.newLatLngZoom(
-                LatLng(location.latitude,
-                    location.longitude), DEFAULT_MAP_ZOOM))
+    fun setCameraPosition(location: Location?, map:MapboxMap) {
+        if (location != null) {
+            map.animateCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    LatLng(location.latitude,
+                        location.longitude), DEFAULT_MAP_ZOOM))
+        }
     }
 
     fun addGoldaMarker(branch: BranchEntity, map: MapboxMap){

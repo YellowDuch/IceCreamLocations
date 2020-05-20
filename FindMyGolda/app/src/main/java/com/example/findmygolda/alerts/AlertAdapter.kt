@@ -13,21 +13,13 @@ class AlertAdapter(
     private val readClickListener: ReadClickListener,
     private val deleteAlertClickListener: DeleteAlertClickListener): ListAdapter<AlertEntity, AlertAdapter.ViewHolder>(AlertDiffCallback())  {
 
-    var data =  listOf<AlertEntity>()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
-
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder.from(parent)
     }
 
-    override fun getItemCount() = data.size
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = data[position]
+        val item = getItem(position)
         holder.bind(item, shareClickListener, readClickListener, deleteAlertClickListener)
     }
 

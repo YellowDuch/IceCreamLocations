@@ -1,9 +1,11 @@
 package com.example.findmygolda.alerts
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import com.example.findmygolda.database.AlertEntity
 
-class AlertsViewModel(private val alertManager: AlertManager) : ViewModel()  {
+class AlertsViewModel(application: Application) : ViewModel()  {
+    private val alertManager = AlertManager.getInstance(application)
     val alerts = alertManager.alerts
 
     fun changeIsReadStatus(alert:AlertEntity){

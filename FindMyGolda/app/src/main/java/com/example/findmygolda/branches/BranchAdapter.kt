@@ -10,21 +10,13 @@ import com.example.findmygolda.databinding.ListBranchItemBinding
 
 class BranchAdapter(private val clickListener: BranchClickListener) : ListAdapter<BranchEntity, BranchAdapter.ViewHolder>(BranchDiffCallback()) {
 
-    var data =  listOf<BranchEntity>()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):
             ViewHolder {
         return ViewHolder.from(parent)
     }
 
-    override fun getItemCount() = data.size
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = data[position]
+        val item = getItem(position)
         holder.bind(item, clickListener)
     }
 

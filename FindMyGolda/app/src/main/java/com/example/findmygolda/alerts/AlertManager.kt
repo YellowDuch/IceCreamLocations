@@ -16,6 +16,7 @@ import com.example.findmygolda.database.AlertDatabase
 import com.example.findmygolda.database.AlertEntity
 import com.example.findmygolda.location.ILocationChanged
 import com.example.findmygolda.branches.BranchManager
+import com.example.findmygolda.location.LocationAdapter
 import kotlinx.coroutines.*
 
 class AlertManager(val context: Context):ILocationChanged {
@@ -30,6 +31,10 @@ class AlertManager(val context: Context):ILocationChanged {
     private val minTimeBetweenAlerts = parseMinutesToMilliseconds(preferences.getInt(PREFERENCE_TIME_BETWEEN_NOTIFICATIONS,
         DEFAULT_TIME_BETWEEN_ALERTS).times(MIN_TIME_BETWEEN_NOTIFICATIONS))
     private val notificationHelper = NotificationHelper(context.applicationContext)
+
+    init {
+        LocationAdapter.getInstance(context).subscribeToLocationChangeEvent(this)
+    }
 
     override fun locationChanged(location: Location) {
         alertIfNeeded(location)

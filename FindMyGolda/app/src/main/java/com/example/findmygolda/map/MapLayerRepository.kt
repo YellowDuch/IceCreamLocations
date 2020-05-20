@@ -4,14 +4,13 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.findmygolda.Constants
-import com.example.findmygolda.MainActivity
 import com.example.findmygolda.network.LayerApi
 import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
-class MapLayerRepository(val mainActivity: MainActivity) {
+class MapLayerRepository(val context: Context) {
     private var mapLayerJob = Job()
     private val coroutineScope = CoroutineScope(
         mapLayerJob + Dispatchers.Main )
@@ -47,21 +46,40 @@ class MapLayerRepository(val mainActivity: MainActivity) {
     }
 
     private fun writeGeoJsonFile(fileName:String, value : String){
-        val file: FileOutputStream = mainActivity.openFileOutput(fileName, Context.MODE_PRIVATE)
+        val file: FileOutputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE)
         file.write(value.toByteArray())
         file.close()
     }
 
     private fun getFileContent(fileName:String): String{
         val charset = Charsets.UTF_8
-        val file: FileInputStream = mainActivity.openFileInput(fileName)
+        val file: FileInputStream = context.openFileInput(fileName)
         var inputString = file.readBytes().toString(charset)
         file.close()
         return  inputString
     }
 
     private fun fileExist(fname: String?): Boolean {
-        val file: File = mainActivity.baseContext.getFileStreamPath(fname)
+        val file: File = context.getFileStreamPath(fname)
         return file.exists()
+    }
+
+    companion object {
+        @Volatile
+        private var INSTANCE: MapLayerRepository? = null
+
+        fun getInstance(context: Context): MapLayerRepository {
+            synchronized(this) {
+                var instance =
+                    INSTANCE
+
+                if (instance == null) {
+                    instance =
+                        MapLayerRepository(context)
+                    INSTANCE = instance
+                }
+                return instance
+            }
+        }
     }
 }

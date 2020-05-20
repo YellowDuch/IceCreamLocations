@@ -20,7 +20,6 @@ import com.google.android.material.chip.ChipGroup
 class BranchesFragment : Fragment() {
     private lateinit var branchViewModel : BranchesViewModel
     private  lateinit var adapter: BranchAdapter
-    private lateinit var mainActivity: MainActivity
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,15 +27,14 @@ class BranchesFragment : Fragment() {
     ): View? {
         val binding: FragmentBranchesBinding = DataBindingUtil.inflate(
             inflater, R.layout.fragment_branches, container, false)
-        mainActivity = activity as MainActivity
-        val viewModelFactory = BranchViewModelFactorty(mainActivity.branchManager, mainActivity.locationAdapter)
+        val viewModelFactory = BranchViewModelFactorty(requireNotNull(this.activity).application)
         branchViewModel =
             ViewModelProviders.of(
                 this, viewModelFactory).get(BranchesViewModel::class.java)
         binding.lifecycleOwner = this
-        adapter =BranchAdapter(BranchAdapter.BranchClickListener { branchId ->
+        adapter =BranchAdapter(BranchAdapter.BranchClickListener { branchPhoneNumber ->
             val intent = Intent(Intent.ACTION_DIAL)
-            intent.data = Uri.parse("tel:<$branchId>")
+            intent.data = Uri.parse("tel:<$branchPhoneNumber>")
             startActivity(intent)
         })
         binding.branchesList.adapter = adapter
@@ -44,7 +42,7 @@ class BranchesFragment : Fragment() {
         setListenerOnChips(chipGroup)
         branchViewModel.filteredBranches.observe(viewLifecycleOwner, Observer {
             it?.let {
-                adapter.data = it
+                adapter.submitList(it)
             }
         })
 

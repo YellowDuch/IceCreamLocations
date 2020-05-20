@@ -132,8 +132,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
         branchManager = BranchManager.getInstance(applicationContext)
         alertManager = AlertManager.getInstance(applicationContext)
         locationAdapter = LocationAdapter(application)
-        locationAdapter.subscribeToLocationChangeEvent(alertManager)
-        mapLayerRepository = MapLayerRepository(this)
+        mapLayerRepository = MapLayerRepository(application)
     }
 
     private fun askForPermissions(){
