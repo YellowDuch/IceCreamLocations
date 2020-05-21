@@ -41,7 +41,7 @@ class NotificationHelper(val context: Context) {
     }
   }
 
-  fun notify(title: String, content: String,smallIcon: Int, icon: Bitmap, alertId: Long) {
+  fun notify(title: String, content: String,icon: Bitmap, smallIcon: Int, alertId: Long) {
     val notificationManager = NotificationManagerCompat.from(context)
     val notification = NotificationCompat.Builder(context, CHANNEL_ID)
       .setSmallIcon(smallIcon)
@@ -54,7 +54,7 @@ class NotificationHelper(val context: Context) {
       .setContentIntent(getBackToAppIntent())
       .addAction(R.drawable.mapbox_logo_icon, context.getString(R.string.shareActionButton),
         getShareIntent(title, content))
-      .addAction(R.drawable.mapbox_logo_icon, context.getString(R.string.MarkAsRead),
+      .addAction(R.drawable.golda_imag, context.getString(R.string.MarkAsRead),
         getPendingIntentMarkAsRead(alertId))
       .setDeleteIntent(getPendingIntentDeleteAlert(alertId))
       .setAutoCancel(true)
@@ -73,7 +73,7 @@ class NotificationHelper(val context: Context) {
       title: String,
       content: String
   ): PendingIntent? {
-    val shareIntent = ShareIntent().getShareIntent(title, content)
+    val shareIntent = ShareIntent.getShareIntent(title, content)
     return PendingIntent.getActivity(context, 0, shareIntent, 0)
   }
 

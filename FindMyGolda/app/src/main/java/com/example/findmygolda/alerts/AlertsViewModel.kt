@@ -9,7 +9,12 @@ class AlertsViewModel(application: Application) : ViewModel()  {
     val alerts = alertManager.alerts
 
     fun changeIsReadStatus(alert:AlertEntity){
-        alertManager.changeIsReadStatus(alert)
+        alertManager.update(AlertEntity(alert.id,
+            alert.time,
+            alert.title,
+            alert.description,
+            alert.branchId,
+            !alert.isRead))
     }
 
     fun deleteAlert(alert: AlertEntity){

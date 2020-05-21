@@ -3,7 +3,9 @@ package com.example.findmygolda.ActionReceiver
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import com.example.findmygolda.Constants.Companion.NOT_EXIST
 import com.example.findmygolda.alerts.AlertManager
+import com.example.findmygolda.database.AlertEntity
 import kotlinx.coroutines.*
 
 class ActionReceiver : BroadcastReceiver() {
@@ -14,7 +16,7 @@ class ActionReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         val alertManager = context?.let { AlertManager.getInstance(it) }
         val action = intent!!.getStringExtra("action")
-        val alertId = intent!!.getLongExtra("alertId", -1)
+        val alertId = intent!!.getLongExtra("alertId", NOT_EXIST)
 
         if (action == "markAsRead") {
             markAlertAsRead(alertId, alertManager)
@@ -31,11 +33,18 @@ class ActionReceiver : BroadcastReceiver() {
         alertId: Long,
         alertManager: AlertManager?
     ) {
-        if (alertId != -1L) {
+        if (alertId != NOT_EXIST) {
             coroutineScope.launch {
                 withContext(Dispatchers.IO) {
                     val alert = alertManager?.getAlert(alertId)
-                    alert?.let { alertManager?.markAsRead(it) }
+                    alert?.let { alertManager?.update(
+                        AlertEntity(alert.id,
+                        alert.time,
+                        alert.title,
+                        alert.description,
+                        alert.branchId,
+                        true)
+                    ) }
                 }
             }
         }

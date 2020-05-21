@@ -32,9 +32,9 @@ class BranchesFragment : Fragment() {
             ViewModelProviders.of(
                 this, viewModelFactory).get(BranchesViewModel::class.java)
         binding.lifecycleOwner = this
-        adapter =BranchAdapter(BranchAdapter.BranchClickListener { branchPhoneNumber ->
+        adapter =BranchAdapter(BranchClickListener { branchPhoneNumber ->
             val intent = Intent(Intent.ACTION_DIAL)
-            intent.data = Uri.parse("tel:<$branchPhoneNumber>")
+            intent.data = Uri.parse("tel:$branchPhoneNumber")
             startActivity(intent)
         })
         binding.branchesList.adapter = adapter

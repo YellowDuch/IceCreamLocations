@@ -8,6 +8,19 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.findmygolda.database.AlertEntity
 import com.example.findmygolda.databinding.ListAlertItemBinding
 
+
+class ShareClickListener(val clickListener: (alert: AlertEntity) -> Unit) {
+    fun onClick(alert: AlertEntity) = clickListener(alert)
+}
+
+class ReadClickListener(val clickListener: (alert: AlertEntity) -> Unit) {
+    fun onClick(alert: AlertEntity) = clickListener(alert)
+}
+
+class DeleteAlertClickListener(val clickListener: (alert: AlertEntity) -> Unit) {
+    fun onClick(alert: AlertEntity) = clickListener(alert)
+}
+
 class AlertAdapter(
     private val shareClickListener: ShareClickListener,
     private val readClickListener: ReadClickListener,
@@ -48,17 +61,6 @@ class AlertAdapter(
         }
     }
 
-    class ShareClickListener(val clickListener: (alert: AlertEntity) -> Unit) {
-        fun onClick(alert: AlertEntity) = clickListener(alert)
-    }
-
-    class ReadClickListener(val clickListener: (alert: AlertEntity) -> Unit) {
-        fun onClick(alert: AlertEntity) = clickListener(alert)
-    }
-
-    class DeleteAlertClickListener(val clickListener: (alert: AlertEntity) -> Unit) {
-        fun onClick(alert: AlertEntity) = clickListener(alert)
-    }
 }
 
 class AlertDiffCallback : DiffUtil.ItemCallback<AlertEntity>() {

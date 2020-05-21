@@ -66,7 +66,7 @@ class AlertManager(val context: Context):ILocationChanged {
         val icon = BitmapFactory.decodeResource(
             context.resources,
           drawableImage)
-        notificationHelper.notify(name, discounts, drawableImage, icon, alertId)
+        notificationHelper.notify(name, discounts,icon, drawableImage, alertId)
     }
 
     private fun addAlert(name:String, discounts:String, branchId:Int): Long{
@@ -78,32 +78,10 @@ class AlertManager(val context: Context):ILocationChanged {
             )
     }
 
-    fun changeIsReadStatus(alert: AlertEntity){
+    fun update(alert: AlertEntity){
         coroutineScope.launch{
             withContext(Dispatchers.IO){
-                dataSource.insert(
-                    AlertEntity(alert.id,
-                        alert.time,
-                        alert.title,
-                        alert.description,
-                        alert.branchId,
-                        !alert.isRead)
-                )
-            }
-        }
-    }
-
-    fun markAsRead(alert: AlertEntity){
-        coroutineScope.launch{
-            withContext(Dispatchers.IO){
-                dataSource.insert(
-                    AlertEntity(alert.id,
-                        alert.time,
-                        alert.title,
-                        alert.description,
-                        alert.branchId,
-                        true)
-                )
+                dataSource.insert(alert)
             }
         }
     }

@@ -26,21 +26,21 @@ class AlertsFragment : Fragment() {
 
         binding.lifecycleOwner = this
         binding.alertsViewModel = alertViewModel
-        val adapter = AlertAdapter(AlertAdapter.ShareClickListener{ alert ->
-            val shareIntent =  ShareIntent().getShareIntent(alert.description, alert.title)
+        val adapter = AlertAdapter(ShareClickListener{ alert ->
+            val shareIntent =  ShareIntent.getShareIntent(alert.description, alert.title)
             startActivity(shareIntent)
             },
-            AlertAdapter.ReadClickListener{alert ->
+            ReadClickListener{alert ->
                 alertViewModel.changeIsReadStatus(alert)
             },
-            AlertAdapter.DeleteAlertClickListener{alert ->
+            DeleteAlertClickListener{alert ->
                 alertViewModel.deleteAlert(alert)
             }
         )
         binding.alertsList.adapter = adapter
         alertViewModel.alerts.observe(viewLifecycleOwner, Observer {
             it?.let {
-                binding.isThereNotifications = it.isNotEmpty()
+                binding.isContentEmpty = it.isEmpty()
                 adapter.submitList(it)
             }
         })

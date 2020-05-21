@@ -8,7 +8,7 @@
             type="com.example.findmygolda.database.BranchEntity"/>
         <variable
             name="clickListener"
-            type="com.example.findmygolda.branches.BranchAdapter.BranchClickListener" />
+            type="com.example.findmygolda.branches.BranchClickListener" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

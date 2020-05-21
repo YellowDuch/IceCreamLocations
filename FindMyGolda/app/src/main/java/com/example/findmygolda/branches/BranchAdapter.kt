@@ -8,6 +8,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.findmygolda.database.BranchEntity
 import com.example.findmygolda.databinding.ListBranchItemBinding
 
+class BranchClickListener(val clickListener: (branchPhone: String) -> Unit) {
+    fun onClick(branch: BranchEntity) = clickListener(branch.phone)
+}
+
 class BranchAdapter(private val clickListener: BranchClickListener) : ListAdapter<BranchEntity, BranchAdapter.ViewHolder>(BranchDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):
@@ -39,11 +43,6 @@ class BranchAdapter(private val clickListener: BranchClickListener) : ListAdapte
                 return ViewHolder(binding)
             }
         }
-
-    }
-
-    class BranchClickListener(val clickListener: (branchPhone: String) -> Unit) {
-        fun onClick(branch: BranchEntity) = clickListener(branch.phone)
     }
 }
 
