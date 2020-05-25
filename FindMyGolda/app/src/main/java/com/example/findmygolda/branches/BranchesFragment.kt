@@ -37,7 +37,6 @@ class BranchesFragment : Fragment() {
         })
         binding.branchesList.adapter = adapter
         binding.viewModel = branchViewModel
-
         branchViewModel.filteredBranches.observe(viewLifecycleOwner, Observer {
             it?.let {
                 adapter.submitList(it)
