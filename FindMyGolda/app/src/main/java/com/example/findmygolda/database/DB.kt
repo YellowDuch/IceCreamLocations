@@ -6,8 +6,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.findmygolda.Constants.Companion.DB_NAME
 
-@Database(entities = [AlertEntity::class, BranchEntity :: class], version = 7, exportSchema = false)
-abstract class AlertDatabase : RoomDatabase() {
+@Database(entities = [Alert::class, Branch :: class], version = 8, exportSchema = false)
+abstract class DB : RoomDatabase() {
 
     abstract val alertDatabaseDAO: AlertDatabaseDAO
     abstract val branchDatabaseDAO: BranchDatabaseDAO
@@ -15,16 +15,16 @@ abstract class AlertDatabase : RoomDatabase() {
     companion object {
 
         @Volatile
-        private var INSTANCE: AlertDatabase? = null
+        private var INSTANCE: DB? = null
 
-        fun getInstance(context: Context): AlertDatabase {
+        fun getInstance(context: Context): DB {
             synchronized(this) {
                 var instance = INSTANCE
 
                 if (instance == null) {
                     instance = Room.databaseBuilder(
                             context.applicationContext,
-                            AlertDatabase::class.java,
+                            DB::class.java,
                             DB_NAME
                         ).fallbackToDestructiveMigration()
                         .build()

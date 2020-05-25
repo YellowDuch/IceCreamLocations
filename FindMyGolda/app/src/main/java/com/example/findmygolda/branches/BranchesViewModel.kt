@@ -8,51 +8,44 @@ import androidx.lifecycle.ViewModel
 import com.example.findmygolda.Constants.Companion.CHIP_TITTLE_A_TO_Z
 import com.example.findmygolda.Constants.Companion.CHIP_TITTLE_DISTANCE
 import com.example.findmygolda.Constants.Companion.LOCATION_NAME
-import com.example.findmygolda.database.BranchEntity
-import com.example.findmygolda.location.ILocationChanged
+import com.example.findmygolda.database.Branch
 import com.example.findmygolda.location.LocationAdapter
 
 class BranchesViewModel(application: Application
-): ViewModel(),ILocationChanged {
+): ViewModel() {
     private val branchManager = BranchManager.getInstance(application)
     private val locationAdapter = LocationAdapter.getInstance(application)
-    private val _filteredBranches = MutableLiveData<List<BranchEntity>>()
-    val filteredBranches: LiveData<List<BranchEntity>>
+    private val _filteredBranches = MutableLiveData<List<Branch>>()
+    val filteredBranches: LiveData<List<Branch>>
         get() = _filteredBranches
-    private var location: Location? = null
 
     init {
         _filteredBranches.value = branchManager.branches.value
-        locationAdapter.subscribeToLocationChangeEvent(this)
-        location = locationAdapter.lastLocation
     }
 
     fun chipPicked(chipTitle: String){
-        if (chipTitle == CHIP_TITTLE_A_TO_Z) {
-            _filteredBranches.value = _filteredBranches.value?.sortAtoZ()
-        }
-
-        if (chipTitle == CHIP_TITTLE_DISTANCE) {
-             _filteredBranches.value = _filteredBranches.value?.sortByLocation()
+        when(chipTitle){
+            CHIP_TITTLE_A_TO_Z -> {
+                _filteredBranches.value = _filteredBranches.value?.sortAtoZ()
+            }
+            CHIP_TITTLE_DISTANCE -> {
+                _filteredBranches.value = _filteredBranches.value?.sortByLocation()
+            }
         }
     }
 
-    private fun List<BranchEntity>?.sortByLocation(): List<BranchEntity>? =
+    private fun List<Branch>?.sortByLocation(): List<Branch>? =
         this?.sortedBy {
-            location?.distanceTo(branchLocation(it))
+            locationAdapter.lastLocation?.distanceTo(getBranchLocation(it))
         }
 
-    private fun List<BranchEntity>.sortAtoZ(): List<BranchEntity> =
+    private fun List<Branch>.sortAtoZ(): List<Branch> =
         this.sortedBy { it?.name }
 
-    private fun branchLocation(branch: BranchEntity): Location {
+    private fun getBranchLocation(branch: Branch): Location {
         val branchLocation = Location(LOCATION_NAME)
-        branchLocation.longitude = branch.longtitude
+        branchLocation.longitude = branch.longitude
         branchLocation.latitude = branch.latitude
         return branchLocation
-    }
-
-    override fun locationChanged(location: Location) {
-        this.location = location
     }
 }

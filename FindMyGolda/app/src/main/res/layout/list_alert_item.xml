@@ -6,7 +6,7 @@
         <import type="android.view.View"/>
         <variable
             name="alert"
-            type="com.example.findmygolda.database.AlertEntity"/>
+            type="com.example.findmygolda.database.Alert"/>
         <variable
             name="shareClickListener"
             type="com.example.findmygolda.alerts.ShareClickListener" />

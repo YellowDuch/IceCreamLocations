@@ -5,7 +5,7 @@
     <data>
         <variable
             name="branch"
-            type="com.example.findmygolda.database.BranchEntity"/>
+            type="com.example.findmygolda.database.Branch"/>
         <variable
             name="clickListener"
             type="com.example.findmygolda.branches.BranchClickListener" />

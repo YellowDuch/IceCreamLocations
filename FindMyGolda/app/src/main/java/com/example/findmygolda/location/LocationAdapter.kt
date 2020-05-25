@@ -9,7 +9,7 @@ import com.mapbox.android.core.location.*
 
 class LocationAdapter(val context: Context) {
     private lateinit var locationEngine: LocationEngine
-    private val callback = LocationChangeListen()
+    private val callback = LocationChangeListener()
     private val locationChangedInterested = mutableListOf<ILocationChanged>()
     var lastLocation: Location? = null
 
@@ -32,16 +32,12 @@ class LocationAdapter(val context: Context) {
         locationChangedInterested.add(interested)
     }
 
-    private inner class LocationChangeListen :
+    private inner class LocationChangeListener :
         LocationEngineCallback<LocationEngineResult> {
         override fun onSuccess(result: LocationEngineResult?) {
             result?.lastLocation ?: return
-
-            if (result.lastLocation != null) {
-                val newLocation = Location(result.lastLocation)
-                lastLocation = newLocation
-                locationChangedInterested.forEach{it.locationChanged(newLocation)}
-            }
+            lastLocation = Location(result.lastLocation)
+            locationChangedInterested.forEach{it.locationChanged(lastLocation)}
         }
 
         override fun onFailure(exception: Exception) {}

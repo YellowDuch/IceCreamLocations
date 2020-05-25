@@ -2,14 +2,14 @@ package com.example.findmygolda.alerts
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
-import com.example.findmygolda.database.AlertEntity
+import com.example.findmygolda.database.Alert
 
 class AlertsViewModel(application: Application) : ViewModel()  {
     private val alertManager = AlertManager.getInstance(application)
     val alerts = alertManager.alerts
 
-    fun changeIsReadStatus(alert:AlertEntity){
-        alertManager.update(AlertEntity(alert.id,
+    fun changeIsReadStatus(alert:Alert){
+        alertManager.update(Alert(alert.id,
             alert.time,
             alert.title,
             alert.description,
@@ -17,7 +17,7 @@ class AlertsViewModel(application: Application) : ViewModel()  {
             !alert.isRead))
     }
 
-    fun deleteAlert(alert: AlertEntity){
+    fun deleteAlert(alert: Alert){
         alertManager.deleteAlert(alert)
     }
 }

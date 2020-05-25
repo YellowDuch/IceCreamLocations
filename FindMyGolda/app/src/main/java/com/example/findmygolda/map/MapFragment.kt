@@ -16,7 +16,7 @@ import com.example.findmygolda.Constants.Companion.ANITA_SOURCE_ID
 import com.example.findmygolda.Constants.Companion.MAP_BOX_TOKEN
 import com.example.findmygolda.R
 import com.example.findmygolda.branches.BranchManager
-import com.example.findmygolda.database.BranchEntity
+import com.example.findmygolda.database.Branch
 import com.example.findmygolda.databinding.FragmentMapBinding
 import com.example.findmygolda.location.ILocationChanged
 import com.example.findmygolda.location.LocationAdapter
@@ -45,34 +45,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
     private lateinit var branchManager: BranchManager
     private lateinit var locationAdapter: LocationAdapter
     private lateinit var mapLayerRepository: MapLayerRepository
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.top_map_layer_settings,menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.golda_check -> {
-                item.isChecked = !item.isChecked
-                if(!item.isChecked){
-                    mapViewModel.removeAllMarkers()
-                } else {
-                    branchManager.branches.value?.let { addMarkers(it) }
-                }
-                return true
-            }
-            R.id.anita_check -> {
-                item.isChecked = !item.isChecked
-                if(!item.isChecked){
-                    mapViewModel.removeMapLayer(mapStyle, ANITA_LAYER_ID, ANITA_SOURCE_ID)
-                } else {
-                    mapViewModel.addMapLayer(geoJson, mapStyle)
-                }
-                return true
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -135,19 +107,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
         }
     }
 
-    override fun locationChanged(location: Location) {
-        map.locationComponent.forceLocationUpdate(location)
-        if (location != null) {
-            currentLocation = location
-        }
-    }
-
-    private fun addMarkers(branches: List<BranchEntity>){
-        branches.forEach{
-            mapViewModel.addGoldaMarker(it,map)
-        }
-    }
-
     @SuppressWarnings("MissingPermission")
     fun initializeLocationComponent(loadedMapStyle: Style) {
         val customLocationComponentOptions = LocationComponentOptions.builder(application)
@@ -162,6 +121,46 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
             isLocationComponentEnabled = true
             cameraMode = CameraMode.TRACKING
             renderMode = RenderMode.COMPASS
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.top_map_layer_settings,menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        item.isChecked = !item.isChecked
+        when (item.itemId) {
+            R.id.golda_check -> {
+                if(item.isChecked){
+                    branchManager.branches.value?.let { addMarkers(it) }
+                } else {
+                    mapViewModel.removeAllMarkers()
+                }
+                return true
+            }
+            R.id.anita_check -> {
+                if(item.isChecked){
+                    mapViewModel.addMapLayer(geoJson, mapStyle)
+                } else {
+                    mapViewModel.removeMapLayer(mapStyle, ANITA_LAYER_ID, ANITA_SOURCE_ID)
+                }
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun locationChanged(location: Location?) {
+        map.locationComponent.forceLocationUpdate(location)
+        if (location != null) {
+            currentLocation = location
+        }
+    }
+
+    private fun addMarkers(branches: List<Branch>){
+        branches.forEach{
+            mapViewModel.addGoldaMarker(it,map)
         }
     }
 

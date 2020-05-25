@@ -7,23 +7,20 @@ import androidx.room.*
 @Dao
 interface AlertDatabaseDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(alert: AlertEntity):Long
+    fun insert(alert: Alert):Long
 
     @Query("SELECT * FROM alerts WHERE id = :id")
-    fun getAlertById(id: Long) : AlertEntity?
+    fun getAlertById(id: Long) : Alert?
 
     @Query("SELECT * FROM alerts ORDER BY id DESC")
-    fun getAllAlerts() : LiveData<List<AlertEntity>>
-
-    @Query("SELECT * FROM alerts ORDER BY id DESC LIMIT 1")
-    fun getLastAlert(): AlertEntity?
+    fun getAllAlerts() : LiveData<List<Alert>>
 
     @Query("SELECT * from alerts WHERE branchId = :branchId ORDER BY time DESC LIMIT 1")
-    fun getLastAlertOfBranch(branchId: String): AlertEntity?
+    fun getLastAlertOfBranch(branchId: String): Alert?
 
     @Update
-    fun update(alert: AlertEntity)
+    fun update(alert: Alert)
 
     @Delete
-    fun delete(alert: AlertEntity)
+    fun delete(alert: Alert)
 }

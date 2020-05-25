@@ -2,15 +2,15 @@ package com.example.findmygolda.branches
 
 import android.content.Context
 import android.location.Location
-import com.example.findmygolda.database.AlertDatabase
-import com.example.findmygolda.database.BranchEntity
+import com.example.findmygolda.database.DB
+import com.example.findmygolda.database.Branch
 import kotlinx.coroutines.*
 import java.lang.Exception
 
 class BranchManager(val context: Context) {
     private val branchRepository =
         BranchesRepository(
-            AlertDatabase.getInstance(context)
+            DB.getInstance(context)
         )
     val branches = branchRepository.branches
     private var branchManagerJob = Job()
@@ -21,10 +21,10 @@ class BranchManager(val context: Context) {
         refreshRepository()
     }
 
-    fun isDistanceInRange(location: Location, branch: BranchEntity, range:Int): Boolean{
+    fun isDistanceInRange(location: Location, branch: Branch, range:Int): Boolean{
         val branchLocation = Location("")
         branchLocation.latitude = branch.latitude
-        branchLocation.longitude = branch.longtitude
+        branchLocation.longitude = branch.longitude
         return (location!!.distanceTo(branchLocation) <= range)
     }
 

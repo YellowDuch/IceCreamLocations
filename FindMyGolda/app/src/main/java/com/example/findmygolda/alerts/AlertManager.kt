@@ -7,13 +7,12 @@ import androidx.preference.PreferenceManager
 import com.example.findmygolda.Constants.Companion.DEFAULT_DISTANCE_TO_BRANCH
 import com.example.findmygolda.Constants.Companion.DEFAULT_TIME_BETWEEN_ALERTS
 import com.example.findmygolda.Constants.Companion.HUNDREDS_METERS
-import com.example.findmygolda.Constants.Companion.MINUTES_TO_MILLISECONDS
 import com.example.findmygolda.Constants.Companion.SIZE_OF_JUMP
 import com.example.findmygolda.Constants.Companion.NOTIFICATION_IMAGE_ICON
 import com.example.findmygolda.Constants.Companion.PREFERENCE_RADIUS_FROM_BRANCH
 import com.example.findmygolda.Constants.Companion.PREFERENCE_TIME_BETWEEN_NOTIFICATIONS
-import com.example.findmygolda.database.AlertDatabase
-import com.example.findmygolda.database.AlertEntity
+import com.example.findmygolda.database.DB
+import com.example.findmygolda.database.Alert
 import com.example.findmygolda.location.ILocationChanged
 import com.example.findmygolda.branches.BranchManager
 import com.example.findmygolda.location.LocationAdapter
@@ -21,7 +20,7 @@ import kotlinx.coroutines.*
 
 class AlertManager(val context: Context):ILocationChanged {
     private val branchManager = BranchManager.getInstance(context)
-    private val dataSource = (AlertDatabase.getInstance(context)).alertDatabaseDAO
+    private val dataSource = (DB.getInstance(context)).alertDatabaseDAO
     val alerts = dataSource.getAllAlerts()
     private var alertManagerJob = Job()
     private val coroutineScope = CoroutineScope(
@@ -36,7 +35,8 @@ class AlertManager(val context: Context):ILocationChanged {
         LocationAdapter.getInstance(context).subscribeToLocationChangeEvent(this)
     }
 
-    override fun locationChanged(location: Location) {
+    override fun locationChanged(location: Location?) {
+        location?: return
         alertIfNeeded(location)
     }
 
@@ -71,14 +71,14 @@ class AlertManager(val context: Context):ILocationChanged {
 
     private fun addAlert(name:String, discounts:String, branchId:Int): Long{
         return dataSource.insert(
-                AlertEntity(title = name,
+                Alert(title = name,
                     description = discounts,
                     branchId = branchId,
                     isRead = false)
             )
     }
 
-    fun update(alert: AlertEntity){
+    fun update(alert: Alert){
         coroutineScope.launch{
             withContext(Dispatchers.IO){
                 dataSource.insert(alert)
@@ -86,7 +86,7 @@ class AlertManager(val context: Context):ILocationChanged {
         }
     }
 
-    fun deleteAlert(alert: AlertEntity){
+    fun deleteAlert(alert: Alert){
         coroutineScope.launch{
             withContext(Dispatchers.IO){
                 dataSource.delete(alert)
@@ -95,7 +95,7 @@ class AlertManager(val context: Context):ILocationChanged {
         }
     }
 
-    fun getAlert(id: Long): AlertEntity? {
+    fun getAlert(id: Long): Alert? {
         return dataSource.getAlertById(id)
     }
 

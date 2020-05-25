@@ -10,7 +10,7 @@ import com.example.findmygolda.Constants.Companion.ANITA_MARKER_IMAGE_ID
 import com.example.findmygolda.Constants.Companion.ANITA_SOURCE_ID
 import com.example.findmygolda.Constants.Companion.DEFAULT_MAP_ZOOM
 import com.example.findmygolda.R
-import com.example.findmygolda.database.BranchEntity
+import com.example.findmygolda.database.Branch
 import com.mapbox.mapboxsdk.annotations.IconFactory
 import com.mapbox.mapboxsdk.annotations.Marker
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
@@ -57,9 +57,9 @@ class MapViewModel(val application: Application) : ViewModel() {
         }
     }
 
-    fun addGoldaMarker(branch: BranchEntity, map: MapboxMap){
+    fun addGoldaMarker(branch: Branch, map: MapboxMap){
         val icon = IconFactory.getInstance(application).fromResource(R.drawable.golda_marker)
-        val point = LatLng(branch.latitude, branch.longtitude)
+        val point = LatLng(branch.latitude, branch.longitude)
         val marker = map.addMarker(MarkerOptions().setTitle(branch.name).setSnippet(branch.address).position(point).icon(icon))
         markers.add(marker)
     }

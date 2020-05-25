@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import com.example.findmygolda.Constants.Companion.NOT_EXIST
 import com.example.findmygolda.alerts.AlertManager
-import com.example.findmygolda.database.AlertEntity
+import com.example.findmygolda.database.Alert
 import kotlinx.coroutines.*
 
 class ActionReceiver : BroadcastReceiver() {
@@ -38,7 +38,7 @@ class ActionReceiver : BroadcastReceiver() {
                 withContext(Dispatchers.IO) {
                     val alert = alertManager?.getAlert(alertId)
                     alert?.let { alertManager?.update(
-                        AlertEntity(alert.id,
+                        Alert(alert.id,
                         alert.time,
                         alert.title,
                         alert.description,
