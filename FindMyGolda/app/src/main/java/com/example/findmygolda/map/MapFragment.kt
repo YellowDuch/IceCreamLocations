@@ -2,7 +2,6 @@ package com.example.findmygolda.map
 
 import android.content.ContentValues.TAG
 import android.content.Context
-import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -18,32 +17,18 @@ import com.example.findmygolda.R
 import com.example.findmygolda.branches.BranchManager
 import com.example.findmygolda.database.Branch
 import com.example.findmygolda.databinding.FragmentMapBinding
-import com.example.findmygolda.location.ILocationChanged
-import com.example.findmygolda.location.LocationAdapter
-import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.Mapbox
-import com.mapbox.mapboxsdk.location.LocationComponent
-import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
-import com.mapbox.mapboxsdk.location.LocationComponentOptions
-import com.mapbox.mapboxsdk.location.modes.CameraMode
-import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
-import com.mapbox.mapboxsdk.maps.Style
 import java.net.URISyntaxException
 
-class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
-    lateinit var mapView: MapView
-    lateinit var mapViewModel: MapViewModel
+class MapFragment : Fragment() {
+    private lateinit var mapView: MapView
+    private lateinit var mapViewModel: MapViewModel
     lateinit var map: MapboxMap
-    var locationComponent: LocationComponent? = null
     private lateinit var application: Context
-    private lateinit var currentLocation: Location
     private lateinit var geoJson: String
-    private lateinit var mapStyle: Style
     private lateinit var branchManager: BranchManager
-    private lateinit var locationAdapter: LocationAdapter
     private lateinit var mapLayerRepository: MapLayerRepository
 
     override fun onCreateView(
@@ -54,7 +39,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
         Mapbox.getInstance(activity, MAP_BOX_TOKEN)
         application = requireNotNull(this.activity).application
         branchManager = BranchManager.getInstance(requireNotNull(this.activity).application)
-        locationAdapter = LocationAdapter.getInstance(requireNotNull(this.activity).application)
         mapLayerRepository = MapLayerRepository.getInstance(requireNotNull(this.activity).application)
         val viewModelFactory = MapViewModelFactory(requireNotNull(this.activity).application)
         mapViewModel =
@@ -65,8 +49,57 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
         mapView = binding.mapView
         binding.viewModel = mapViewModel
         mapView.onCreate(savedInstanceState)
-        mapView.getMapAsync(this)
+        mapView.getMapAsync(mapViewModel)
 
+        observeToNavigationToAlertFragment()
+        observeToMapReady()
+
+        return binding.root
+    }
+
+    private fun observeToMapReady() {
+        mapViewModel.isMapReady.observe(viewLifecycleOwner, Observer {isMapReady ->
+            if (isMapReady) {
+                observeToFocusOnUserLocation()
+                observeToMapLayerRepository()
+                observeToBranches()
+                mapViewModel.doneMapReady()
+            }
+        })
+    }
+
+    private fun observeToBranches() {
+        branchManager.branches.observe(viewLifecycleOwner, Observer { branches ->
+            addMarkers(branches)
+        })
+    }
+
+    private fun observeToMapLayerRepository() {
+        mapLayerRepository.geojson.observe(viewLifecycleOwner, Observer { geoJson ->
+            if (geoJson != null) {
+                try {
+                    mapViewModel.removeMapLayer(ANITA_LAYER_ID, ANITA_SOURCE_ID)
+                    mapViewModel.addMapLayer(geoJson)
+                    this.geoJson = geoJson
+                } catch (exception: URISyntaxException) {
+                    Log.d(TAG, "exception")
+                }
+            }
+        })
+    }
+
+    private fun observeToFocusOnUserLocation() {
+        mapViewModel.focusOnUserLocation.observe(
+            viewLifecycleOwner,
+            Observer { isFoucosed ->
+                if (isFoucosed == true) {
+                    mapViewModel.setCameraPosition()
+                    mapViewModel.doneFocusOnUserLocation()
+                }
+            })
+    }
+
+    private fun observeToNavigationToAlertFragment() {
         mapViewModel.navigateToAlertsFragment.observe(viewLifecycleOwner, Observer {
             if (it == true) {
                 NavHostFragment.findNavController(this)
@@ -74,54 +107,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
                 mapViewModel.doneNavigateToAlertsFragment()
             }
         })
-
-        return binding.root
-    }
-
-    override fun onMapReady(mapboxMap: MapboxMap) {
-        map = mapboxMap
-        mapboxMap.setStyle(Style.MAPBOX_STREETS) {style->
-            mapStyle = style
-            initializeLocationComponent(style)
-            locationAdapter.subscribeToLocationChangeEvent(this)
-            mapViewModel.focusOnUserLocation.observe(viewLifecycleOwner, Observer {
-                if (it == true) {
-                    mapViewModel.setCameraPosition(locationAdapter.lastLocation,map)
-                    mapViewModel.doneFocusOnUserLocation()
-                }
-            })
-            mapLayerRepository.geojson.observe(viewLifecycleOwner, Observer { geoJson ->
-                if (geoJson != null) {
-                    try {
-                        mapViewModel.removeMapLayer(mapStyle, ANITA_LAYER_ID, ANITA_SOURCE_ID)
-                        mapViewModel.addMapLayer(geoJson, style)
-                        this.geoJson = geoJson
-                    } catch (exception: URISyntaxException) {
-                        Log.d(TAG, "exception")
-                    }
-                }
-            })
-            branchManager.branches.observe(viewLifecycleOwner, Observer { branches ->
-                addMarkers(branches)
-            })
-        }
-    }
-
-    @SuppressWarnings("MissingPermission")
-    fun initializeLocationComponent(loadedMapStyle: Style) {
-        val customLocationComponentOptions = LocationComponentOptions.builder(application)
-            .trackingGesturesManagement(true)
-            .build()
-        val locationComponentActivationOptions =
-            LocationComponentActivationOptions.builder(application, loadedMapStyle)
-                .locationComponentOptions(customLocationComponentOptions)
-                .build()
-        map.locationComponent.apply {
-            activateLocationComponent(locationComponentActivationOptions)
-            isLocationComponentEnabled = true
-            cameraMode = CameraMode.TRACKING
-            renderMode = RenderMode.COMPASS
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -141,9 +126,9 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
             }
             R.id.anita_check -> {
                 if(item.isChecked){
-                    mapViewModel.addMapLayer(geoJson, mapStyle)
+                    mapViewModel.addMapLayer(geoJson)
                 } else {
-                    mapViewModel.removeMapLayer(mapStyle, ANITA_LAYER_ID, ANITA_SOURCE_ID)
+                    mapViewModel.removeMapLayer(ANITA_LAYER_ID, ANITA_SOURCE_ID)
                 }
                 return true
             }
@@ -151,24 +136,14 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun locationChanged(location: Location?) {
-        map.locationComponent.forceLocationUpdate(location)
-        if (location != null) {
-            currentLocation = location
-        }
-    }
-
     private fun addMarkers(branches: List<Branch>){
         branches.forEach{
-            mapViewModel.addGoldaMarker(it,map)
+            mapViewModel.addGoldaMarker(it)
         }
     }
 
     override fun onStart() {
         super.onStart()
-        if (PermissionsManager.areLocationPermissionsGranted(activity)) {
-            locationComponent?.onStart()
-        }
         mapView.onStart()
     }
 
@@ -184,7 +159,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, ILocationChanged {
 
     override fun onStop() {
         super.onStop()
-        locationComponent?.onStop()
         mapView.onStop()
     }
 
