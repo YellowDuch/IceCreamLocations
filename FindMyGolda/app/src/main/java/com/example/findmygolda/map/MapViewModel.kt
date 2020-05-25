@@ -112,8 +112,8 @@ class MapViewModel(val application: Application) : ViewModel(),
         mapboxMap.setStyle(Style.MAPBOX_STREETS) {style->
             initializeLocationComponent(style)
             _isMapReady.value = true
+            locationAdapter.subscribeToLocationChangeEvent(this)
         }
-        locationAdapter.subscribeToLocationChangeEvent(this)
     }
 
     @SuppressWarnings("MissingPermission")
