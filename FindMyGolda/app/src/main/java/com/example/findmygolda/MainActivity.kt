@@ -39,39 +39,11 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
         val bottomNavigation = binding.bottomNavigation
         val onBottomNavigationSelect =
             BottomNavigationView.OnNavigationItemSelectedListener { item ->
-                when (item.itemId) {
-                    R.id.settingsFragment -> {
-                        onNavDestinationSelected(
-                            item,
-                            Navigation.findNavController(this, R.id.myNavHostFragment)
-                        )
-                        return@OnNavigationItemSelectedListener true
-                    }
-                    R.id.alertsFragment -> {
-                        onNavDestinationSelected(
-                            item,
-                            Navigation.findNavController(this, R.id.myNavHostFragment)
-                        )
-                        return@OnNavigationItemSelectedListener true
-                    }
-                    R.id.branchesFragment -> {
-                        onNavDestinationSelected(
-                            item,
-                            Navigation.findNavController(this, R.id.myNavHostFragment)
-                        )
-                        return@OnNavigationItemSelectedListener true
-                    }
-                    R.id.mapFragment -> {
-                        onNavDestinationSelected(
-                            item,
-                            Navigation.findNavController(this, R.id.myNavHostFragment)
-                        )
-                        return@OnNavigationItemSelectedListener true
-                    }
-                    else -> {
-                        return@OnNavigationItemSelectedListener false
-                    }
-                }
+                onNavDestinationSelected(
+                    item,
+                    Navigation.findNavController(this, R.id.myNavHostFragment)
+                )
+                return@OnNavigationItemSelectedListener true
             }
         bottomNavigation.setupWithNavController(
             Navigation.findNavController(
@@ -128,21 +100,15 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
         }.show()
     }
 
-    private fun initGlobalVariables(){
-        branchManager = BranchManager.getInstance(applicationContext)
-        alertManager = AlertManager.getInstance(applicationContext)
-        locationAdapter = LocationAdapter(application)
-        mapLayerRepository = MapLayerRepository(application)
-    }
-
     private fun askForPermissions(){
         if (PermissionsManager.areLocationPermissionsGranted(this)) {
             if (!isLocationEnabled(applicationContext)) {
                 showLocationIsDisabledAlert()
             } else {
-                initGlobalVariables()
                 binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
                 setupOptionMenu()
+                binding.toolbar.title = ""
+                setSupportActionBar(binding.toolbar)
                 createBottomNavigation()
             }
         } else {

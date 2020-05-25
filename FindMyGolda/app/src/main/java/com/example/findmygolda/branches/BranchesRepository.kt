@@ -12,9 +12,8 @@ class BranchesRepository(private val database: DB) {
 
     suspend fun refreshBranches() {
         withContext(Dispatchers.IO) {
-            val getBranchesDeferred = BranchApi.retrofitService.getProperties()
-            val allBranches = getBranchesDeferred.await()
-            database.branchDatabaseDAO.insert(allBranches)
+            val branches = BranchApi.retrofitService.getProperties().await()
+            database.branchDatabaseDAO.insert(branches)
         }
     }
 }

@@ -8,8 +8,8 @@
     <string name="appNeedLocationPermission">This app needs location permission to be able to show your location on the map</string>
     <string name="cannotShowYourPositionMessage">We can\'t show your position because you disabled the location service for your device.</string>
     <string name="settings">Settings</string>
-    <string name="meters">\" Meters\"</string>
-    <string name="minutes">\" Minutes\"</string>
+    <string name="meters">Meters</string>
+    <string name="minutes">Minutes</string>
     <string name="shareButton">Share button</string>
     <string name="branndImage">Brand image</string>
     <string name="markAsReadButton">markAsReadButton</string>
