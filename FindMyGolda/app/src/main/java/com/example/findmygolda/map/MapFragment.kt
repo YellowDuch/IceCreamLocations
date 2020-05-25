@@ -18,6 +18,8 @@ import com.example.findmygolda.branches.BranchManager
 import com.example.findmygolda.database.Branch
 import com.example.findmygolda.databinding.FragmentMapBinding
 import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.annotations.IconFactory
+import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import java.net.URISyntaxException
@@ -26,7 +28,6 @@ class MapFragment : Fragment() {
     private lateinit var mapView: MapView
     private lateinit var mapViewModel: MapViewModel
     lateinit var map: MapboxMap
-    private lateinit var application: Context
     private lateinit var geoJson: String
     private lateinit var branchManager: BranchManager
     private lateinit var mapLayerRepository: MapLayerRepository
@@ -35,9 +36,7 @@ class MapFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
-        val activity = activity as Context
-        Mapbox.getInstance(activity, MAP_BOX_TOKEN)
-        application = requireNotNull(this.activity).application
+        Mapbox.getInstance(activity as Context, MAP_BOX_TOKEN)
         branchManager = BranchManager.getInstance(requireNotNull(this.activity).application)
         mapLayerRepository = MapLayerRepository.getInstance(requireNotNull(this.activity).application)
         val viewModelFactory = MapViewModelFactory(requireNotNull(this.activity).application)
@@ -89,10 +88,10 @@ class MapFragment : Fragment() {
     }
 
     private fun observeToFocusOnUserLocation() {
-        mapViewModel.focusOnUserLocation.observe(
+        mapViewModel.isFocusOnUserLocation.observe(
             viewLifecycleOwner,
-            Observer { isFoucosed ->
-                if (isFoucosed == true) {
+            Observer { isFocused ->
+                if (isFocused) {
                     mapViewModel.setCameraPosition()
                     mapViewModel.doneFocusOnUserLocation()
                 }
@@ -100,8 +99,8 @@ class MapFragment : Fragment() {
     }
 
     private fun observeToNavigationToAlertFragment() {
-        mapViewModel.navigateToAlertsFragment.observe(viewLifecycleOwner, Observer {
-            if (it == true) {
+        mapViewModel.isNavigateToAlertsFragment.observe(viewLifecycleOwner, Observer {isNavigate ->
+            if (isNavigate) {
                 NavHostFragment.findNavController(this)
                     .navigate(R.id.action_mapFragment_to_alertsFragment)
                 mapViewModel.doneNavigateToAlertsFragment()
@@ -137,8 +136,9 @@ class MapFragment : Fragment() {
     }
 
     private fun addMarkers(branches: List<Branch>){
-        branches.forEach{
-            mapViewModel.addGoldaMarker(it)
+        val icon = IconFactory.getInstance(requireNotNull(this.activity).application).fromResource(R.drawable.golda_marker)
+        branches.forEach{branch ->
+            mapViewModel.addMarker(branch.name, branch.address, LatLng(branch.latitude, branch.longitude), icon)
         }
     }
 

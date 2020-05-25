@@ -1,13 +1,7 @@
 package com.example.findmygolda
 
 import android.app.Application
-import android.content.Context
-import android.content.Intent
-import android.location.LocationManager
 import android.os.Build
-import android.provider.Settings
-import android.view.WindowManager
-import androidx.appcompat.app.AlertDialog
 import androidx.work.*
 import com.example.findmygolda.worker.RefreshDataWorker
 import kotlinx.coroutines.CoroutineScope

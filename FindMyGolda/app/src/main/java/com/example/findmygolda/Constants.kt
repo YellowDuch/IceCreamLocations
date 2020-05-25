@@ -1,7 +1,5 @@
 package com.example.findmygolda
 
-import android.graphics.BitmapFactory
-
 class Constants {
     companion object {
         const val ANITA_GEO_FILE_NAME = "AnitaGeoJson"
@@ -42,6 +40,7 @@ class Constants {
         const val ACTION_MARK_AS_READ = "markAsRead"
         const val NOTIFICATION_IMAGE_ICON = R.drawable.golda_imag
         const val NOT_EXIST = -1L
+        const val TOP_OF_RECYCLEVIEW = 0
 
     }
 }

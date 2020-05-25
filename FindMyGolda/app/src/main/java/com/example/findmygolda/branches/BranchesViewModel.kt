@@ -2,6 +2,7 @@ package com.example.findmygolda.branches
 
 import android.app.Application
 import android.location.Location
+import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,6 +11,7 @@ import com.example.findmygolda.Constants.Companion.CHIP_TITTLE_DISTANCE
 import com.example.findmygolda.Constants.Companion.LOCATION_NAME
 import com.example.findmygolda.database.Branch
 import com.example.findmygolda.location.LocationAdapter
+import com.google.android.material.chip.Chip
 
 class BranchesViewModel(application: Application
 ): ViewModel() {
@@ -23,8 +25,9 @@ class BranchesViewModel(application: Application
         _filteredBranches.value = branchManager.branches.value
     }
 
-    fun chipPicked(chipTitle: String){
-        when(chipTitle){
+    fun chipPicked(chip: View){
+        val chip = chip as Chip
+        when(chip.text){
             CHIP_TITTLE_A_TO_Z -> {
                 _filteredBranches.value = _filteredBranches.value?.sortAtoZ()
             }

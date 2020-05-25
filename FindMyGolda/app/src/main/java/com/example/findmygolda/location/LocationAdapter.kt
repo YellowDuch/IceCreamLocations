@@ -9,7 +9,7 @@ import com.mapbox.android.core.location.*
 
 class LocationAdapter(val context: Context) {
     private lateinit var locationEngine: LocationEngine
-    private val callback = LocationChangeListener()
+    private val locationChangeListener = LocationChangeListener()
     private val locationChangedInterested = mutableListOf<ILocationChanged>()
     var lastLocation: Location? = null
 
@@ -24,8 +24,8 @@ class LocationAdapter(val context: Context) {
             .setPriority(LocationEngineRequest.PRIORITY_HIGH_ACCURACY)
             .setMaxWaitTime(MAX_RESPONSE_TIME)
             .build()
-        locationEngine.requestLocationUpdates(request, callback, Looper.myLooper())
-        locationEngine.getLastLocation(callback)
+        locationEngine.requestLocationUpdates(request, locationChangeListener, Looper.myLooper())
+        locationEngine.getLastLocation(locationChangeListener)
     }
 
     fun subscribeToLocationChangeEvent(interested:ILocationChanged){
