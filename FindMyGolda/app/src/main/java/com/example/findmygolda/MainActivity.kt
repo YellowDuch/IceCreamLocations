@@ -11,11 +11,10 @@ import androidx.databinding.DataBindingUtil
 import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
-import com.example.findmygolda.alerts.AlertManager
+import com.example.findmygolda.Constants.Companion.LOCATION_SERVICE_NOT_ENABLE
+import com.example.findmygolda.Constants.Companion.PERMISSIONS_GRANTED_AND_LOCATION_SERVICE_ENABLE
+import com.example.findmygolda.Constants.Companion.PERMISSIONS_NOT_GRANTED
 import com.example.findmygolda.databinding.ActivityMainBinding
-import com.example.findmygolda.location.LocationAdapter
-import com.example.findmygolda.branches.BranchManager
-import com.example.findmygolda.map.MapLayerRepository
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
@@ -25,14 +24,14 @@ import org.jetbrains.anko.yesButton
 class MainActivity : AppCompatActivity(), PermissionsListener {
     private lateinit var permissionManager: PermissionsManager
     lateinit var binding: ActivityMainBinding
-    lateinit var branchManager : BranchManager
-    lateinit var alertManager : AlertManager
-    lateinit var locationAdapter: LocationAdapter
-    lateinit var mapLayerRepository: MapLayerRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        askForPermissions()
+        when(isLocationServicesAndPermissionsGranted()){
+            LOCATION_SERVICE_NOT_ENABLE -> showLocationIsDisabledAlert()
+            PERMISSIONS_NOT_GRANTED -> askForPermissions()
+            else -> loadHomePage()
+        }
     }
 
     private fun createBottomNavigation() {
@@ -62,7 +61,10 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
 
     override fun onPermissionResult(granted: Boolean) {
         if (granted) {
-            askForPermissions()
+            loadHomePage()
+            if (!isLocationServiceEnabled(applicationContext)){
+                showLocationIsDisabledAlert()
+            }
         } else {
             finish()
         }
@@ -80,7 +82,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
         setSupportActionBar(toolbar)
     }
 
-     private fun isLocationEnabled(mContext: Context): Boolean {
+     private fun isLocationServiceEnabled(mContext: Context): Boolean {
         val locationManager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
             LocationManager.NETWORK_PROVIDER)
@@ -96,25 +98,38 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
             }
             neutralPressed(getString(R.string.settings)) {
                 startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                loadHomePage()
             }
         }.show()
     }
 
-    private fun askForPermissions(){
-        if (PermissionsManager.areLocationPermissionsGranted(this)) {
-            if (!isLocationEnabled(applicationContext)) {
-                showLocationIsDisabledAlert()
+    private fun askForPermissions() {
+        permissionManager = PermissionsManager(this)
+        permissionManager.requestLocationPermissions(this)
+    }
+
+    private fun isLocationServicesAndPermissionsGranted(): Int{
+        if (areLocationPermissionsGranted()) {
+            if (!isLocationServiceEnabled(applicationContext)) {
+                return LOCATION_SERVICE_NOT_ENABLE
             } else {
-                binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-                setupOptionMenu()
-                binding.toolbar.title = ""
-                setSupportActionBar(binding.toolbar)
-                createBottomNavigation()
+                return PERMISSIONS_GRANTED_AND_LOCATION_SERVICE_ENABLE
             }
         } else {
-            permissionManager = PermissionsManager(this)
-            permissionManager.requestLocationPermissions(this)
+            return PERMISSIONS_NOT_GRANTED
         }
+    }
+
+    private fun areLocationPermissionsGranted():Boolean{
+        return PermissionsManager.areLocationPermissionsGranted(this)
+    }
+
+    private fun loadHomePage() {
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        setupOptionMenu()
+        binding.toolbar.title = ""
+        setSupportActionBar(binding.toolbar)
+        createBottomNavigation()
     }
 
 }
