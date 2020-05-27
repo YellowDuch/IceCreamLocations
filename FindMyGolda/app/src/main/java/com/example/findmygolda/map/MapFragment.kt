@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.NavHostFragment
 import com.example.findmygolda.Constants.Companion.ANITA_LAYER_ID
+import com.example.findmygolda.Constants.Companion.ANITA_MARKER_IMAGE_ID
 import com.example.findmygolda.Constants.Companion.ANITA_SOURCE_ID
 import com.example.findmygolda.Constants.Companion.MAP_BOX_TOKEN
 import com.example.findmygolda.R
@@ -49,14 +50,12 @@ class MapFragment : Fragment() {
         binding.viewModel = mapViewModel
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(mapViewModel)
-
-        observeToNavigationToAlertFragment()
-        observeToMapReady()
-
+        observeNavigationToAlertFragment()
+        observeMapReady()
         return binding.root
     }
 
-    private fun observeToMapReady() {
+    private fun observeMapReady() {
         mapViewModel.isMapReady.observe(viewLifecycleOwner, Observer {isMapReady ->
             if (isMapReady) {
                 observeToFocusOnUserLocation()
@@ -78,7 +77,7 @@ class MapFragment : Fragment() {
             if (geoJson != null) {
                 try {
                     mapViewModel.removeMapLayer(ANITA_LAYER_ID, ANITA_SOURCE_ID)
-                    mapViewModel.addMapLayer(geoJson)
+                    mapViewModel.addMapLayer(ANITA_SOURCE_ID,geoJson, ANITA_MARKER_IMAGE_ID, R.drawable.anita_marker, ANITA_LAYER_ID)
                     this.geoJson = geoJson
                 } catch (exception: URISyntaxException) {
                     Log.d(TAG, "exception")
@@ -98,7 +97,7 @@ class MapFragment : Fragment() {
             })
     }
 
-    private fun observeToNavigationToAlertFragment() {
+    private fun observeNavigationToAlertFragment() {
         mapViewModel.isNavigateToAlertsFragment.observe(viewLifecycleOwner, Observer {isNavigate ->
             if (isNavigate) {
                 NavHostFragment.findNavController(this)
@@ -125,7 +124,7 @@ class MapFragment : Fragment() {
             }
             R.id.anita_check -> {
                 if(item.isChecked){
-                    mapViewModel.addMapLayer(geoJson)
+                    mapViewModel.addMapLayer(ANITA_SOURCE_ID, geoJson, ANITA_MARKER_IMAGE_ID, R.drawable.anita_marker, ANITA_LAYER_ID)
                 } else {
                     mapViewModel.removeMapLayer(ANITA_LAYER_ID, ANITA_SOURCE_ID)
                 }

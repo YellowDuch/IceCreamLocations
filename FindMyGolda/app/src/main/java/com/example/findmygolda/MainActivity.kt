@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         when(isLocationServicesAndPermissionsGranted()){
-            LOCATION_SERVICE_NOT_ENABLE -> showLocationIsDisabledAlert()
+            LOCATION_SERVICE_NOT_ENABLE -> popupLocationServicesDisabledAlert()
             PERMISSIONS_NOT_GRANTED -> askForPermissions()
             else -> loadHomePage()
         }
@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
         if (granted) {
             loadHomePage()
             if (!isLocationServiceEnabled(applicationContext)){
-                showLocationIsDisabledAlert()
+                popupLocationServicesDisabledAlert()
             }
         } else {
             finish()
@@ -76,9 +76,9 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
         permissionManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    private fun setupOptionMenu() {
+    private fun setupActionToolbar() {
         val toolbar = binding.toolbar
-        toolbar.title = ""
+        toolbar.title = "" // Use for remove the default value - the name of the fragment
         setSupportActionBar(toolbar)
     }
 
@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
             LocationManager.NETWORK_PROVIDER)
     }
 
-    private fun showLocationIsDisabledAlert() {
+    private fun popupLocationServicesDisabledAlert() {
         alert(getString(R.string.cannotShowYourPositionMessage)) {
             yesButton {
                 finish()
@@ -126,7 +126,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
 
     private fun loadHomePage() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        setupOptionMenu()
+        setupActionToolbar()
         binding.toolbar.title = ""
         setSupportActionBar(binding.toolbar)
         createBottomNavigation()

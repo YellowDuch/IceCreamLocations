@@ -44,7 +44,5 @@ class Constants {
         const val PERMISSIONS_GRANTED_AND_LOCATION_SERVICE_ENABLE = 0
         const val PERMISSIONS_NOT_GRANTED = 2
         const val LOCATION_SERVICE_NOT_ENABLE = 1
-
-
     }
 }

@@ -5,11 +5,7 @@ import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.findmygolda.Constants.Companion.ANITA_LAYER_ID
-import com.example.findmygolda.Constants.Companion.ANITA_MARKER_IMAGE_ID
-import com.example.findmygolda.Constants.Companion.ANITA_SOURCE_ID
 import com.example.findmygolda.Constants.Companion.DEFAULT_MAP_ZOOM
-import com.example.findmygolda.R
 import com.example.findmygolda.location.ILocationChanged
 import com.example.findmygolda.location.LocationAdapter
 import com.mapbox.mapboxsdk.annotations.Marker
@@ -43,7 +39,6 @@ class MapViewModel(val application: Application) : ViewModel(),
     val isMapReady: LiveData<Boolean>
         get() = _isMapReady
     lateinit var map: MapboxMap
-
 
     fun onAlertsButtonClicked(){
         _isNavigateToAlertsFragment.value = true
@@ -86,16 +81,16 @@ class MapViewModel(val application: Application) : ViewModel(),
        }
     }
 
-    fun addMapLayer(geoJson: String?) {
+    fun addMapLayer(sourceId: String, geoJson: String?, markerImageId: String, markerDrawableImage: Int, layerId: String) {
         val style = map.style
-        val geoJsonSource = GeoJsonSource(ANITA_SOURCE_ID)
+        val geoJsonSource = GeoJsonSource(sourceId)
         geoJsonSource.setGeoJson(geoJson)
         style?.addSource(geoJsonSource)
-        val anitaMarkerImage = application.resources.getDrawable(R.drawable.anita_marker)
-        style?.addImage(ANITA_MARKER_IMAGE_ID, anitaMarkerImage)
-        val myLayer = SymbolLayer(ANITA_LAYER_ID, geoJsonSource.id)
-        myLayer.setProperties(PropertyFactory.iconImage(ANITA_MARKER_IMAGE_ID))
-        style?.addLayer(myLayer)
+        val markerImage = application.resources.getDrawable(markerDrawableImage)
+        style?.addImage(markerImageId, markerImage)
+        val layer = SymbolLayer(layerId, geoJsonSource.id)
+        layer.setProperties(PropertyFactory.iconImage(markerImageId))
+        style?.addLayer(layer)
     }
 
     fun removeMapLayer(layerId: String, sourceId: String){

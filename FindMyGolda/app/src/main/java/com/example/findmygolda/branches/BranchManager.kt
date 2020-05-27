@@ -25,7 +25,7 @@ class BranchManager(val context: Context) {
         val branchLocation = Location("")
         branchLocation.latitude = branch.latitude
         branchLocation.longitude = branch.longitude
-        return (location!!.distanceTo(branchLocation) <= range)
+        return (location.distanceTo(branchLocation) <= range)
     }
 
     private fun refreshRepository() {
