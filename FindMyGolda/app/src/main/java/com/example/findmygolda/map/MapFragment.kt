@@ -28,7 +28,6 @@ import java.net.URISyntaxException
 class MapFragment : Fragment() {
     private lateinit var mapView: MapView
     private lateinit var mapViewModel: MapViewModel
-    lateinit var map: MapboxMap
     private lateinit var geoJson: String
     private lateinit var branchManager: BranchManager
     private lateinit var mapLayerRepository: MapLayerRepository

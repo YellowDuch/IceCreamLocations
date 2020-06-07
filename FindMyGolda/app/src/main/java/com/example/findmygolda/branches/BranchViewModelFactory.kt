@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.findmygolda.location.LocationAdapter
 
-class BranchViewModelFactorty (
+class BranchViewModelFactory (
     private val application: Application
 ) : ViewModelProvider.Factory  {
 

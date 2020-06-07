@@ -7,7 +7,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ScrollView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -25,7 +24,7 @@ class BranchesFragment : Fragment() {
     ): View? {
         val binding: FragmentBranchesBinding = DataBindingUtil.inflate(
             inflater, R.layout.fragment_branches, container, false)
-        val viewModelFactory = BranchViewModelFactorty(requireNotNull(this.activity).application)
+        val viewModelFactory = BranchViewModelFactory(requireNotNull(this.activity).application)
         branchViewModel =
             ViewModelProviders.of(
                 this, viewModelFactory).get(BranchesViewModel::class.java)

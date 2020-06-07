@@ -109,14 +109,14 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
     }
 
     private fun isLocationServicesAndPermissionsGranted(): Int{
-        if (areLocationPermissionsGranted()) {
+        return if (areLocationPermissionsGranted()) {
             if (!isLocationServiceEnabled(applicationContext)) {
-                return LOCATION_SERVICE_NOT_ENABLE
+                LOCATION_SERVICE_NOT_ENABLE
             } else {
-                return PERMISSIONS_GRANTED_AND_LOCATION_SERVICE_ENABLE
+                PERMISSIONS_GRANTED_AND_LOCATION_SERVICE_ENABLE
             }
         } else {
-            return PERMISSIONS_NOT_GRANTED
+            PERMISSIONS_NOT_GRANTED
         }
     }
 

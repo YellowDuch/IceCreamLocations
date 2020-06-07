@@ -23,7 +23,6 @@ class Constants {
         const val MAP_BOX_TOKEN = "pk.eyJ1IjoibW9yc2t5MiIsImEiOiJjazhlN21tMG4xM2R3M2xtajcxM2s0NW10In0.8TX4Iy3nPrjw9KJR3WzN0w"
         const val HUNDREDS_METERS = 100
         const val SIZE_OF_JUMP = 5
-        const val FIRST_CHIP_INDEX = 0
         const val NOTIFICATION_CHANEL_DESCRIPTION = "Golda notifications"
         const val DEFAULT_DISTANCE_TO_BRANCH = 5
         const val DEFAULT_TIME_BETWEEN_ALERTS = 1
@@ -44,5 +43,8 @@ class Constants {
         const val PERMISSIONS_GRANTED_AND_LOCATION_SERVICE_ENABLE = 0
         const val PERMISSIONS_NOT_GRANTED = 2
         const val LOCATION_SERVICE_NOT_ENABLE = 1
+        const val DATE_FORMAT = "HH:mm dd-MM-yy"
+        const val SHARE_INTENT_TYPE = "text/plain"
+
     }
 }
