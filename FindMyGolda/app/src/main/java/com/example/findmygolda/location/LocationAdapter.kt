@@ -13,6 +13,25 @@ class LocationAdapter(val context: Context) {
     private val locationChangedInterested = mutableListOf<ILocationChanged>()
     var lastLocation: Location? = null
 
+    companion object {
+        @Volatile
+        private var INSTANCE: LocationAdapter? = null
+
+        fun getInstance(context: Context): LocationAdapter {
+            synchronized(this) {
+                var instance =
+                    INSTANCE
+
+                if (instance == null) {
+                    instance =
+                        LocationAdapter(context)
+                    INSTANCE = instance
+                }
+                return instance
+            }
+        }
+    }
+
     init {
         initLocationEngine()
     }
@@ -42,24 +61,5 @@ class LocationAdapter(val context: Context) {
         }
 
         override fun onFailure(exception: Exception) {}
-    }
-
-    companion object {
-        @Volatile
-        private var INSTANCE: LocationAdapter? = null
-
-        fun getInstance(context: Context): LocationAdapter {
-            synchronized(this) {
-                var instance =
-                    INSTANCE
-
-                if (instance == null) {
-                    instance =
-                        LocationAdapter(context)
-                    INSTANCE = instance
-                }
-                return instance
-            }
-        }
     }
 }

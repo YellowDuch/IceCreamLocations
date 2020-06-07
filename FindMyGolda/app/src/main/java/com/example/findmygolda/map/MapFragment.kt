@@ -1,15 +1,12 @@
 package com.example.findmygolda.map
 
-import android.content.ContentValues.TAG
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.NavHostFragment
 import com.example.findmygolda.Constants.Companion.ANITA_LAYER_ID
 import com.example.findmygolda.Constants.Companion.ANITA_MARKER_IMAGE_ID
@@ -23,8 +20,6 @@ import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.annotations.IconFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
-import com.mapbox.mapboxsdk.maps.MapboxMap
-import java.net.URISyntaxException
 
 class MapFragment : Fragment() {
     private lateinit var mapView: MapView
@@ -48,7 +43,7 @@ class MapFragment : Fragment() {
         binding.viewModel = mapViewModel
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(mapViewModel)
-        observeNavigationToAlertFragment()
+        navigationToAlertFragmentObserver()
         observeMapReady()
         return binding.root
     }
@@ -56,15 +51,15 @@ class MapFragment : Fragment() {
     private fun observeMapReady() {
         mapViewModel.isMapReady.observe(viewLifecycleOwner, Observer {isMapReady ->
             if (isMapReady) {
-                observeToFocusOnUserLocation()
+                focusOnUserLocationObserver()
                 observeToMapLayerRepository()
-                observeToBranches()
+                branchesObserve()
                 mapViewModel.doneMapReady()
             }
         })
     }
 
-    private fun observeToBranches() {
+    private fun branchesObserve() {
         branchManager.branches.observe(viewLifecycleOwner, Observer { branches ->
             addMarkers(branches)
         })
@@ -72,30 +67,24 @@ class MapFragment : Fragment() {
 
     private fun observeToMapLayerRepository() {
         mapLayerRepository.geojson.observe(viewLifecycleOwner, Observer { geoJson ->
-            if (geoJson != null) {
-                try {
-                    mapViewModel.removeMapLayer(ANITA_LAYER_ID, ANITA_SOURCE_ID)
-                    mapViewModel.addMapLayer(ANITA_SOURCE_ID,geoJson, ANITA_MARKER_IMAGE_ID, R.drawable.anita_marker, ANITA_LAYER_ID)
-                    this.geoJson = geoJson
-                } catch (exception: URISyntaxException) {
-                    Log.d(TAG, "exception")
-                }
+            geoJson?.let {
+                mapViewModel.addAnitaLayer(it)
+                this.geoJson = geoJson
             }
         })
     }
 
-    private fun observeToFocusOnUserLocation() {
+    private fun focusOnUserLocationObserver() {
         mapViewModel.isFocusOnUserLocation.observe(
             viewLifecycleOwner,
             Observer { isFocused ->
                 if (isFocused) {
-                    mapViewModel.setCameraPosition()
-                    mapViewModel.doneFocusOnUserLocation()
+                    mapViewModel.focusOnUserLocation()
                 }
             })
     }
 
-    private fun observeNavigationToAlertFragment() {
+    private fun navigationToAlertFragmentObserver() {
         mapViewModel.isNavigateToAlertsFragment.observe(viewLifecycleOwner, Observer {isNavigate ->
             if (isNavigate) {
                 NavHostFragment.findNavController(this)

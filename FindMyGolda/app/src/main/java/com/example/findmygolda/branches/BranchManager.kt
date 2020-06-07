@@ -17,6 +17,25 @@ class BranchManager(val context: Context) {
     private val coroutineScope = CoroutineScope(
         branchManagerJob + Dispatchers.Main)
 
+    companion object {
+        @Volatile
+        private var INSTANCE: BranchManager? = null
+
+        fun getInstance(context: Context): BranchManager {
+            synchronized(this) {
+                var instance =
+                    INSTANCE
+
+                if (instance == null) {
+                    instance =
+                        BranchManager(context)
+                    INSTANCE = instance
+                }
+                return instance
+            }
+        }
+    }
+
     init {
         refreshRepository()
     }
@@ -37,26 +56,6 @@ class BranchManager(val context: Context) {
             }
         }
     }
-
-    companion object {
-        @Volatile
-        private var INSTANCE: BranchManager? = null
-
-        fun getInstance(context: Context): BranchManager {
-            synchronized(this) {
-                var instance =
-                    INSTANCE
-
-                if (instance == null) {
-                    instance =
-                        BranchManager(context)
-                    INSTANCE = instance
-                }
-                return instance
-            }
-        }
-    }
-
 }
 
 

@@ -18,6 +18,25 @@ class MapLayerRepository(val context: Context) {
     val geojson: LiveData<String?>
         get() = _geojson
 
+    companion object {
+        @Volatile
+        private var INSTANCE: MapLayerRepository? = null
+
+        fun getInstance(context: Context): MapLayerRepository {
+            synchronized(this) {
+                var instance =
+                    INSTANCE
+
+                if (instance == null) {
+                    instance =
+                        MapLayerRepository(context)
+                    INSTANCE = instance
+                }
+                return instance
+            }
+        }
+    }
+
     init {
         if(fileExist(Constants.ANITA_GEO_FILE_NAME)){
             _geojson.value = getFileContent(Constants.ANITA_GEO_FILE_NAME)
@@ -59,27 +78,8 @@ class MapLayerRepository(val context: Context) {
         return  inputString
     }
 
-    private fun fileExist(fname: String?): Boolean {
-        val file: File = context.getFileStreamPath(fname)
+    private fun fileExist(fileName: String?): Boolean {
+        val file: File = context.getFileStreamPath(fileName)
         return file.exists()
-    }
-
-    companion object {
-        @Volatile
-        private var INSTANCE: MapLayerRepository? = null
-
-        fun getInstance(context: Context): MapLayerRepository {
-            synchronized(this) {
-                var instance =
-                    INSTANCE
-
-                if (instance == null) {
-                    instance =
-                        MapLayerRepository(context)
-                    INSTANCE = instance
-                }
-                return instance
-            }
-        }
     }
 }

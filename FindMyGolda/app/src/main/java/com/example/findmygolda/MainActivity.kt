@@ -11,6 +11,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
+import com.example.findmygolda.Constants.Companion.EXIT_STATUS_CODE
 import com.example.findmygolda.Constants.Companion.LOCATION_SERVICE_NOT_ENABLE
 import com.example.findmygolda.Constants.Companion.PERMISSIONS_GRANTED_AND_LOCATION_SERVICE_ENABLE
 import com.example.findmygolda.Constants.Companion.PERMISSIONS_NOT_GRANTED
@@ -29,7 +30,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         when(isLocationServicesAndPermissionsGranted()){
-            LOCATION_SERVICE_NOT_ENABLE -> popupLocationServicesDisabledAlert()
+            LOCATION_SERVICE_NOT_ENABLE -> showLocationServicesDisabledDialog()
             PERMISSIONS_NOT_GRANTED -> askForPermissions()
             else -> loadHomePage()
         }
@@ -65,7 +66,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
         if (granted) {
             loadHomePage()
             if (!isLocationServiceEnabled(applicationContext)){
-                popupLocationServicesDisabledAlert()
+                showLocationServicesDisabledDialog()
             }
         } else {
             finish()
@@ -90,13 +91,13 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
             LocationManager.NETWORK_PROVIDER)
     }
 
-    private fun popupLocationServicesDisabledAlert() {
+    private fun showLocationServicesDisabledDialog() {
         alert(getString(R.string.cannotShowYourPositionMessage)) {
             yesButton {
                 finish()
                 moveTaskToBack(true)
                 android.os.Process.killProcess(android.os.Process.myPid())
-                exitProcess(1)
+                exitProcess(EXIT_STATUS_CODE)
             }
             neutralPressed(getString(R.string.settings)) {
                 startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
@@ -133,7 +134,6 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
         setSupportActionBar(binding.toolbar)
         createBottomNavigation()
     }
-
 }
 
 

@@ -15,6 +15,7 @@ import com.example.findmygolda.database.DB
 import com.example.findmygolda.database.Alert
 import com.example.findmygolda.location.ILocationChanged
 import com.example.findmygolda.branches.BranchManager
+import com.example.findmygolda.database.Branch
 import com.example.findmygolda.location.LocationAdapter
 import kotlinx.coroutines.*
 
@@ -31,27 +32,42 @@ class AlertManager(val context: Context):ILocationChanged {
         DEFAULT_TIME_BETWEEN_ALERTS).times(SIZE_OF_JUMP))
     private val notificationHelper = NotificationHelper(context.applicationContext)
 
+    companion object {
+        @Volatile
+        private var INSTANCE: AlertManager? = null
+
+        fun getInstance(context: Context): AlertManager {
+            synchronized(this) {
+                var instance = INSTANCE
+
+                if (instance == null) {
+                    instance = AlertManager(context)
+                    INSTANCE = instance
+                }
+                return instance
+            }
+        }
+    }
+
     init {
         LocationAdapter.getInstance(context).subscribeToLocationChangeEvent(this)
     }
 
     override fun locationChanged(location: Location?) {
         location?: return
-        alertIfNeeded(location)
+        alertIfBranchInRangeAndTimeExceeded(location)
     }
 
-    private fun alertIfNeeded(location: Location){
+    private fun alertIfBranchInRangeAndTimeExceeded(location: Location) {
         val branches = branchManager.branches.value
-
-        branches?.forEach{
-            if(branchManager.isDistanceInRange(location, it, maxDistanceFromBranch)){
+        branches?.forEach{branch ->
+            if(branchManager.isDistanceInRange(location, branch, maxDistanceFromBranch)){
                 coroutineScope.launch{
                     withContext(Dispatchers.IO){
-                        val lastAlert = dataSource.getLastAlertOfBranch(it.id)
-
+                        //val lastAlert = dataSource.getLastAlertOfBranch(branch.id)
+                        val lastAlert = getLastAlertOfBranch(branch.id.toLong())
                         if(lastAlert == null || hasIntervalExceeded(lastAlert.time,System.currentTimeMillis(), intervalBetweenIdenticalNotifications)){
-                            val alertId = addAlert(it.name, it.discounts, it.id.toInt())
-                            notify(it.name, it.discounts, alertId, NOTIFICATION_IMAGE_ICON)
+                            addAlert(branch)
                         }
                     }
                 }
@@ -70,13 +86,18 @@ class AlertManager(val context: Context):ILocationChanged {
         notificationHelper.notify(name, discounts,icon, drawableImage, alertId)
     }
 
-    private fun addAlert(name:String, discounts:String, branchId:Int): Long{
-        return dataSource.insert(
-                Alert(title = name,
-                    description = discounts,
-                    branchId = branchId,
-                    isRead = false)
-            )
+    private fun addAlert(branch: Branch){
+        coroutineScope.launch{
+            withContext(Dispatchers.IO){
+                val alertId = dataSource.insert(
+                    Alert(title = branch.name,
+                        description = branch.discounts,
+                        branchId = branch.id.toInt(),
+                        isRead = false)
+                )
+                notify(branch.name, branch.discounts, alertId, NOTIFICATION_IMAGE_ICON)
+            }
+        }
     }
 
     fun update(alert: Alert){
@@ -100,20 +121,17 @@ class AlertManager(val context: Context):ILocationChanged {
         return dataSource.getAlertById(id)
     }
 
-    companion object {
-        @Volatile
-        private var INSTANCE: AlertManager? = null
-
-        fun getInstance(context: Context): AlertManager {
-            synchronized(this) {
-                var instance = INSTANCE
-
-                if (instance == null) {
-                    instance = AlertManager(context)
-                    INSTANCE = instance
+    fun getLastAlertOfBranch(id: Long): Alert? {
+        var lastAlert: Alert? = null
+        alerts.value?.forEach {alert->
+            if (alert.id == id){
+                if (lastAlert == null){
+                    lastAlert = alert
+                }else if (lastAlert!!.time < alert.time){
+                    lastAlert = alert
                 }
-                return instance
             }
         }
+        return lastAlert
     }
 }
