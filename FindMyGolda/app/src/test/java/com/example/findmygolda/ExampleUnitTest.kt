@@ -11,7 +11,7 @@ import org.mockito.Mockito.mock
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 class ExampleUnitTest {
-    var alertManager: AlertManager = mock(AlertManager::class.java)
+    //var alertManager: AlertManager = mock(AlertManager::class.java)
     @Test
     fun addition_isCorrect() {
         assertEquals(4, 2 + 2)

@@ -55,8 +55,8 @@ class NotificationHelper(val context: Context) {
       .addAction(R.drawable.mapbox_logo_icon, context.getString(R.string.shareActionButton),
         getShareIntent(title, content))
       .addAction(R.drawable.golda_imag, context.getString(R.string.MarkAsRead),
-        getPendingIntentMarkAsRead(alertId))
-      .setDeleteIntent(getPendingIntentDeleteAlert(alertId))
+        getMarkAsReadPendingIntent(alertId))
+      .setDeleteIntent(getDeleteAlertPendingIntent(alertId))
       .setAutoCancel(true)
       .build()
     notificationManager.notify(alertId.toInt(), notification)
@@ -77,7 +77,7 @@ class NotificationHelper(val context: Context) {
     return PendingIntent.getActivity(context, 0, shareIntent, 0)
   }
 
-  private fun getPendingIntentDeleteAlert(alertId: Long): PendingIntent? {
+  private fun getDeleteAlertPendingIntent(alertId: Long): PendingIntent? {
     val deleteNotification = Intent(context, ActionReceiver::class.java)
     deleteNotification.putExtra(ACTION, ACTION_DELETE)
     deleteNotification.putExtra(ALERT_ID_KEY, alertId)
@@ -89,7 +89,7 @@ class NotificationHelper(val context: Context) {
     )
   }
 
-  private fun getPendingIntentMarkAsRead(alertId: Long): PendingIntent? {
+  private fun getMarkAsReadPendingIntent(alertId: Long): PendingIntent? {
     val markAsReadIntent = Intent(context, ActionReceiver::class.java)
     markAsReadIntent.putExtra(ACTION, ACTION_MARK_AS_READ)
     markAsReadIntent.putExtra(ALERT_ID_KEY, alertId)

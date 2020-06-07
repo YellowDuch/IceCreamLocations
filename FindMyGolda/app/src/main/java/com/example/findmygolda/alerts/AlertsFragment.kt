@@ -26,7 +26,8 @@ class AlertsFragment : Fragment() {
 
         binding.lifecycleOwner = this
         binding.alertsViewModel = alertViewModel
-        val adapter = AlertAdapter(ShareClickListener{ alert ->
+        val adapter = AlertAdapter(
+            ShareClickListener{ alert ->
             val shareIntent =  ShareIntent.getShareIntent(alert.description, alert.title)
             startActivity(shareIntent)
             },
