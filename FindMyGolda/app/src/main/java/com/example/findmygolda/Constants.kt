@@ -45,6 +45,5 @@ class Constants {
         const val LOCATION_SERVICE_NOT_ENABLE = 1
         const val DATE_FORMAT = "HH:mm dd-MM-yy"
         const val SHARE_INTENT_TYPE = "text/plain"
-
     }
 }

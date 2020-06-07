@@ -20,6 +20,7 @@ import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.yesButton
+import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity(), PermissionsListener {
     private lateinit var permissionManager: PermissionsManager
@@ -44,6 +45,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
                 )
                 return@OnNavigationItemSelectedListener true
             }
+
         bottomNavigation.setupWithNavController(
             Navigation.findNavController(
                 this,
@@ -94,7 +96,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
                 finish()
                 moveTaskToBack(true)
                 android.os.Process.killProcess(android.os.Process.myPid())
-                System.exit(1)
+                exitProcess(1)
             }
             neutralPressed(getString(R.string.settings)) {
                 startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))

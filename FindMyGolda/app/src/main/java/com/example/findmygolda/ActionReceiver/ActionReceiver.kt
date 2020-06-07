@@ -20,7 +20,7 @@ class ActionReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         val alertManager = context?.let { AlertManager.getInstance(it) }
         val action = intent!!.getStringExtra(ACTION)
-        val alertId = intent!!.getLongExtra(ALERT_ID_KEY, NOT_EXIST)
+        val alertId = intent.getLongExtra(ALERT_ID_KEY, NOT_EXIST)
 
         if (action == ACTION_MARK_AS_READ) {
             markAlertAsRead(alertId, alertManager)
@@ -41,14 +41,16 @@ class ActionReceiver : BroadcastReceiver() {
             coroutineScope.launch {
                 withContext(Dispatchers.IO) {
                     val alert = alertManager?.getAlert(alertId)
-                    alert?.let { alertManager?.update(
-                        Alert(alert.id,
-                        alert.time,
-                        alert.title,
-                        alert.description,
-                        alert.branchId,
-                        true)
-                    ) }
+                    alert?.let {
+                        alertManager.update(
+                            Alert(alert.id,
+                                alert.time,
+                                alert.title,
+                                alert.description,
+                                alert.branchId,
+                                true)
+                        )
+                    }
                 }
             }
         }
@@ -62,7 +64,7 @@ class ActionReceiver : BroadcastReceiver() {
             coroutineScope.launch {
                 withContext(Dispatchers.IO) {
                     val alert = alertManager?.getAlert(alertId)
-                    alert?.let { alertManager?.deleteAlert(it) }
+                    alert?.let { alertManager.deleteAlert(it) }
                 }
             }
         }

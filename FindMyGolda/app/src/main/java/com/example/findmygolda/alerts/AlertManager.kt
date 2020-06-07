@@ -48,6 +48,7 @@ class AlertManager(val context: Context):ILocationChanged {
                 coroutineScope.launch{
                     withContext(Dispatchers.IO){
                         val lastAlert = dataSource.getLastAlertOfBranch(it.id)
+
                         if(lastAlert == null || hasIntervalExceeded(lastAlert.time,System.currentTimeMillis(), intervalBetweenIdenticalNotifications)){
                             val alertId = addAlert(it.name, it.discounts, it.id.toInt())
                             notify(it.name, it.discounts, alertId, NOTIFICATION_IMAGE_ICON)

@@ -2,9 +2,9 @@ package com.example.findmygolda.map
 
 import android.app.Application
 import android.location.Location
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.example.findmygolda.Constants.Companion.DEFAULT_MAP_ZOOM
 import com.example.findmygolda.location.ILocationChanged
 import com.example.findmygolda.location.LocationAdapter
@@ -23,10 +23,11 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 
-class MapViewModel(val application: Application) : ViewModel(),
+class MapViewModel(application: Application) : AndroidViewModel(application),
     OnMapReadyCallback,
     ILocationChanged {
 
+    private var applicationContext = application
     private var locationAdapter: LocationAdapter = LocationAdapter.getInstance(application)
     private val _isFocusOnUserLocation = MutableLiveData<Boolean>()
     val isFocusOnUserLocation: MutableLiveData<Boolean>
@@ -86,7 +87,7 @@ class MapViewModel(val application: Application) : ViewModel(),
         val geoJsonSource = GeoJsonSource(sourceId)
         geoJsonSource.setGeoJson(geoJson)
         style?.addSource(geoJsonSource)
-        val markerImage = application.resources.getDrawable(markerDrawableImage)
+        val markerImage = applicationContext.resources.getDrawable(markerDrawableImage)
         style?.addImage(markerImageId, markerImage)
         val layer = SymbolLayer(layerId, geoJsonSource.id)
         layer.setProperties(PropertyFactory.iconImage(markerImageId))
@@ -109,11 +110,11 @@ class MapViewModel(val application: Application) : ViewModel(),
 
     @SuppressWarnings("MissingPermission")
     fun initializeLocationComponent(loadedMapStyle: Style) {
-        val customLocationComponentOptions = LocationComponentOptions.builder(application)
+        val customLocationComponentOptions = LocationComponentOptions.builder(applicationContext)
             .trackingGesturesManagement(true)
             .build()
         val locationComponentActivationOptions =
-            LocationComponentActivationOptions.builder(application, loadedMapStyle)
+            LocationComponentActivationOptions.builder(applicationContext, loadedMapStyle)
                 .locationComponentOptions(customLocationComponentOptions)
                 .build()
         map.locationComponent.apply {

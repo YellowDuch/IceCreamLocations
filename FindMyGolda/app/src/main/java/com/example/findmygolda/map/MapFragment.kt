@@ -8,6 +8,7 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.NavHostFragment
 import com.example.findmygolda.Constants.Companion.ANITA_LAYER_ID
@@ -39,10 +40,8 @@ class MapFragment : Fragment() {
         Mapbox.getInstance(activity as Context, MAP_BOX_TOKEN)
         branchManager = BranchManager.getInstance(requireNotNull(this.activity).application)
         mapLayerRepository = MapLayerRepository.getInstance(requireNotNull(this.activity).application)
-        val viewModelFactory = MapViewModelFactory(requireNotNull(this.activity).application)
-        mapViewModel =
-            ViewModelProviders.of(
-                this, viewModelFactory).get(MapViewModel::class.java)
+        mapViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(requireNotNull(this.activity).application).create(MapViewModel::class.java)
+
         val binding = DataBindingUtil.inflate<FragmentMapBinding>(inflater,
             R.layout.fragment_map,container,false)
         mapView = binding.mapView

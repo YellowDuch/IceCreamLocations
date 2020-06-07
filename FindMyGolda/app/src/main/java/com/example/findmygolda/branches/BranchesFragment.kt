@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.example.findmygolda.Constants.Companion.TOP_OF_RECYCLEVIEW
 import com.example.findmygolda.R
@@ -24,10 +25,7 @@ class BranchesFragment : Fragment() {
     ): View? {
         val binding: FragmentBranchesBinding = DataBindingUtil.inflate(
             inflater, R.layout.fragment_branches, container, false)
-        val viewModelFactory = BranchViewModelFactory(requireNotNull(this.activity).application)
-        branchViewModel =
-            ViewModelProviders.of(
-                this, viewModelFactory).get(BranchesViewModel::class.java)
+        branchViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(requireNotNull(this.activity).application).create(BranchesViewModel::class.java)
         binding.lifecycleOwner = this
         adapter =BranchAdapter(BranchClickListener { branchPhoneNumber ->
             val intent = Intent(Intent.ACTION_DIAL)

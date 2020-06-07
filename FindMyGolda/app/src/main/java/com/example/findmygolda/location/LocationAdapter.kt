@@ -18,12 +18,13 @@ class LocationAdapter(val context: Context) {
     }
 
     private fun initLocationEngine() {
-        locationEngine = LocationEngineProvider.getBestLocationEngine(context)
         val request = LocationEngineRequest
             .Builder(INTERVAL_CHECK_LOCATION)
             .setPriority(LocationEngineRequest.PRIORITY_HIGH_ACCURACY)
             .setMaxWaitTime(MAX_RESPONSE_TIME)
             .build()
+
+        locationEngine = LocationEngineProvider.getBestLocationEngine(context)
         locationEngine.requestLocationUpdates(request, locationChangeListener, Looper.myLooper())
         locationEngine.getLastLocation(locationChangeListener)
     }

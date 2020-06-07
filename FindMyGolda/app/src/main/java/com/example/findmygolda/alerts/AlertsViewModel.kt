@@ -1,10 +1,10 @@
 package com.example.findmygolda.alerts
 
 import android.app.Application
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import com.example.findmygolda.database.Alert
 
-class AlertsViewModel(application: Application) : ViewModel()  {
+class AlertsViewModel(application: Application) : AndroidViewModel(application)  {
     private val alertManager = AlertManager.getInstance(application)
     val alerts = alertManager.alerts
 
