@@ -64,8 +64,8 @@ class AlertManager(val context: Context):ILocationChanged {
             if(branchManager.isDistanceInRange(location, branch, maxDistanceFromBranch)){
                 coroutineScope.launch{
                     withContext(Dispatchers.IO){
-                        //val lastAlert = dataSource.getLastAlertOfBranch(branch.id)
-                        val lastAlert = getLastAlertOfBranch(branch.id.toLong())
+                        val lastAlert = dataSource.getLastAlertOfBranch(branch.id)
+
                         if(lastAlert == null || hasIntervalExceeded(lastAlert.time,System.currentTimeMillis(), intervalBetweenIdenticalNotifications)){
                             addAlert(branch)
                         }
@@ -119,19 +119,5 @@ class AlertManager(val context: Context):ILocationChanged {
 
     fun getAlert(id: Long): Alert? {
         return dataSource.getAlertById(id)
-    }
-
-    fun getLastAlertOfBranch(id: Long): Alert? {
-        var lastAlert: Alert? = null
-        alerts.value?.forEach {alert->
-            if (alert.id == id){
-                if (lastAlert == null){
-                    lastAlert = alert
-                }else if (lastAlert!!.time < alert.time){
-                    lastAlert = alert
-                }
-            }
-        }
-        return lastAlert
     }
 }
