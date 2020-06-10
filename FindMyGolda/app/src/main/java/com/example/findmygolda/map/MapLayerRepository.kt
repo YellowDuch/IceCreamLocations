@@ -11,9 +11,8 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 
 class MapLayerRepository(val context: Context) {
-    private var mapLayerJob = Job()
     private val coroutineScope = CoroutineScope(
-        mapLayerJob + Dispatchers.Main )
+        Dispatchers.Main )
     private val _geojson = MutableLiveData<String?>()
     val geojson: LiveData<String?>
         get() = _geojson

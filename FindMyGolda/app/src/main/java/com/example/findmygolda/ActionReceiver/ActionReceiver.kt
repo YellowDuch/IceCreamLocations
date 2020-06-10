@@ -3,6 +3,7 @@ package com.example.findmygolda.ActionReceiver
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import com.example.findmygolda.Constants
 import com.example.findmygolda.Constants.Companion.ACTION
 import com.example.findmygolda.Constants.Companion.ACTION_DELETE
 import com.example.findmygolda.Constants.Companion.ACTION_MARK_AS_READ
@@ -13,23 +14,22 @@ import com.example.findmygolda.database.Alert
 import kotlinx.coroutines.*
 
 class ActionReceiver : BroadcastReceiver() {
-    private var actionReceiverJob = Job()
     private val coroutineScope = CoroutineScope(
-        actionReceiverJob + Dispatchers.Main)
+        Dispatchers.Main)
 
     override fun onReceive(context: Context?, intent: Intent?) {
         val alertManager = context?.let { AlertManager.getInstance(it) }
         val action = intent!!.getStringExtra(ACTION)
         val alertId = intent.getLongExtra(ALERT_ID_KEY, NOT_EXIST)
 
-        if (action == ACTION_MARK_AS_READ) {
-            markAlertAsRead(alertId, alertManager)
-            //This is used to close the notification tray
-            val it = Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)
-            context!!.sendBroadcast(it)
-        }
-        if (action== ACTION_DELETE){
-            deleteAlert(alertId, alertManager)
+        when(action){
+            ACTION_MARK_AS_READ -> {
+                markAlertAsRead(alertId, alertManager)
+                //This is used to close the notification tray
+                val it = Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)
+                context!!.sendBroadcast(it)
+            }
+            ACTION_DELETE -> deleteAlert(alertId, alertManager)
         }
     }
 

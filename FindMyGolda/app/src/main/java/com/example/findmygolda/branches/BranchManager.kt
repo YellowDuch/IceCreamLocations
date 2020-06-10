@@ -13,9 +13,8 @@ class BranchManager(val context: Context) {
             DB.getInstance(context)
         )
     val branches = branchRepository.branches
-    private var branchManagerJob = Job()
     private val coroutineScope = CoroutineScope(
-        branchManagerJob + Dispatchers.Main)
+        Dispatchers.Main)
 
     companion object {
         @Volatile

@@ -7,10 +7,10 @@ import com.example.findmygolda.Constants.Companion.ALERTS_TABLE_NAME
 @Entity(tableName = ALERTS_TABLE_NAME)
 data class Alert(
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    val id: Long = 0L,
     val time: Long = System.currentTimeMillis(),
     val title: String,
     val description: String,
-    val branchId: Int,
+    val branchId: Long,
     val isRead: Boolean = false
 )

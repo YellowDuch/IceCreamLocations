@@ -23,9 +23,8 @@ class AlertManager(val context: Context):ILocationChanged {
     private val branchManager = BranchManager.getInstance(context)
     private val dataSource = (DB.getInstance(context)).alertDatabaseDAO
     val alerts = dataSource.getAllAlerts()
-    private var alertManagerJob = Job()
     private val coroutineScope = CoroutineScope(
-        alertManagerJob + Dispatchers.Main)
+         Dispatchers.Main)
     private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
     var maxDistanceFromBranch = preferences.getInt(PREFERENCE_RADIUS_FROM_BRANCH, DEFAULT_DISTANCE_TO_BRANCH).times(HUNDREDS_METERS)
     var intervalBetweenIdenticalNotifications = parseMinutesToMilliseconds(preferences.getInt(PREFERENCE_TIME_BETWEEN_NOTIFICATIONS,
