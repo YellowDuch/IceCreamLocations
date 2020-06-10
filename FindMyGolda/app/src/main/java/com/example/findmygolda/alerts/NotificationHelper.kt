@@ -10,6 +10,7 @@ import android.graphics.Bitmap
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.example.findmygolda.*
 import com.example.findmygolda.ActionReceiver.ActionReceiver
 import com.example.findmygolda.Constants.Companion.ACTION
 import com.example.findmygolda.Constants.Companion.ACTION_DELETE
@@ -21,8 +22,6 @@ import com.example.findmygolda.Constants.Companion.GROUP_ID
 import com.example.findmygolda.Constants.Companion.NOTIFICATION_CHANEL_DESCRIPTION
 import com.example.findmygolda.Constants.Companion.REQUEST_CODE_PENDING_INTENT_DELETE_ALERT
 import com.example.findmygolda.Constants.Companion.REQUEST_CODE_PENDING_INTENT_MARK_AS_READ
-import com.example.findmygolda.MainActivity
-import com.example.findmygolda.R
 
 class NotificationHelper(val context: Context) {
 
@@ -41,10 +40,17 @@ class NotificationHelper(val context: Context) {
     }
   }
 
-  fun notify(title: String, content: String,icon: Bitmap, smallIcon: Int,groupId: String, alertId: Long) {
+  fun notify(title: String,
+             content: String = "",
+             icon: Bitmap? = null,
+             smallIcon: Int,
+             groupId: String,
+             alertId: Long,
+             isAutoCancellation: Boolean = true,
+             contentIntent: PendingIntent? = null,
+             deleteIntent: PendingIntent? = null,
+             vararg actions: NotificationCompat.Action) {
     val notificationManager = NotificationManagerCompat.from(context)
-    val action = NotificationCompat.Action(R.drawable.golda_imag, context.getString(R.string.MarkAsRead),
-      getPendingIntentMarkAsRead(alertId))
 
     val notification = NotificationCompat.Builder(context, CHANNEL_ID)
       .setSmallIcon(smallIcon)
@@ -54,55 +60,17 @@ class NotificationHelper(val context: Context) {
       .setDefaults(NotificationCompat.DEFAULT_ALL)
       .setGroup(groupId)
       .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-      .setContentIntent(getBackToAppIntent())
-      .addAction(R.drawable.mapbox_logo_icon, context.getString(R.string.shareActionButton),
-        getShareIntent(title, content))
-      .addAction(action)
-      .setDeleteIntent(getPendingIntentDeleteAlert(alertId))
-      .setAutoCancel(true)
-      .build()
+      .setContentIntent(getBackToAppIntent(context))
+      .addAction(createShareAction(context, title, content))
+      .addAction(createMarkAsReadAction(context, title, content, alertId))
+      .setDeleteIntent(getPendingIntentDeleteAlert(context, alertId))
+      .setAutoCancel(isAutoCancellation)
 
+    for (action in actions) {
+      notification.addAction(action)
+    }
 
-    notificationManager.notify(alertId.toInt(), notification)
-  }
-
-  private fun getBackToAppIntent(): PendingIntent {
-    val backToApp = Intent(context, MainActivity::class.java).apply {
-      flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-      }
-    return PendingIntent.getActivity(context, 0, backToApp, 0)
-  }
-
-  private fun getShareIntent(
-      title: String,
-      content: String
-  ): PendingIntent? {
-    val shareIntent = ShareIntent.getShareIntent(title, content)
-    return PendingIntent.getActivity(context, 0, shareIntent, 0)
-  }
-
-  private fun getPendingIntentDeleteAlert(alertId: Long): PendingIntent? {
-    val deleteNotification = Intent(context, ActionReceiver::class.java)
-    deleteNotification.putExtra(ACTION, ACTION_DELETE)
-    deleteNotification.putExtra(ALERT_ID_KEY, alertId)
-    return PendingIntent.getBroadcast(
-      context,
-      REQUEST_CODE_PENDING_INTENT_DELETE_ALERT,
-      deleteNotification,
-      PendingIntent.FLAG_CANCEL_CURRENT
-    )
-  }
-
-  private fun getPendingIntentMarkAsRead(alertId: Long): PendingIntent? {
-    val markAsReadIntent = Intent(context, ActionReceiver::class.java)
-    markAsReadIntent.putExtra(ACTION, ACTION_MARK_AS_READ)
-    markAsReadIntent.putExtra(ALERT_ID_KEY, alertId)
-    return PendingIntent.getBroadcast(
-      context,
-      REQUEST_CODE_PENDING_INTENT_MARK_AS_READ,
-      markAsReadIntent,
-      PendingIntent.FLAG_UPDATE_CURRENT
-    )
+    notificationManager.notify(alertId.toInt(), notification.build())
   }
 
   fun cancelNotification(context: Context, notifyId: Int) {

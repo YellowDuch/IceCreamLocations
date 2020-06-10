@@ -91,7 +91,7 @@ class AlertManager(val context: Context):ILocationChanged {
         val icon = BitmapFactory.decodeResource(
             context.resources,
           drawableImage)
-        notificationHelper.notify(name, discounts,icon, drawableImage, GROUP_ID, alertId)
+        notificationHelper.notify(name, discounts,icon, drawableImage, GROUP_ID, alertId, true)
     }
 
     fun markAlertAsRead(alertId: Long) {
