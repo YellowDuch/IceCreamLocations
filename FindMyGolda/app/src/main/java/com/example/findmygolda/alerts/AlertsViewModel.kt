@@ -8,7 +8,7 @@ class AlertsViewModel(application: Application) : AndroidViewModel(application) 
     private val alertManager = AlertManager.getInstance(application)
     val alerts = alertManager.alerts
 
-    fun changeIsReadStatus(alert:Alert){
+    fun changeIsReadToggleStatus(alert:Alert){
         alertManager.update(Alert(alert.id,
             alert.time,
             alert.title,
@@ -18,6 +18,6 @@ class AlertsViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun deleteAlert(alert: Alert){
-        alertManager.deleteAlert(alert)
+        alertManager.deleteAlert(alert.id)
     }
 }

@@ -1,19 +1,23 @@
 package com.example.findmygolda.map
 
+import android.content.ContentValues
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
+import com.example.findmygolda.Constants
 import com.example.findmygolda.Constants.Companion.MAP_BOX_TOKEN
 import com.example.findmygolda.R
 import com.example.findmygolda.branches.BranchManager
 import com.example.findmygolda.databinding.FragmentMapBinding
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.maps.MapView
+import java.net.URISyntaxException
 
 class MapFragment : Fragment() {
     private lateinit var mapView: MapView
@@ -80,10 +84,25 @@ class MapFragment : Fragment() {
     private fun observeToMapLayerRepository() {
         mapLayerRepository.geojson.observe(viewLifecycleOwner, Observer { geoJson ->
             geoJson?.let {
-                mapViewModel.addAnitaLayer(it)
+                addAnitaLayer(it)
                 mapViewModel.geoJson = it
             }
         })
+    }
+
+    fun addAnitaLayer(geoJson: String) {
+        try {
+                mapViewModel.removeMapLayer(Constants.ANITA_LAYER_ID, Constants.ANITA_SOURCE_ID)
+                mapViewModel.addMapLayer(
+                Constants.ANITA_SOURCE_ID,
+                geoJson,
+                Constants.ANITA_MARKER_IMAGE_ID,
+                R.drawable.anita_marker,
+                Constants.ANITA_LAYER_ID
+            )
+        } catch (exception: URISyntaxException) {
+            Log.d(ContentValues.TAG, "exception")
+        }
     }
 
     private fun focusOnUserLocationObserver() {

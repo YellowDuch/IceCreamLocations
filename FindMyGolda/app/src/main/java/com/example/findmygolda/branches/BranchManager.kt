@@ -39,10 +39,7 @@ class BranchManager(val context: Context) {
         refreshRepository()
     }
 
-    fun isDistanceInRange(location: Location, branch: Branch, range:Int): Boolean{
-        val branchLocation = Location("")
-        branchLocation.latitude = branch.latitude
-        branchLocation.longitude = branch.longitude
+    fun isDistanceInRange(location: Location, branchLocation: Location, range:Int): Boolean{
         return (location.distanceTo(branchLocation) <= range)
     }
 

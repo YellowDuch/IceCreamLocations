@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.findmygolda.Constants.Companion.DB_NAME
 
-@Database(entities = [Alert::class, Branch :: class], version = 11, exportSchema = false)
+@Database(entities = [Alert::class, Branch :: class], version = 12, exportSchema = false)
 abstract class DB : RoomDatabase() {
 
     abstract val alertDatabaseDAO: AlertDatabaseDAO

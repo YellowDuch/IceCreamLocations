@@ -14,8 +14,6 @@ import com.example.findmygolda.database.Alert
 import kotlinx.coroutines.*
 
 class ActionReceiver : BroadcastReceiver() {
-    private val coroutineScope = CoroutineScope(
-        Dispatchers.Main)
 
     override fun onReceive(context: Context?, intent: Intent?) {
         val alertManager = context?.let { AlertManager.getInstance(it) }
@@ -24,49 +22,12 @@ class ActionReceiver : BroadcastReceiver() {
 
         when(action){
             ACTION_MARK_AS_READ -> {
-                markAlertAsRead(alertId, alertManager)
+                alertManager?.markAlertAsRead(alertId)
                 //This is used to close the notification tray
                 val it = Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)
                 context!!.sendBroadcast(it)
             }
-            ACTION_DELETE -> deleteAlert(alertId, alertManager)
-        }
-    }
-
-    private fun markAlertAsRead(
-        alertId: Long,
-        alertManager: AlertManager?
-    ) {
-        if (alertId != NOT_EXIST) {
-            coroutineScope.launch {
-                withContext(Dispatchers.IO) {
-                    val alert = alertManager?.getAlert(alertId)
-                    alert?.let {
-                        alertManager.update(
-                            Alert(alert.id,
-                                alert.time,
-                                alert.title,
-                                alert.description,
-                                alert.branchId,
-                                true)
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    private fun deleteAlert(
-        alertId: Long,
-        alertManager: AlertManager?
-    ) {
-        if (alertId != -1L) {
-            coroutineScope.launch {
-                withContext(Dispatchers.IO) {
-                    val alert = alertManager?.getAlert(alertId)
-                    alert?.let { alertManager.deleteAlert(it) }
-                }
-            }
+            ACTION_DELETE ->   alertManager?.deleteAlert(alertId)
         }
     }
 }

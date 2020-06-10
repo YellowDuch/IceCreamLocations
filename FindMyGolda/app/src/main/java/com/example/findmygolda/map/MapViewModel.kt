@@ -108,7 +108,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application),
        }
     }
 
-    private fun addMapLayer(sourceId: String, geoJson: String?, markerImageId: String, markerDrawableImage: Int, layerId: String) {
+    fun addMapLayer(sourceId: String, geoJson: String?, markerImageId: String, markerDrawableImage: Int, layerId: String) {
         val style = map.style
         val geoJsonSource = GeoJsonSource(sourceId)
         geoJsonSource.setGeoJson(geoJson)
@@ -123,21 +123,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application),
     fun focusOnUserLocation(){
         setCameraPosition()
         doneFocusOnUserLocation()
-    }
-
-    fun addAnitaLayer(geoJson: String) {
-        try {
-                removeMapLayer(Constants.ANITA_LAYER_ID, Constants.ANITA_SOURCE_ID)
-                addMapLayer(
-                Constants.ANITA_SOURCE_ID,
-                geoJson,
-                Constants.ANITA_MARKER_IMAGE_ID,
-                R.drawable.anita_marker,
-                Constants.ANITA_LAYER_ID
-            )
-        } catch (exception: URISyntaxException) {
-            Log.d(ContentValues.TAG, "exception")
-        }
     }
 
     fun anitaLayerCheckChanged(isChecked: Boolean) {
@@ -160,7 +145,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application),
         }
     }
 
-    private fun removeMapLayer(layerId: String, sourceId: String){
+    fun removeMapLayer(layerId: String, sourceId: String){
         map.style?.removeLayer(layerId)
         map.style?.removeSource(sourceId)
     }

@@ -1,16 +1,14 @@
 package com.example.findmygolda.branches
 
 import android.app.Application
-import android.location.Location
 import android.view.View
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.example.findmygolda.Constants.Companion.CHIP_TITTLE_A_TO_Z
 import com.example.findmygolda.Constants.Companion.CHIP_TITTLE_DISTANCE
-import com.example.findmygolda.Constants.Companion.LOCATION_NAME
 import com.example.findmygolda.database.Branch
+import com.example.findmygolda.getBranchLocation
 import com.example.findmygolda.location.LocationAdapter
 import com.google.android.material.chip.Chip
 
@@ -38,18 +36,14 @@ class BranchesViewModel(application: Application
         }
     }
 
-    private fun List<Branch>?.sortByLocation(): List<Branch>? =
-        this?.sortedBy {
+    private fun List<Branch>.sortByLocation(): List<Branch>? =
+        this.sortedBy {
             locationAdapter.lastLocation?.distanceTo(getBranchLocation(it))
         }
 
     private fun List<Branch>.sortAtoZ(): List<Branch> =
-        this.sortedBy { it?.name }
+        this.sortedBy { it.name }
 
-    private fun getBranchLocation(branch: Branch): Location {
-        val branchLocation = Location(LOCATION_NAME)
-        branchLocation.longitude = branch.longitude
-        branchLocation.latitude = branch.latitude
-        return branchLocation
-    }
+
+
 }

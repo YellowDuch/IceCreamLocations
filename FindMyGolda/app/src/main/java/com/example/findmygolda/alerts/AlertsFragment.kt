@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import com.example.findmygolda.R
 import com.example.findmygolda.databinding.FragmentAlertsBinding
 
@@ -29,7 +28,7 @@ class AlertsFragment : Fragment() {
             startActivity(shareIntent)
             },
             ReadClickListener{alert ->
-                alertViewModel.changeIsReadStatus(alert)
+                alertViewModel.changeIsReadToggleStatus(alert)
             },
             DeleteAlertClickListener{alert ->
                 alertViewModel.deleteAlert(alert)

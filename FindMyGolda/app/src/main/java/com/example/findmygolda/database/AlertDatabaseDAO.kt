@@ -21,6 +21,6 @@ interface AlertDatabaseDAO {
     @Update
     fun update(alert: Alert)
 
-    @Delete
-    fun delete(alert: Alert)
+    @Query("DELETE from alerts WHERE id = :alertId")
+    fun deleteAlert(alertId: Long)
 }

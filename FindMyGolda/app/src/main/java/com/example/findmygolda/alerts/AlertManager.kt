@@ -9,14 +9,16 @@ import com.example.findmygolda.Constants.Companion.DEFAULT_TIME_BETWEEN_ALERTS
 import com.example.findmygolda.Constants.Companion.HUNDREDS_METERS
 import com.example.findmygolda.Constants.Companion.SIZE_OF_JUMP
 import com.example.findmygolda.Constants.Companion.NOTIFICATION_IMAGE_ICON
+import com.example.findmygolda.Constants.Companion.NOT_EXIST
 import com.example.findmygolda.Constants.Companion.PREFERENCE_RADIUS_FROM_BRANCH
 import com.example.findmygolda.Constants.Companion.PREFERENCE_TIME_BETWEEN_NOTIFICATIONS
 import com.example.findmygolda.database.DB
 import com.example.findmygolda.database.Alert
 import com.example.findmygolda.location.ILocationChanged
 import com.example.findmygolda.branches.BranchManager
-import com.example.findmygolda.database.Branch
+import com.example.findmygolda.getBranchLocation
 import com.example.findmygolda.location.LocationAdapter
+import com.example.findmygolda.parseMinutesToMilliseconds
 import kotlinx.coroutines.*
 
 class AlertManager(val context: Context):ILocationChanged {
@@ -60,13 +62,19 @@ class AlertManager(val context: Context):ILocationChanged {
     private fun alertIfBranchInRangeAndTimeExceeded(location: Location) {
         val branches = branchManager.branches.value
         branches?.forEach{branch ->
-            if(branchManager.isDistanceInRange(location, branch, maxDistanceFromBranch)){
+            if(branchManager.isDistanceInRange(location, getBranchLocation(branch), maxDistanceFromBranch)){
                 coroutineScope.launch{
                     withContext(Dispatchers.IO){
-                        val lastAlert = dataSource.getLastAlertOfBranch(branch.id)
+                        val lastAlertOfBranch = dataSource.getLastAlertOfBranch(branch.id)
 
-                        if(lastAlert == null || hasIntervalExceeded(lastAlert.time,System.currentTimeMillis(), intervalBetweenIdenticalNotifications)){
-                            addAlert(branch)
+                        if(lastAlertOfBranch == null || hasIntervalExceeded(lastAlertOfBranch.time,System.currentTimeMillis(), intervalBetweenIdenticalNotifications)){
+                            val alertId = dataSource.insert(
+                                Alert(title = branch.name,
+                                    description = branch.discounts,
+                                    branchId = branch.id,
+                                    isRead = false)
+                            )
+                            notify(branch.name, branch.discounts, alertId, NOTIFICATION_IMAGE_ICON)
                         }
                     }
                 }
@@ -74,8 +82,8 @@ class AlertManager(val context: Context):ILocationChanged {
         }
     }
 
-    private fun hasIntervalExceeded(startedTime: Long, finishedTime:Long, interval:Long): Boolean {
-        return (finishedTime - startedTime) >= interval
+    private fun hasIntervalExceeded(startedTime: Long, currentTime:Long, interval:Long): Boolean {
+        return (currentTime - startedTime) >= interval
     }
 
     private fun notify(name: String, discounts: String, alertId: Long, drawableImage: Int){
@@ -85,16 +93,22 @@ class AlertManager(val context: Context):ILocationChanged {
         notificationHelper.notify(name, discounts,icon, drawableImage, alertId)
     }
 
-    private fun addAlert(branch: Branch){
-        coroutineScope.launch{
-            withContext(Dispatchers.IO){
-                val alertId = dataSource.insert(
-                    Alert(title = branch.name,
-                        description = branch.discounts,
-                        branchId = branch.id,
-                        isRead = false)
-                )
-                notify(branch.name, branch.discounts, alertId, NOTIFICATION_IMAGE_ICON)
+    fun markAlertAsRead(alertId: Long) {
+        if (alertId != NOT_EXIST) {
+            coroutineScope.launch {
+                withContext(Dispatchers.IO) {
+                    val alert = getAlert(alertId)
+                    alert?.let {
+                       update(
+                            Alert(alert.id,
+                                alert.time,
+                                alert.title,
+                                alert.description,
+                                alert.branchId,
+                                true)
+                        )
+                    }
+                }
             }
         }
     }
@@ -107,16 +121,16 @@ class AlertManager(val context: Context):ILocationChanged {
         }
     }
 
-    fun deleteAlert(alert: Alert){
+    fun deleteAlert(id: Long){
         coroutineScope.launch{
             withContext(Dispatchers.IO){
-                dataSource.delete(alert)
-                notificationHelper.cancelNotification(context, alert.id.toInt())
+                dataSource.deleteAlert(id)
+                notificationHelper.cancelNotification(context, id.toInt())
             }
         }
     }
 
-    fun getAlert(id: Long): Alert? {
+    private fun getAlert(id: Long): Alert? {
         return dataSource.getAlertById(id)
     }
 }

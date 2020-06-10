@@ -9,7 +9,7 @@ import com.example.findmygolda.Constants.Companion.PREFERENCE_RADIUS_FROM_BRANCH
 import com.example.findmygolda.Constants.Companion.PREFERENCE_TIME_BETWEEN_NOTIFICATIONS
 import com.example.findmygolda.R
 import com.example.findmygolda.alerts.AlertManager
-import com.example.findmygolda.alerts.parseMinutesToMilliseconds
+import com.example.findmygolda.parseMinutesToMilliseconds
 
 class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
