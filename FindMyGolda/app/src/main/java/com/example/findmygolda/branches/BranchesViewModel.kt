@@ -36,7 +36,7 @@ class BranchesViewModel(application: Application
         }
     }
 
-    private fun List<Branch>.sortByLocation(): List<Branch>? =
+    private fun List<Branch>.sortByLocation(): List<Branch> =
         this.sortedBy {
             locationAdapter.lastLocation?.distanceTo(getBranchLocation(it))
         }

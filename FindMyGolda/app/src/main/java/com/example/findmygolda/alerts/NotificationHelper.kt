@@ -1,5 +1,6 @@
 package com.example.findmygolda.alerts
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -26,39 +27,42 @@ import com.example.findmygolda.R
 class NotificationHelper(val context: Context) {
 
   init {
-      createChannel()
+      createChannel(NotificationManager.IMPORTANCE_HIGH, NOTIFICATION_CHANEL_DESCRIPTION, CHANNEL_ID, CHANNEL_NAME)
   }
 
-  private fun createChannel() {
+  private fun createChannel(importance: Int, channelDescription: String, Id: String, name: String) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      val importance = NotificationManager.IMPORTANCE_HIGH
-      val descriptionText = NOTIFICATION_CHANEL_DESCRIPTION
-      val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, importance).apply {
-        description = descriptionText
+      val importance = importance
+      val channel = NotificationChannel(Id, name, importance).apply {
+        description = channelDescription
       }
       val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
       notificationManager.createNotificationChannel(channel)
     }
   }
 
-  fun notify(title: String, content: String,icon: Bitmap, smallIcon: Int, alertId: Long) {
+  fun notify(title: String, content: String,icon: Bitmap, smallIcon: Int,groupId: String, alertId: Long) {
     val notificationManager = NotificationManagerCompat.from(context)
+    val action = NotificationCompat.Action(R.drawable.golda_imag, context.getString(R.string.MarkAsRead),
+      getPendingIntentMarkAsRead(alertId))
+
     val notification = NotificationCompat.Builder(context, CHANNEL_ID)
       .setSmallIcon(smallIcon)
       .setLargeIcon(icon)
       .setContentTitle(title)
       .setContentText(content)
       .setDefaults(NotificationCompat.DEFAULT_ALL)
-      .setGroup(GROUP_ID)
+      .setGroup(groupId)
       .setPriority(NotificationCompat.PRIORITY_DEFAULT)
       .setContentIntent(getBackToAppIntent())
       .addAction(R.drawable.mapbox_logo_icon, context.getString(R.string.shareActionButton),
         getShareIntent(title, content))
-      .addAction(R.drawable.golda_imag, context.getString(R.string.MarkAsRead),
-        getPendingIntentMarkAsRead(alertId))
+      .addAction(action)
       .setDeleteIntent(getPendingIntentDeleteAlert(alertId))
       .setAutoCancel(true)
       .build()
+
+
     notificationManager.notify(alertId.toInt(), notification)
   }
 

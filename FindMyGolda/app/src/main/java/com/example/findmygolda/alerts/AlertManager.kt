@@ -6,6 +6,7 @@ import android.location.Location
 import androidx.preference.PreferenceManager
 import com.example.findmygolda.Constants.Companion.DEFAULT_DISTANCE_TO_BRANCH
 import com.example.findmygolda.Constants.Companion.DEFAULT_TIME_BETWEEN_ALERTS
+import com.example.findmygolda.Constants.Companion.GROUP_ID
 import com.example.findmygolda.Constants.Companion.HUNDREDS_METERS
 import com.example.findmygolda.Constants.Companion.SIZE_OF_JUMP
 import com.example.findmygolda.Constants.Companion.NOTIFICATION_IMAGE_ICON
@@ -90,7 +91,7 @@ class AlertManager(val context: Context):ILocationChanged {
         val icon = BitmapFactory.decodeResource(
             context.resources,
           drawableImage)
-        notificationHelper.notify(name, discounts,icon, drawableImage, alertId)
+        notificationHelper.notify(name, discounts,icon, drawableImage, GROUP_ID, alertId)
     }
 
     fun markAlertAsRead(alertId: Long) {
