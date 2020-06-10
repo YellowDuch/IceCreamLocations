@@ -10,8 +10,11 @@ import androidx.lifecycle.MutableLiveData
 import com.example.findmygolda.Constants
 import com.example.findmygolda.Constants.Companion.DEFAULT_MAP_ZOOM
 import com.example.findmygolda.R
+import com.example.findmygolda.branches.BranchManager
+import com.example.findmygolda.database.Branch
 import com.example.findmygolda.location.ILocationChanged
 import com.example.findmygolda.location.LocationAdapter
+import com.mapbox.mapboxsdk.annotations.IconFactory
 import com.mapbox.mapboxsdk.annotations.Marker
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
@@ -33,6 +36,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application),
     ILocationChanged {
 
     private var applicationContext = application
+    private var branchManager = BranchManager.getInstance(application)
     private var locationAdapter: LocationAdapter = LocationAdapter.getInstance(application)
     private val _isFocusOnUserLocation = MutableLiveData<Boolean>()
     val isFocusOnUserLocation: MutableLiveData<Boolean>
@@ -45,6 +49,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application),
     val isMapReady: LiveData<Boolean>
         get() = _isMapReady
     lateinit var map: MapboxMap
+    lateinit var geoJson: String
 
     fun onAlertsButtonClicked(){
         _isNavigateToAlertsFragment.value = true
@@ -85,18 +90,25 @@ class MapViewModel(application: Application) : AndroidViewModel(application),
         }
     }
 
-    fun addMarker(title: String, description: String, latLng: LatLng, icon: com.mapbox.mapboxsdk.annotations.Icon){
+    private fun addMarker(title: String, description: String, latLng: LatLng, icon: com.mapbox.mapboxsdk.annotations.Icon){
         val marker = map.addMarker(MarkerOptions().setTitle(title).setSnippet(description).position(latLng).icon(icon))
         markers.add(marker)
     }
 
-    fun removeAllMarkers(){
+    fun addMarkersOfBranches(branches: List<Branch>){
+        val icon = IconFactory.getInstance(applicationContext).fromResource(R.drawable.golda_marker)
+        branches.forEach{branch ->
+            addMarker(branch.name, branch.address, LatLng(branch.latitude, branch.longitude), icon)
+        }
+    }
+
+    private fun removeAllMarkers(){
        markers.forEach{ marker ->
            marker.remove()
        }
     }
 
-    fun addMapLayer(sourceId: String, geoJson: String?, markerImageId: String, markerDrawableImage: Int, layerId: String) {
+    private fun addMapLayer(sourceId: String, geoJson: String?, markerImageId: String, markerDrawableImage: Int, layerId: String) {
         val style = map.style
         val geoJsonSource = GeoJsonSource(sourceId)
         geoJsonSource.setGeoJson(geoJson)
@@ -128,7 +140,27 @@ class MapViewModel(application: Application) : AndroidViewModel(application),
         }
     }
 
-    fun removeMapLayer(layerId: String, sourceId: String){
+    fun anitaLayerCheckChanged(isChecked: Boolean) {
+        if(isChecked){
+            addMapLayer(
+                Constants.ANITA_SOURCE_ID, geoJson,
+                Constants.ANITA_MARKER_IMAGE_ID, R.drawable.anita_marker,
+                Constants.ANITA_LAYER_ID
+            )
+        } else {
+            removeMapLayer(Constants.ANITA_LAYER_ID, Constants.ANITA_SOURCE_ID)
+        }
+    }
+
+    fun goldaLayerCheckChanged(isChecked: Boolean) {
+        if(isChecked){
+            branchManager.branches.value?.let { addMarkersOfBranches(it) }
+        } else {
+            removeAllMarkers()
+        }
+    }
+
+    private fun removeMapLayer(layerId: String, sourceId: String){
         map.style?.removeLayer(layerId)
         map.style?.removeSource(sourceId)
     }

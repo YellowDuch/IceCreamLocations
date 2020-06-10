@@ -8,23 +8,16 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
-import com.example.findmygolda.Constants.Companion.ANITA_LAYER_ID
-import com.example.findmygolda.Constants.Companion.ANITA_MARKER_IMAGE_ID
-import com.example.findmygolda.Constants.Companion.ANITA_SOURCE_ID
 import com.example.findmygolda.Constants.Companion.MAP_BOX_TOKEN
 import com.example.findmygolda.R
 import com.example.findmygolda.branches.BranchManager
-import com.example.findmygolda.database.Branch
 import com.example.findmygolda.databinding.FragmentMapBinding
 import com.mapbox.mapboxsdk.Mapbox
-import com.mapbox.mapboxsdk.annotations.IconFactory
-import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 
 class MapFragment : Fragment() {
     private lateinit var mapView: MapView
     private lateinit var mapViewModel: MapViewModel
-    private lateinit var geoJson: String
     private lateinit var branchManager: BranchManager
     private lateinit var mapLayerRepository: MapLayerRepository
 
@@ -48,6 +41,25 @@ class MapFragment : Fragment() {
         return binding.root
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.top_map_layer_settings,menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        item.isChecked = !item.isChecked
+        when (item.itemId) {
+            R.id.golda_check -> {
+                mapViewModel.goldaLayerCheckChanged(item.isChecked)
+                return true
+            }
+            R.id.anita_check -> {
+                mapViewModel.anitaLayerCheckChanged(item.isChecked)
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     private fun observeMapReady() {
         mapViewModel.isMapReady.observe(viewLifecycleOwner, Observer {isMapReady ->
             if (isMapReady) {
@@ -61,7 +73,7 @@ class MapFragment : Fragment() {
 
     private fun branchesObserve() {
         branchManager.branches.observe(viewLifecycleOwner, Observer { branches ->
-            addMarkers(branches)
+            mapViewModel.addMarkersOfBranches(branches)
         })
     }
 
@@ -69,7 +81,7 @@ class MapFragment : Fragment() {
         mapLayerRepository.geojson.observe(viewLifecycleOwner, Observer { geoJson ->
             geoJson?.let {
                 mapViewModel.addAnitaLayer(it)
-                this.geoJson = geoJson
+                mapViewModel.geoJson = it
             }
         })
     }
@@ -92,40 +104,6 @@ class MapFragment : Fragment() {
                 mapViewModel.doneNavigateToAlertsFragment()
             }
         })
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.top_map_layer_settings,menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        item.isChecked = !item.isChecked
-        when (item.itemId) {
-            R.id.golda_check -> {
-                if(item.isChecked){
-                    branchManager.branches.value?.let { addMarkers(it) }
-                } else {
-                    mapViewModel.removeAllMarkers()
-                }
-                return true
-            }
-            R.id.anita_check -> {
-                if(item.isChecked){
-                    mapViewModel.addMapLayer(ANITA_SOURCE_ID, geoJson, ANITA_MARKER_IMAGE_ID, R.drawable.anita_marker, ANITA_LAYER_ID)
-                } else {
-                    mapViewModel.removeMapLayer(ANITA_LAYER_ID, ANITA_SOURCE_ID)
-                }
-                return true
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
-    private fun addMarkers(branches: List<Branch>){
-        val icon = IconFactory.getInstance(requireNotNull(this.activity).application).fromResource(R.drawable.golda_marker)
-        branches.forEach{branch ->
-            mapViewModel.addMarker(branch.name, branch.address, LatLng(branch.latitude, branch.longitude), icon)
-        }
     }
 
     override fun onStart() {

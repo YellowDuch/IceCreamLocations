@@ -92,7 +92,7 @@ class AlertManager(val context: Context):ILocationChanged {
                 val alertId = dataSource.insert(
                     Alert(title = branch.name,
                         description = branch.discounts,
-                        branchId = branch.id.toInt(),
+                        branchId = branch.id,
                         isRead = false)
                 )
                 notify(branch.name, branch.discounts, alertId, NOTIFICATION_IMAGE_ICON)
