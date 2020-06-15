@@ -46,6 +46,5 @@ class Constants {
         const val DATE_FORMAT = "HH:mm dd-MM-yy"
         const val SHARE_INTENT_TYPE = "text/plain"
         const val EXIT_STATUS_CODE = 1
-
     }
 }

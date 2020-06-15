@@ -8,12 +8,11 @@ import com.example.findmygolda.Constants.Companion.JUMPS_OF_5_MINUTES
 import com.example.findmygolda.Constants.Companion.PREFERENCE_RADIUS_FROM_BRANCH
 import com.example.findmygolda.Constants.Companion.PREFERENCE_TIME_BETWEEN_NOTIFICATIONS
 import com.example.findmygolda.R
-import com.example.findmygolda.alerts.AlertManager
-import com.example.findmygolda.parseMinutesToMilliseconds
 
 class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.app_preferences, rootKey)
+
         val radiusPreference: SeekBarPreference? = findPreference(PREFERENCE_RADIUS_FROM_BRANCH)
         radiusPreference?.apply {
             summary = this.value.times(HUNDREDS_METERS).toString() + getString(R.string.meters)
