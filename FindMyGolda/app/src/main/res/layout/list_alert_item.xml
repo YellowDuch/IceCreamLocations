@@ -30,7 +30,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/golda_imag" />
+            app:srcCompat="@drawable/golda_image" />
         <TextView
             android:id="@+id/alert_title"
             android:layout_width="wrap_content"

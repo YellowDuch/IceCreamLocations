@@ -1,14 +1,19 @@
 package com.example.findmygolda.alerts
 
+import android.app.NotificationManager
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.location.Location
 import androidx.preference.PreferenceManager
+import com.example.findmygolda.*
+import com.example.findmygolda.Constants.Companion.GOLDA_CHANNEL_ID
 import com.example.findmygolda.Constants.Companion.DEFAULT_DISTANCE_TO_BRANCH
 import com.example.findmygolda.Constants.Companion.DEFAULT_TIME_BETWEEN_ALERTS
+import com.example.findmygolda.Constants.Companion.GOLADA_NOTIFICATION_CHANEL_DESCRIPTION
+import com.example.findmygolda.Constants.Companion.GOLDA_CHANNEL_NAME
 import com.example.findmygolda.Constants.Companion.GROUP_ID
 import com.example.findmygolda.Constants.Companion.HUNDREDS_METERS
-import com.example.findmygolda.Constants.Companion.SIZE_OF_JUMP
+import com.example.findmygolda.Constants.Companion.JUMPS_OF_5_MINUTES
 import com.example.findmygolda.Constants.Companion.NOTIFICATION_IMAGE_ICON
 import com.example.findmygolda.Constants.Companion.NOT_EXIST
 import com.example.findmygolda.Constants.Companion.PREFERENCE_RADIUS_FROM_BRANCH
@@ -17,9 +22,7 @@ import com.example.findmygolda.database.DB
 import com.example.findmygolda.database.Alert
 import com.example.findmygolda.location.ILocationChanged
 import com.example.findmygolda.branches.BranchManager
-import com.example.findmygolda.getBranchLocation
 import com.example.findmygolda.location.LocationAdapter
-import com.example.findmygolda.parseMinutesToMilliseconds
 import kotlinx.coroutines.*
 
 class AlertManager(val context: Context):ILocationChanged {
@@ -31,7 +34,7 @@ class AlertManager(val context: Context):ILocationChanged {
     private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
     var maxDistanceFromBranch = preferences.getInt(PREFERENCE_RADIUS_FROM_BRANCH, DEFAULT_DISTANCE_TO_BRANCH).times(HUNDREDS_METERS)
     var intervalBetweenIdenticalNotifications = parseMinutesToMilliseconds(preferences.getInt(PREFERENCE_TIME_BETWEEN_NOTIFICATIONS,
-        DEFAULT_TIME_BETWEEN_ALERTS).times(SIZE_OF_JUMP))
+        DEFAULT_TIME_BETWEEN_ALERTS).times(JUMPS_OF_5_MINUTES))
     private val notificationHelper = NotificationHelper(context.applicationContext)
 
     companion object {
@@ -91,7 +94,25 @@ class AlertManager(val context: Context):ILocationChanged {
         val icon = BitmapFactory.decodeResource(
             context.resources,
           drawableImage)
-        notificationHelper.notify(name, discounts,icon, drawableImage, GROUP_ID, alertId, true)
+        if (!notificationHelper.isChannelExist(GOLDA_CHANNEL_ID)){
+            notificationHelper.createChannel(
+                NotificationManager.IMPORTANCE_HIGH,
+                GOLADA_NOTIFICATION_CHANEL_DESCRIPTION,
+                GOLDA_CHANNEL_ID,
+                GOLDA_CHANNEL_NAME
+            )
+        }
+        notificationHelper.notify(name,
+            discounts,
+            icon,
+            drawableImage,
+            GROUP_ID,
+            alertId,
+            true,
+            getBackToAppPendingIntent(context),
+            getDeleteAlertPendingIntent(context, alertId),
+            getMarkAsReadAction(context, name, discounts, alertId),
+            getShareAction(context, name, discounts))
     }
 
     fun markAlertAsRead(alertId: Long) {

@@ -43,7 +43,4 @@ class BranchesViewModel(application: Application
 
     private fun List<Branch>.sortAtoZ(): List<Branch> =
         this.sortedBy { it.name }
-
-
-
 }

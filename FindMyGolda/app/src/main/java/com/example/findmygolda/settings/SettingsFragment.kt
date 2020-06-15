@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SeekBarPreference
 import com.example.findmygolda.Constants.Companion.HUNDREDS_METERS
-import com.example.findmygolda.Constants.Companion.SIZE_OF_JUMP
+import com.example.findmygolda.Constants.Companion.JUMPS_OF_5_MINUTES
 import com.example.findmygolda.Constants.Companion.PREFERENCE_RADIUS_FROM_BRANCH
 import com.example.findmygolda.Constants.Companion.PREFERENCE_TIME_BETWEEN_NOTIFICATIONS
 import com.example.findmygolda.R
@@ -21,8 +21,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
             setOnPreferenceChangeListener { preference, newValue ->
                 preference.summary = (newValue as Int).times(HUNDREDS_METERS).toString() + getString(R.string.meters)
-                if (alertManager != null) {
-                    alertManager.maxDistanceFromBranch = (newValue.times(HUNDREDS_METERS))
+                alertManager?.apply {
+                    maxDistanceFromBranch = newValue.times(HUNDREDS_METERS)
                 }
                 true
             }
@@ -30,12 +30,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         val timePreference: SeekBarPreference? = findPreference(PREFERENCE_TIME_BETWEEN_NOTIFICATIONS)
         timePreference?.apply {
-            summary = this.value.times(SIZE_OF_JUMP).toString() + getString(R.string.minutes)
+            summary = this.value.times(JUMPS_OF_5_MINUTES).toString() + getString(R.string.minutes)
 
             setOnPreferenceChangeListener { preference, newValue ->
-                preference.summary = (newValue as Int).times(SIZE_OF_JUMP).toString() + getString(R.string.minutes)
-                if (alertManager != null) {
-                    alertManager.intervalBetweenIdenticalNotifications = parseMinutesToMilliseconds(newValue.times(SIZE_OF_JUMP))
+                preference.summary = (newValue as Int).times(JUMPS_OF_5_MINUTES).toString() + getString(R.string.minutes)
+                alertManager?.apply {
+                    intervalBetweenIdenticalNotifications = parseMinutesToMilliseconds(newValue.times(JUMPS_OF_5_MINUTES))
                 }
                 true
             }

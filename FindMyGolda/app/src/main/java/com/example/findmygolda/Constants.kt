@@ -17,13 +17,13 @@ class Constants {
         const val DB_NAME = "database"
         const val CHIP_TITTLE_A_TO_Z = "A-Z"
         const val CHIP_TITTLE_DISTANCE = "Distance"
-        const val CHANNEL_ID = "com.example.findMyGolda.branchDetails"
+        const val GOLDA_CHANNEL_ID = "com.example.findMyGolda.branchDetails"
         const val GROUP_ID = "com.example.findMyGolda"
-        const val CHANNEL_NAME = "Golda notifications"
+        const val GOLDA_CHANNEL_NAME = "Golda notifications"
         const val MAP_BOX_TOKEN = "pk.eyJ1IjoibW9yc2t5MiIsImEiOiJjazhlN21tMG4xM2R3M2xtajcxM2s0NW10In0.8TX4Iy3nPrjw9KJR3WzN0w"
         const val HUNDREDS_METERS = 100
-        const val SIZE_OF_JUMP = 5
-        const val NOTIFICATION_CHANEL_DESCRIPTION = "Golda notifications"
+        const val JUMPS_OF_5_MINUTES = 5
+        const val GOLADA_NOTIFICATION_CHANEL_DESCRIPTION = "Golda notifications"
         const val DEFAULT_DISTANCE_TO_BRANCH = 5
         const val DEFAULT_TIME_BETWEEN_ALERTS = 1
         const val MINUTES_TO_MILLISECONDS = 60000
@@ -37,7 +37,7 @@ class Constants {
         const val ACTION = "action"
         const val ACTION_DELETE = "delete"
         const val ACTION_MARK_AS_READ = "markAsRead"
-        const val NOTIFICATION_IMAGE_ICON = R.drawable.golda_imag
+        const val NOTIFICATION_IMAGE_ICON = R.drawable.golda_image
         const val NOT_EXIST = -1L
         const val TOP_OF_RECYCLEVIEW = 0
         const val PERMISSIONS_GRANTED_AND_LOCATION_SERVICE_ENABLE = 0

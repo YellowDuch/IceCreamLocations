@@ -20,24 +20,24 @@ fun getBranchLocation(branch: Branch): Location {
     return branchLocation
 }
 
-fun createShareAction(context: Context, title: String, content: String): NotificationCompat.Action {
-    return NotificationCompat.Action(R.drawable.mapbox_logo_icon, context.getString(R.string.shareActionButton),
+fun getShareAction(context: Context, title: String, content: String): NotificationCompat.Action {
+    return NotificationCompat.Action(R.drawable.golda_image, context.getString(R.string.shareActionButton),
     getShareIntent(title, content, context))
 }
 
-fun createMarkAsReadAction(context: Context, title: String, content: String, alertId: Long): NotificationCompat.Action {
-    return NotificationCompat.Action(R.drawable.golda_imag, context.getString(R.string.MarkAsRead),
+fun getMarkAsReadAction(context: Context, title: String, content: String, alertId: Long): NotificationCompat.Action {
+    return NotificationCompat.Action(R.drawable.golda_image, context.getString(R.string.MarkAsRead),
         getPendingIntentMarkAsRead(context, alertId))
 }
 
-fun getBackToAppIntent(context: Context): PendingIntent {
+fun getBackToAppPendingIntent(context: Context): PendingIntent {
     val backToApp = Intent(context, MainActivity::class.java).apply {
         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
     }
     return PendingIntent.getActivity(context, 0, backToApp, 0)
 }
 
-fun getPendingIntentDeleteAlert(context: Context, alertId: Long): PendingIntent? {
+fun getDeleteAlertPendingIntent(context: Context, alertId: Long): PendingIntent? {
     val deleteNotification = Intent(context, ActionReceiver::class.java)
     deleteNotification.putExtra(Constants.ACTION, Constants.ACTION_DELETE)
     deleteNotification.putExtra(Constants.ALERT_ID_KEY, alertId)
