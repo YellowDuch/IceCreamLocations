@@ -13,7 +13,6 @@ import com.example.findmygolda.parseMinutesToMilliseconds
 
 class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-        val alertManager = context?.let { AlertManager.getInstance(it) }
         setPreferencesFromResource(R.xml.app_preferences, rootKey)
         val radiusPreference: SeekBarPreference? = findPreference(PREFERENCE_RADIUS_FROM_BRANCH)
         radiusPreference?.apply {
@@ -21,9 +20,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
             setOnPreferenceChangeListener { preference, newValue ->
                 preference.summary = (newValue as Int).times(HUNDREDS_METERS).toString() + getString(R.string.meters)
-                alertManager?.apply {
-                    maxDistanceFromBranch = newValue.times(HUNDREDS_METERS)
-                }
                 true
             }
         }
@@ -34,9 +30,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
             setOnPreferenceChangeListener { preference, newValue ->
                 preference.summary = (newValue as Int).times(JUMPS_OF_5_MINUTES).toString() + getString(R.string.minutes)
-                alertManager?.apply {
-                    intervalBetweenIdenticalNotifications = parseMinutesToMilliseconds(newValue.times(JUMPS_OF_5_MINUTES))
-                }
                 true
             }
         }

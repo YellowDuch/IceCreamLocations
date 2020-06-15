@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.findmygolda.database.Alert
 import com.example.findmygolda.databinding.ListAlertItemBinding
 
-
 class ShareClickListener(val clickListener: (alert: Alert) -> Unit) {
     fun onClick(alert: Alert) = clickListener(alert)
 }

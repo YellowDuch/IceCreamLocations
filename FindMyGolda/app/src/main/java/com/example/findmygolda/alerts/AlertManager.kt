@@ -2,6 +2,7 @@ package com.example.findmygolda.alerts
 
 import android.app.NotificationManager
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.BitmapFactory
 import android.location.Location
 import androidx.preference.PreferenceManager
@@ -25,7 +26,8 @@ import com.example.findmygolda.branches.BranchManager
 import com.example.findmygolda.location.LocationAdapter
 import kotlinx.coroutines.*
 
-class AlertManager(val context: Context):ILocationChanged {
+class AlertManager(val context: Context):ILocationChanged,
+    SharedPreferences.OnSharedPreferenceChangeListener {
     private val branchManager = BranchManager.getInstance(context)
     private val dataSource = (DB.getInstance(context)).alertDatabaseDAO
     val alerts = dataSource.getAllAlerts()
@@ -56,6 +58,7 @@ class AlertManager(val context: Context):ILocationChanged {
 
     init {
         LocationAdapter.getInstance(context).subscribeToLocationChangeEvent(this)
+        preferences.registerOnSharedPreferenceChangeListener(this)
     }
 
     override fun locationChanged(location: Location?) {
@@ -154,5 +157,25 @@ class AlertManager(val context: Context):ILocationChanged {
 
     private fun getAlert(id: Long): Alert? {
         return dataSource.getAlertById(id)
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        when (key){
+            PREFERENCE_RADIUS_FROM_BRANCH -> {
+               sharedPreferences?.let {
+                   maxDistanceFromBranch = sharedPreferences.getInt(PREFERENCE_RADIUS_FROM_BRANCH, DEFAULT_DISTANCE_TO_BRANCH)
+                       .times(HUNDREDS_METERS)
+
+               }
+            }
+
+            PREFERENCE_TIME_BETWEEN_NOTIFICATIONS -> {
+                sharedPreferences?.let {
+                    intervalBetweenIdenticalNotifications = parseMinutesToMilliseconds(sharedPreferences.getInt(PREFERENCE_TIME_BETWEEN_NOTIFICATIONS,
+                        DEFAULT_TIME_BETWEEN_ALERTS).times(JUMPS_OF_5_MINUTES))
+
+                }
+            }
+        }
     }
 }
