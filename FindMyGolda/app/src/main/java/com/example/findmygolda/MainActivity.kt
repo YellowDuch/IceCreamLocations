@@ -65,6 +65,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
     override fun onPermissionResult(granted: Boolean) {
         if (granted) {
             loadHomePage()
+
             if (!isLocationServiceEnabled(applicationContext)){
                 showLocationServicesDisabledDialog()
             }

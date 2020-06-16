@@ -27,15 +27,21 @@ class MapFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?): View? {
+        savedInstanceState: Bundle?
+    ): View? {
         setHasOptionsMenu(true)
         Mapbox.getInstance(activity as Context, MAP_BOX_TOKEN)
         branchManager = BranchManager.getInstance(requireNotNull(this.activity).application)
-        mapLayerRepository = MapLayerRepository.getInstance(requireNotNull(this.activity).application)
-        mapViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(requireNotNull(this.activity).application).create(MapViewModel::class.java)
+        mapLayerRepository =
+            MapLayerRepository.getInstance(requireNotNull(this.activity).application)
+        mapViewModel =
+            ViewModelProvider.AndroidViewModelFactory.getInstance(requireNotNull(this.activity).application)
+                .create(MapViewModel::class.java)
 
-        val binding = DataBindingUtil.inflate<FragmentMapBinding>(inflater,
-            R.layout.fragment_map,container,false)
+        val binding = DataBindingUtil.inflate<FragmentMapBinding>(
+            inflater,
+            R.layout.fragment_map, container, false
+        )
         mapView = binding.mapView
         binding.viewModel = mapViewModel
         mapView.onCreate(savedInstanceState)
@@ -46,7 +52,7 @@ class MapFragment : Fragment() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.top_map_layer_settings,menu)
+        inflater.inflate(R.menu.top_map_layer_settings, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -65,7 +71,7 @@ class MapFragment : Fragment() {
     }
 
     private fun observeMapReady() {
-        mapViewModel.isMapReady.observe(viewLifecycleOwner, Observer {isMapReady ->
+        mapViewModel.isMapReady.observe(viewLifecycleOwner, Observer { isMapReady ->
             if (isMapReady) {
                 focusOnUserLocationObserver()
                 observeToMapLayerRepository()
@@ -90,10 +96,10 @@ class MapFragment : Fragment() {
         })
     }
 
-    fun addAnitaLayer(geoJson: String) {
+    private fun addAnitaLayer(geoJson: String) {
         try {
-                mapViewModel.removeMapLayer(Constants.ANITA_LAYER_ID, Constants.ANITA_SOURCE_ID)
-                mapViewModel.addMapLayer(
+            mapViewModel.removeMapLayer(Constants.ANITA_LAYER_ID, Constants.ANITA_SOURCE_ID)
+            mapViewModel.addMapLayer(
                 Constants.ANITA_SOURCE_ID,
                 geoJson,
                 Constants.ANITA_MARKER_IMAGE_ID,
@@ -106,17 +112,17 @@ class MapFragment : Fragment() {
     }
 
     private fun focusOnUserLocationObserver() {
-        mapViewModel.isFocusOnUserLocation.observe(
+        mapViewModel.isFocusedOnUserLocation.observe(
             viewLifecycleOwner,
-            Observer { isFocused ->
-                if (isFocused) {
+            Observer {
+                if (it) {
                     mapViewModel.focusOnUserLocation()
                 }
             })
     }
 
     private fun navigationToAlertFragmentObserver() {
-        mapViewModel.isNavigateToAlertsFragment.observe(viewLifecycleOwner, Observer {isNavigate ->
+        mapViewModel.isNavigateToAlertsFragment.observe(viewLifecycleOwner, Observer { isNavigate ->
             if (isNavigate) {
                 NavHostFragment.findNavController(this)
                     .navigate(R.id.action_mapFragment_to_alertsFragment)

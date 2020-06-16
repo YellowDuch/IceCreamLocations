@@ -3,15 +3,12 @@ package com.example.findmygolda.ActionReceiver
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.example.findmygolda.Constants
 import com.example.findmygolda.Constants.Companion.ACTION
 import com.example.findmygolda.Constants.Companion.ACTION_DELETE
 import com.example.findmygolda.Constants.Companion.ACTION_MARK_AS_READ
 import com.example.findmygolda.Constants.Companion.ALERT_ID_KEY
 import com.example.findmygolda.Constants.Companion.NOT_EXIST
 import com.example.findmygolda.alerts.AlertManager
-import com.example.findmygolda.database.Alert
-import kotlinx.coroutines.*
 
 class ActionReceiver : BroadcastReceiver() {
 
@@ -22,7 +19,7 @@ class ActionReceiver : BroadcastReceiver() {
 
         when(action){
             ACTION_MARK_AS_READ -> {
-                alertManager?.markAlertAsRead(alertId)
+                alertManager?.changeIsReadToggleStatus(alertId,true)
                 //This is used to close the notification tray
                 val it = Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)
                 context!!.sendBroadcast(it)
