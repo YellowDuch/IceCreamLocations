@@ -18,17 +18,20 @@ class SettingsFragment : PreferenceFragmentCompat() {
             summary = this.value.times(JUMP_IN_METERS).toString() + getString(R.string.meters)
 
             setOnPreferenceChangeListener { preference, newValue ->
-                preference.summary = (newValue as Int).times(JUMP_IN_METERS).toString() + getString(R.string.meters)
+                preference.summary =
+                    (newValue as Int).times(JUMP_IN_METERS).toString() + getString(R.string.meters)
                 true
             }
         }
 
-        val timePreference: SeekBarPreference? = findPreference(TIME_BETWEEN_NOTIFICATIONS_PREFERENCE)
+        val timePreference: SeekBarPreference? =
+            findPreference(TIME_BETWEEN_NOTIFICATIONS_PREFERENCE)
         timePreference?.apply {
             summary = this.value.times(JUMP_IN_MINUTES).toString() + getString(R.string.minutes)
 
             setOnPreferenceChangeListener { preference, newValue ->
-                preference.summary = (newValue as Int).times(JUMP_IN_MINUTES).toString() + getString(R.string.minutes)
+                preference.summary = (newValue as Int).times(JUMP_IN_MINUTES)
+                    .toString() + getString(R.string.minutes)
                 true
             }
         }

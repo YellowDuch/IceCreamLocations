@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        when(isLocationServicesAndPermissionsGranted()){
+        when (isLocationServicesAndPermissionsGranted()) {
             LOCATION_SERVICE_NOT_ENABLE -> showLocationServicesDisabledDialog()
             PERMISSIONS_NOT_GRANTED -> askForPermissions()
             else -> loadHomePage()
@@ -57,41 +57,44 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
     }
 
     override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {
-        Toast.makeText(applicationContext,
+        Toast.makeText(
+            applicationContext,
             getString(R.string.appNeedLocationPermission),
-            Toast.LENGTH_SHORT).show()
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     override fun onPermissionResult(granted: Boolean) {
-
-        if(!granted){
+        if (!granted) {
             finish()
         }
 
         loadHomePage()
 
-        if (!isLocationServiceEnabled(applicationContext)){
+        if (!isLocationServiceEnabled(applicationContext)) {
             showLocationServicesDisabledDialog()
         }
-
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<out String>,
-                                            grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         permissionManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     private fun setupActionToolbar() {
         val toolbar = binding.toolbar
         setSupportActionBar(toolbar)
-        //supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
     }
 
-     private fun isLocationServiceEnabled(mContext: Context): Boolean {
+    private fun isLocationServiceEnabled(mContext: Context): Boolean {
         val locationManager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
-            LocationManager.NETWORK_PROVIDER)
+            LocationManager.NETWORK_PROVIDER
+        )
     }
 
     private fun showLocationServicesDisabledDialog() {
@@ -114,7 +117,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
         permissionManager.requestLocationPermissions(this)
     }
 
-    private fun isLocationServicesAndPermissionsGranted(): Int{
+    private fun isLocationServicesAndPermissionsGranted(): Int {
         return if (areLocationPermissionsGranted()) {
             if (!isLocationServiceEnabled(applicationContext)) {
                 LOCATION_SERVICE_NOT_ENABLE
@@ -126,15 +129,13 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
         }
     }
 
-    private fun areLocationPermissionsGranted():Boolean{
+    private fun areLocationPermissionsGranted(): Boolean {
         return PermissionsManager.areLocationPermissionsGranted(this)
     }
 
     private fun loadHomePage() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         setupActionToolbar()
-        binding.toolbar.title = ""
-        setSupportActionBar(binding.toolbar)
         createBottomNavigation()
     }
 }

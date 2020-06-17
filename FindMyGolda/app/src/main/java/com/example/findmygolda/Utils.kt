@@ -3,7 +3,7 @@ package com.example.findmygolda
 import android.location.Location
 import com.example.findmygolda.database.Branch
 
-fun parseMinutesToMilliseconds(minutes : Int) : Long{
+fun parseMinutesToMilliseconds(minutes: Int): Long {
     return (minutes * Constants.MINUTES_TO_MILLISECONDS).toLong()
 }
 

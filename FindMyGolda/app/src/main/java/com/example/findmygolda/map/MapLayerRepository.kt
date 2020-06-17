@@ -12,7 +12,8 @@ import java.io.FileOutputStream
 
 class MapLayerRepository(val context: Context) {
     private val coroutineScope = CoroutineScope(
-        Dispatchers.Main )
+        Dispatchers.Main
+    )
     private val _geojson = MutableLiveData<String?>()
     val geojson: LiveData<String?>
         get() = _geojson
@@ -37,7 +38,7 @@ class MapLayerRepository(val context: Context) {
     }
 
     init {
-        if(fileExist(Constants.ANITA_GEO_FILE_NAME)){
+        if (fileExist(Constants.ANITA_GEO_FILE_NAME)) {
             _geojson.value = getFileContent(Constants.ANITA_GEO_FILE_NAME)
         } else {
             refreshRepository()
@@ -63,18 +64,18 @@ class MapLayerRepository(val context: Context) {
         }
     }
 
-    private fun writeGeoJsonFile(fileName:String, value : String){
+    private fun writeGeoJsonFile(fileName: String, value: String) {
         val file: FileOutputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE)
         file.write(value.toByteArray())
         file.close()
     }
 
-    private fun getFileContent(fileName:String): String{
+    private fun getFileContent(fileName: String): String {
         val charset = Charsets.UTF_8
         val file: FileInputStream = context.openFileInput(fileName)
         var inputString = file.readBytes().toString(charset)
         file.close()
-        return  inputString
+        return inputString
     }
 
     private fun fileExist(fileName: String?): Boolean {

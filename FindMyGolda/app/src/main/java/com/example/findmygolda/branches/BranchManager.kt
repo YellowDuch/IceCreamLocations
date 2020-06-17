@@ -14,7 +14,8 @@ class BranchManager(val context: Context) {
         )
     val branches = branchRepository.branches
     private val coroutineScope = CoroutineScope(
-        Dispatchers.Main)
+        Dispatchers.Main
+    )
 
     companion object {
         @Volatile
@@ -39,7 +40,7 @@ class BranchManager(val context: Context) {
         refreshRepository()
     }
 
-    fun isDistanceInRange(location: Location, branchLocation: Location, range:Int): Boolean{
+    fun isDistanceInRange(location: Location, branchLocation: Location, range: Int): Boolean {
         return (location.distanceTo(branchLocation) <= range)
     }
 

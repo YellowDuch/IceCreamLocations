@@ -5,7 +5,7 @@ import com.example.findmygolda.Constants.Companion.SHARE_INTENT_TYPE
 
 class ShareIntent {
 
-    companion object{
+    companion object {
         fun getShareIntent(description: String, title: String): Intent? {
             val sendIntent: Intent = Intent().apply {
                 action = Intent.ACTION_SEND

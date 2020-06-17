@@ -18,19 +18,22 @@ class AlertsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val binding: FragmentAlertsBinding = DataBindingUtil.inflate(
-            inflater, R.layout.fragment_alerts, container, false)
-        val alertViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(requireNotNull(this.activity).application).create(AlertsViewModel::class.java)
+            inflater, R.layout.fragment_alerts, container, false
+        )
+        val alertViewModel =
+            ViewModelProvider.AndroidViewModelFactory.getInstance(requireNotNull(this.activity).application)
+                .create(AlertsViewModel::class.java)
         binding.lifecycleOwner = this
         binding.alertsViewModel = alertViewModel
 
-        val adapter = AlertAdapter(ShareClickListener{ alert ->
-            val shareIntent =  ShareIntent.getShareIntent(alert.description, alert.title)
+        val adapter = AlertAdapter(ShareClickListener { alert ->
+            val shareIntent = ShareIntent.getShareIntent(alert.description, alert.title)
             startActivity(shareIntent)
-            },
-            ReadClickListener{alert ->
+        },
+            ReadClickListener { alert ->
                 alertViewModel.changeIsReadToggleStatus(alert)
             },
-            DeleteAlertClickListener{alert ->
+            DeleteAlertClickListener { alert ->
                 alertViewModel.deleteAlert(alert)
             }
         )

@@ -65,7 +65,7 @@ class MapFragment : Fragment() {
                 return true
             }
             R.id.anita_check -> {
-                mapViewModel.changeLayerVisibility(ANITA_LAYER_ID,item.isChecked)
+                mapViewModel.changeLayerVisibility(ANITA_LAYER_ID, item.isChecked)
                 return true
             }
         }
@@ -92,12 +92,24 @@ class MapFragment : Fragment() {
     private fun observeToMapLayerRepository() {
         mapLayerRepository.geojson.observe(viewLifecycleOwner, Observer { geoJson ->
             geoJson?.let {
-                addMapLayer(ANITA_LAYER_ID, ANITA_SOURCE_ID, it, ANITA_MARKER_IMAGE_ID, R.drawable.anita_marker)
+                addMapLayer(
+                    ANITA_LAYER_ID,
+                    ANITA_SOURCE_ID,
+                    it,
+                    ANITA_MARKER_IMAGE_ID,
+                    R.drawable.anita_marker
+                )
             }
         })
     }
 
-    private fun addMapLayer(layerId: String, sourceId: String, geoJson: String, imageId: String, image: Int) {
+    private fun addMapLayer(
+        layerId: String,
+        sourceId: String,
+        geoJson: String,
+        imageId: String,
+        image: Int
+    ) {
         try {
             mapViewModel.addMapLayer(
                 layerId,

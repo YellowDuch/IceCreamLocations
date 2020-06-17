@@ -12,8 +12,9 @@ import com.example.findmygolda.getBranchLocation
 import com.example.findmygolda.location.LocationAdapter
 import com.google.android.material.chip.Chip
 
-class BranchesViewModel(application: Application
-): AndroidViewModel(application) {
+class BranchesViewModel(
+    application: Application
+) : AndroidViewModel(application) {
     private val branchManager = BranchManager.getInstance(application)
     private val locationAdapter = LocationAdapter.getInstance(application)
     private val _filteredBranches = MutableLiveData<List<Branch>>()
@@ -24,9 +25,9 @@ class BranchesViewModel(application: Application
         _filteredBranches.value = branchManager.branches.value
     }
 
-    fun chipPicked(chip: View){
+    fun chipPicked(chip: View) {
         val chip = chip as Chip
-        when(chip.text){
+        when (chip.text) {
             CHIP_TITTLE_A_TO_Z -> {
                 _filteredBranches.value = _filteredBranches.value?.sortAtoZ()
             }

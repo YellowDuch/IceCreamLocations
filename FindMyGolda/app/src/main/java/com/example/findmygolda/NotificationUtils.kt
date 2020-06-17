@@ -35,7 +35,12 @@ fun getSharePendingIntent(
 }
 
 // Every pending intent needs a unique request code
-fun getPendingIntent(requestCode: Int, actionId: String, context: Context, extraId: Long? = null): PendingIntent? {
+fun getPendingIntent(
+    requestCode: Int,
+    actionId: String,
+    context: Context,
+    extraId: Long? = null
+): PendingIntent? {
     val intent = Intent(context, ActionReceiver::class.java)
     intent.putExtra(Constants.ACTION, actionId)
     extraId?.apply { intent.putExtra(Constants.EXTRA_ID, extraId) }

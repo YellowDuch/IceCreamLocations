@@ -48,7 +48,7 @@ class LocationAdapter(val context: Context) {
         locationEngine.getLastLocation(locationChangeListener)
     }
 
-    fun subscribeToLocationChangeEvent(interested:ILocationChanged){
+    fun subscribeToLocationChangeEvent(interested: ILocationChanged) {
         locationChangedInterested.add(interested)
     }
 
@@ -57,7 +57,7 @@ class LocationAdapter(val context: Context) {
         override fun onSuccess(result: LocationEngineResult?) {
             result?.lastLocation ?: return
             lastLocation = Location(result.lastLocation)
-            locationChangedInterested.forEach{it.locationChanged(lastLocation)}
+            locationChangedInterested.forEach { it.locationChanged(lastLocation) }
         }
 
         override fun onFailure(exception: Exception) {}

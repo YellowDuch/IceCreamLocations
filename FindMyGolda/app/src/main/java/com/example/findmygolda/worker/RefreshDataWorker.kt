@@ -16,7 +16,7 @@ class RefreshDataWorker(appContext: Context, params: WorkerParameters) :
         val repository =
             BranchesRepository(database)
         try {
-            repository.refreshBranches( )
+            repository.refreshBranches()
         } catch (e: HttpException) {
             return Result.retry()
         }

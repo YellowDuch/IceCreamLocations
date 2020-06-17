@@ -16,18 +16,21 @@ import com.example.findmygolda.R
 import com.example.findmygolda.databinding.FragmentBranchesBinding
 
 class BranchesFragment : Fragment() {
-    private lateinit var branchViewModel : BranchesViewModel
-    private  lateinit var adapter: BranchAdapter
+    private lateinit var branchViewModel: BranchesViewModel
+    private lateinit var adapter: BranchAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val binding: FragmentBranchesBinding = DataBindingUtil.inflate(
-            inflater, R.layout.fragment_branches, container, false)
-        branchViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(requireNotNull(this.activity).application).create(BranchesViewModel::class.java)
+            inflater, R.layout.fragment_branches, container, false
+        )
+        branchViewModel =
+            ViewModelProvider.AndroidViewModelFactory.getInstance(requireNotNull(this.activity).application)
+                .create(BranchesViewModel::class.java)
         binding.lifecycleOwner = this
-        adapter =BranchAdapter(BranchClickListener { branchPhoneNumber ->
+        adapter = BranchAdapter(BranchClickListener { branchPhoneNumber ->
             val intent = Intent(Intent.ACTION_DIAL)
             intent.data = Uri.parse("tel:$branchPhoneNumber")
             startActivity(intent)

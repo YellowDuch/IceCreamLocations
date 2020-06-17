@@ -12,7 +12,8 @@ class BranchClickListener(val clickListener: (branchPhone: String) -> Unit) {
     fun onClick(branch: Branch) = clickListener(branch.phone)
 }
 
-class BranchAdapter(private val clickListener: BranchClickListener) : ListAdapter<Branch, BranchAdapter.ViewHolder>(BranchDiffCallback()) {
+class BranchAdapter(private val clickListener: BranchClickListener) :
+    ListAdapter<Branch, BranchAdapter.ViewHolder>(BranchDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):
             ViewHolder {
@@ -24,7 +25,8 @@ class BranchAdapter(private val clickListener: BranchClickListener) : ListAdapte
         holder.bind(item, clickListener)
     }
 
-    class ViewHolder private constructor(val binding: ListBranchItemBinding) : RecyclerView.ViewHolder(binding.root){
+    class ViewHolder private constructor(val binding: ListBranchItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(
             item: Branch,
             clickListener: BranchClickListener

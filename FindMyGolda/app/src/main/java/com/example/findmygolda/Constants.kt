@@ -20,7 +20,8 @@ class Constants {
         const val GOLDA_CHANNEL_ID = "com.example.findMyGolda.branchDetails"
         const val GROUP_ID = "com.example.findMyGolda"
         const val GOLDA_CHANNEL_NAME = "Golda notifications"
-        const val MAP_BOX_TOKEN = "pk.eyJ1IjoibW9yc2t5MiIsImEiOiJjazhlN21tMG4xM2R3M2xtajcxM2s0NW10In0.8TX4Iy3nPrjw9KJR3WzN0w"
+        const val MAP_BOX_TOKEN =
+            "pk.eyJ1IjoibW9yc2t5MiIsImEiOiJjazhlN21tMG4xM2R3M2xtajcxM2s0NW10In0.8TX4Iy3nPrjw9KJR3WzN0w"
         const val JUMP_IN_METERS = 100
         const val JUMP_IN_MINUTES = 5
         const val GOLADA_NOTIFICATION_CHANEL_DESCRIPTION = "Golda notifications"
