@@ -75,30 +75,8 @@ class MapFragment : Fragment() {
     private fun observeMapReady() {
         mapViewModel.isMapReady.observe(viewLifecycleOwner, Observer { isMapReady ->
             if (isMapReady) {
-                focusOnUserLocationObserver()
-                observeToMapLayerRepository()
-                branchesObserve()
+                initObservers()
                 mapViewModel.doneMapReady()
-            }
-        })
-    }
-
-    private fun branchesObserve() {
-        branchManager.branches.observe(viewLifecycleOwner, Observer { branches ->
-            mapViewModel.addMarkersOfBranches(branches)
-        })
-    }
-
-    private fun observeToMapLayerRepository() {
-        mapLayerRepository.geojson.observe(viewLifecycleOwner, Observer { geoJson ->
-            geoJson?.let {
-                addMapLayer(
-                    ANITA_LAYER_ID,
-                    ANITA_SOURCE_ID,
-                    it,
-                    ANITA_MARKER_IMAGE_ID,
-                    R.drawable.anita_marker
-                )
             }
         })
     }
@@ -123,16 +101,6 @@ class MapFragment : Fragment() {
         }
     }
 
-    private fun focusOnUserLocationObserver() {
-        mapViewModel.isFocusedOnUserLocation.observe(
-            viewLifecycleOwner,
-            Observer {
-                if (it) {
-                    mapViewModel.focusOnUserLocation()
-                }
-            })
-    }
-
     private fun navigationToAlertFragmentObserver() {
         mapViewModel.shouldNavigateToAlertsFragment.observe(viewLifecycleOwner, Observer {
             if (it) {
@@ -141,6 +109,33 @@ class MapFragment : Fragment() {
                 mapViewModel.doneNavigateToAlertsFragment()
             }
         })
+    }
+
+    private fun initObservers(){
+        mapViewModel.isFocusedOnUserLocation.observe(
+            viewLifecycleOwner,
+            Observer {
+                if (it) {
+                    mapViewModel.focusOnUserLocation()
+                }
+            })
+
+        mapLayerRepository.geojson.observe(viewLifecycleOwner, Observer { geoJson ->
+            geoJson?.let {
+                addMapLayer(
+                    ANITA_LAYER_ID,
+                    ANITA_SOURCE_ID,
+                    it,
+                    ANITA_MARKER_IMAGE_ID,
+                    R.drawable.anita_marker
+                )
+            }
+        })
+
+        branchManager.branches.observe(viewLifecycleOwner, Observer { branches ->
+            mapViewModel.addMarkersOfBranches(branches)
+        })
+
     }
 
     override fun onStart() {
