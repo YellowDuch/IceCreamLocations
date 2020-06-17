@@ -1,5 +1,7 @@
 package com.example.findmygolda
 
+import java.text.SimpleDateFormat
+
 class Constants {
     companion object {
         const val ANITA_GEO_FILE_NAME = "AnitaGeoJson"
@@ -44,8 +46,9 @@ class Constants {
         const val PERMISSIONS_GRANTED_AND_LOCATION_SERVICE_ENABLE = 0
         const val PERMISSIONS_NOT_GRANTED = 2
         const val LOCATION_SERVICE_NOT_ENABLE = 1
-        const val DATE_FORMAT = "HH:mm dd-MM-yy"
+        private const val DATE_FORMAT = "HH:mm dd-MM-yy"
         const val SHARE_INTENT_TYPE = "text/plain"
         const val EXIT_STATUS_CODE = 1
+        val SIMPLE_DATE_FORMAT = SimpleDateFormat(DATE_FORMAT)
     }
 }

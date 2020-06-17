@@ -2,14 +2,9 @@ package com.example.findmygolda.alerts
 
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
-import com.example.findmygolda.Constants
-import com.example.findmygolda.Constants.Companion.DATE_FORMAT
-import java.text.SimpleDateFormat
+import com.example.findmygolda.Constants.Companion.SIMPLE_DATE_FORMAT
 
 @BindingAdapter("dateFormat")
 fun TextView.setDateFormat(time: Long) {
-//    text = SimpleDateFormat(DATE_FORMAT)
-//        .format(time).toString()
-
-    text = SimpleDateFormat.getDateTimeInstance().format(time).toString()
+    text = SIMPLE_DATE_FORMAT.format(time).toString()
 }
