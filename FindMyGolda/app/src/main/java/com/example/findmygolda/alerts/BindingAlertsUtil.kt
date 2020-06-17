@@ -8,6 +8,8 @@ import java.text.SimpleDateFormat
 
 @BindingAdapter("dateFormat")
 fun TextView.setDateFormat(time: Long) {
-    text = SimpleDateFormat(DATE_FORMAT)
-        .format(time).toString()
+//    text = SimpleDateFormat(DATE_FORMAT)
+//        .format(time).toString()
+
+    text = SimpleDateFormat.getDateTimeInstance().format(time).toString()
 }

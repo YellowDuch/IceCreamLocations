@@ -63,15 +63,17 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
     }
 
     override fun onPermissionResult(granted: Boolean) {
-        if (granted) {
-            loadHomePage()
 
-            if (!isLocationServiceEnabled(applicationContext)){
-                showLocationServicesDisabledDialog()
-            }
-        } else {
+        if(!granted){
             finish()
         }
+
+        loadHomePage()
+
+        if (!isLocationServiceEnabled(applicationContext)){
+            showLocationServicesDisabledDialog()
+        }
+
     }
 
     override fun onRequestPermissionsResult(requestCode: Int,
@@ -82,8 +84,8 @@ class MainActivity : AppCompatActivity(), PermissionsListener {
 
     private fun setupActionToolbar() {
         val toolbar = binding.toolbar
-        toolbar.title = "" // Use for remove the default value - the name of the fragment
         setSupportActionBar(toolbar)
+        //supportActionBar?.setDisplayShowTitleEnabled(false)
     }
 
      private fun isLocationServiceEnabled(mContext: Context): Boolean {

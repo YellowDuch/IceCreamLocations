@@ -10,7 +10,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
-import com.example.findmygolda.Constants
+import com.example.findmygolda.Constants.Companion.ANITA_LAYER_ID
+import com.example.findmygolda.Constants.Companion.ANITA_MARKER_IMAGE_ID
+import com.example.findmygolda.Constants.Companion.ANITA_SOURCE_ID
 import com.example.findmygolda.Constants.Companion.MAP_BOX_TOKEN
 import com.example.findmygolda.R
 import com.example.findmygolda.branches.BranchManager
@@ -59,11 +61,11 @@ class MapFragment : Fragment() {
         item.isChecked = !item.isChecked
         when (item.itemId) {
             R.id.golda_check -> {
-                mapViewModel.goldaLayerCheckChanged(item.isChecked)
+                mapViewModel.changeMarkersLayerVisibility(item.isChecked)
                 return true
             }
             R.id.anita_check -> {
-                mapViewModel.anitaLayerCheckChanged(item.isChecked)
+                mapViewModel.changeLayerVisibility(ANITA_LAYER_ID,item.isChecked)
                 return true
             }
         }
@@ -90,21 +92,19 @@ class MapFragment : Fragment() {
     private fun observeToMapLayerRepository() {
         mapLayerRepository.geojson.observe(viewLifecycleOwner, Observer { geoJson ->
             geoJson?.let {
-                addAnitaLayer(it)
-                mapViewModel.geoJson = it
+                addMapLayer(ANITA_LAYER_ID, ANITA_SOURCE_ID, it, ANITA_MARKER_IMAGE_ID, R.drawable.anita_marker)
             }
         })
     }
 
-    private fun addAnitaLayer(geoJson: String) {
+    private fun addMapLayer(layerId: String, sourceId: String, geoJson: String, imageId: String, image: Int) {
         try {
-            mapViewModel.removeMapLayer(Constants.ANITA_LAYER_ID, Constants.ANITA_SOURCE_ID)
             mapViewModel.addMapLayer(
-                Constants.ANITA_SOURCE_ID,
+                layerId,
+                sourceId,
                 geoJson,
-                Constants.ANITA_MARKER_IMAGE_ID,
-                R.drawable.anita_marker,
-                Constants.ANITA_LAYER_ID
+                imageId,
+                image
             )
         } catch (exception: URISyntaxException) {
             Log.d(ContentValues.TAG, "exception")
@@ -122,8 +122,8 @@ class MapFragment : Fragment() {
     }
 
     private fun navigationToAlertFragmentObserver() {
-        mapViewModel.isNavigateToAlertsFragment.observe(viewLifecycleOwner, Observer { isNavigate ->
-            if (isNavigate) {
+        mapViewModel.shouldNavigateToAlertsFragment.observe(viewLifecycleOwner, Observer {
+            if (it) {
                 NavHostFragment.findNavController(this)
                     .navigate(R.id.action_mapFragment_to_alertsFragment)
                 mapViewModel.doneNavigateToAlertsFragment()

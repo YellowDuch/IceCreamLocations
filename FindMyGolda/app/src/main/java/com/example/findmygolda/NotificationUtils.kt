@@ -7,13 +7,6 @@ import androidx.core.app.NotificationCompat
 import com.example.findmygolda.ActionReceiver.ActionReceiver
 import com.example.findmygolda.alerts.ShareIntent
 
-fun getShareAction(context: Context, title: String, content: String): NotificationCompat.Action {
-    return NotificationCompat.Action(
-        R.drawable.golda_image, context.getString(R.string.shareActionButton),
-        getShareIntent(title, content, context)
-    )
-}
-
 fun getAction(
     actionTitle: String,
     actionImage: Int,
@@ -32,7 +25,7 @@ fun getBackToAppPendingIntent(context: Context): PendingIntent {
     return PendingIntent.getActivity(context, 0, backToApp, 0)
 }
 
-private fun getShareIntent(
+fun getSharePendingIntent(
     title: String,
     content: String,
     context: Context
@@ -42,10 +35,10 @@ private fun getShareIntent(
 }
 
 // Every pending intent needs a unique request code
-fun getPendingIntent(requestCode: Int, context: Context, alertId: Long, actionId: String): PendingIntent? {
+fun getPendingIntent(requestCode: Int, actionId: String, context: Context, extraId: Long? = null): PendingIntent? {
     val intent = Intent(context, ActionReceiver::class.java)
     intent.putExtra(Constants.ACTION, actionId)
-    intent.putExtra(Constants.ALERT_ID_KEY, alertId)
+    extraId?.apply { intent.putExtra(Constants.EXTRA_ID, extraId) }
 
     return PendingIntent.getBroadcast(
         context,

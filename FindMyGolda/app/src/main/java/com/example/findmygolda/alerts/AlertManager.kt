@@ -137,11 +137,11 @@ class AlertManager(val context: Context) : ILocationChanged,
             icon,
             true,
             getBackToAppPendingIntent(context),
-            getPendingIntent(REQUEST_CODE_DELETE_ALERT, context, alertId, ACTION_DELETE),
-            getShareAction(context, name, discounts),
+            getPendingIntent(REQUEST_CODE_DELETE_ALERT, ACTION_DELETE, context, alertId),
+            getAction(context.getString(R.string.shareActionButton), R.drawable.golda_image, getSharePendingIntent(name, discounts, context)),
             getAction(context.getString(R.string.MarkAsRead),
                 R.drawable.golda_image,
-                getPendingIntent(REQUEST_CODE_MARK_AS_READ, context, alertId, ACTION_MARK_AS_READ))
+                getPendingIntent(REQUEST_CODE_MARK_AS_READ, ACTION_MARK_AS_READ, context, alertId))
 
         )
     }
