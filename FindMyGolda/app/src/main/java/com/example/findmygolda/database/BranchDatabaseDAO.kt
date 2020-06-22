@@ -10,8 +10,8 @@ import androidx.room.Query
 interface BranchDatabaseDAO {
 
     @Query("select * from branches")
-    fun getBranches(): LiveData<List<BranchEntity>>
+    fun get(): LiveData<List<Branch>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert( videos: List<BranchEntity>)
+    fun insert(branches: List<Branch>)
 }

@@ -5,10 +5,10 @@
     <data>
         <variable
             name="branch"
-            type="com.example.findmygolda.database.BranchEntity"/>
+            type="com.example.findmygolda.database.Branch"/>
         <variable
             name="clickListener"
-            type="com.example.findmygolda.branches.BranchAdapter.BranchClickListener" />
+            type="com.example.findmygolda.branches.BranchClickListener" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -25,7 +25,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/golda_imag" />
+            app:srcCompat="@drawable/golda_image" />
         <TextView
             android:id="@+id/branch_name"
             android:layout_width="wrap_content"

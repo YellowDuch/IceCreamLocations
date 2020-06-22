@@ -1,24 +1,44 @@
-package com.example.findmygolda
+package com.example.findmygolda.map
 
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.findmygolda.Constants
 import com.example.findmygolda.network.LayerApi
 import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
-class MapLayerRepository(val mainActivity: MainActivity) {
-    private var mapLayerJob = Job()
+class MapLayerRepository(val context: Context) {
     private val coroutineScope = CoroutineScope(
-        mapLayerJob + Dispatchers.Main )
+        Dispatchers.Main
+    )
     private val _geojson = MutableLiveData<String?>()
     val geojson: LiveData<String?>
         get() = _geojson
 
+    companion object {
+        @Volatile
+        private var INSTANCE: MapLayerRepository? = null
+
+        fun getInstance(context: Context): MapLayerRepository {
+            synchronized(this) {
+                var instance =
+                    INSTANCE
+
+                if (instance == null) {
+                    instance =
+                        MapLayerRepository(context)
+                    INSTANCE = instance
+                }
+                return instance
+            }
+        }
+    }
+
     init {
-        if(fileExist(Constants.ANITA_GEO_FILE_NAME)){
+        if (fileExist(Constants.ANITA_GEO_FILE_NAME)) {
             _geojson.value = getFileContent(Constants.ANITA_GEO_FILE_NAME)
         } else {
             refreshRepository()
@@ -44,22 +64,22 @@ class MapLayerRepository(val mainActivity: MainActivity) {
         }
     }
 
-    private fun writeGeoJsonFile(fileName:String, value : String){
-        val file: FileOutputStream = mainActivity.openFileOutput(fileName, Context.MODE_PRIVATE)
+    private fun writeGeoJsonFile(fileName: String, value: String) {
+        val file: FileOutputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE)
         file.write(value.toByteArray())
         file.close()
     }
 
-    private fun getFileContent(fileName:String): String{
+    private fun getFileContent(fileName: String): String {
         val charset = Charsets.UTF_8
-        val file: FileInputStream = mainActivity.openFileInput(fileName)
+        val file: FileInputStream = context.openFileInput(fileName)
         var inputString = file.readBytes().toString(charset)
         file.close()
-        return  inputString
+        return inputString
     }
 
-    private fun fileExist(fname: String?): Boolean {
-        val file: File = mainActivity.baseContext.getFileStreamPath(fname)
+    private fun fileExist(fileName: String?): Boolean {
+        val file: File = context.getFileStreamPath(fileName)
         return file.exists()
     }
 }

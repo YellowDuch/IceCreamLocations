@@ -7,44 +7,41 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
-import com.example.findmygolda.MainActivity
+import androidx.lifecycle.ViewModelProvider
 import com.example.findmygolda.R
 import com.example.findmygolda.databinding.FragmentAlertsBinding
 
 class AlertsFragment : Fragment() {
-    private lateinit var mainActivity: MainActivity
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val binding: FragmentAlertsBinding = DataBindingUtil.inflate(
-            inflater, R.layout.fragment_alerts, container, false)
-        mainActivity = activity as MainActivity
-        val viewModelFactory = AlertViewModelFactory(mainActivity.alertManager)
+            inflater, R.layout.fragment_alerts, container, false
+        )
         val alertViewModel =
-            ViewModelProviders.of(
-                this, viewModelFactory).get(AlertsViewModel::class.java)
-
+            ViewModelProvider.AndroidViewModelFactory.getInstance(requireNotNull(this.activity).application)
+                .create(AlertsViewModel::class.java)
         binding.lifecycleOwner = this
         binding.alertsViewModel = alertViewModel
-        val adapter = AlertAdapter(AlertAdapter.ShareClickListener{ alert ->
-            val shareIntent =  ShareIntent().getShareIntent(alert.description, alert.title)
+
+        val adapter = AlertAdapter(ShareClickListener { alert ->
+            val shareIntent = ShareIntent.getShareIntent(alert.description, alert.title)
             startActivity(shareIntent)
+        },
+            ReadClickListener { alert ->
+                alertViewModel.changeIsReadToggleStatus(alert)
             },
-            AlertAdapter.ReadClickListener{alert ->
-                alertViewModel.updateAlert(alert)
-            },
-            AlertAdapter.DeleteAlertClickListener{alert ->
+            DeleteAlertClickListener { alert ->
                 alertViewModel.deleteAlert(alert)
             }
         )
         binding.alertsList.adapter = adapter
         alertViewModel.alerts.observe(viewLifecycleOwner, Observer {
             it?.let {
-                binding.isThereNotifications = it.isNotEmpty()
-                adapter.data = it
+                binding.isContentEmpty = it.isEmpty()
+                adapter.submitList(it)
             }
         })
 

@@ -5,35 +5,39 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.findmygolda.database.AlertEntity
+import com.example.findmygolda.database.Alert
 import com.example.findmygolda.databinding.ListAlertItemBinding
+
+class ShareClickListener(val clickListener: (alert: Alert) -> Unit) {
+    fun onClick(alert: Alert) = clickListener(alert)
+}
+
+class ReadClickListener(val clickListener: (alert: Alert) -> Unit) {
+    fun onClick(alert: Alert) = clickListener(alert)
+}
+
+class DeleteAlertClickListener(val clickListener: (alert: Alert) -> Unit) {
+    fun onClick(alert: Alert) = clickListener(alert)
+}
 
 class AlertAdapter(
     private val shareClickListener: ShareClickListener,
     private val readClickListener: ReadClickListener,
-    private val deleteAlertClickListener: DeleteAlertClickListener): ListAdapter<AlertEntity, AlertAdapter.ViewHolder>(AlertDiffCallback())  {
-
-    var data =  listOf<AlertEntity>()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
+    private val deleteAlertClickListener: DeleteAlertClickListener): ListAdapter<Alert, AlertAdapter.ViewHolder>(AlertDiffCallback())  {
 
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder.from(parent)
     }
 
-    override fun getItemCount() = data.size
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = data[position]
+        val item = getItem(position)
         holder.bind(item, shareClickListener, readClickListener, deleteAlertClickListener)
     }
 
     class ViewHolder private constructor(val binding: ListAlertItemBinding) : RecyclerView.ViewHolder(binding.root){
         fun bind(
-            item: AlertEntity,
+            item: Alert,
             shareClickListener: ShareClickListener,
             readClickListener: ReadClickListener,
             deleteAlertClickListener: DeleteAlertClickListener
@@ -56,26 +60,15 @@ class AlertAdapter(
         }
     }
 
-    class ShareClickListener(val clickListener: (alert: AlertEntity) -> Unit) {
-        fun onClick(alert: AlertEntity) = clickListener(alert)
-    }
-
-    class ReadClickListener(val clickListener: (alert: AlertEntity) -> Unit) {
-        fun onClick(alert: AlertEntity) = clickListener(alert)
-    }
-
-    class DeleteAlertClickListener(val clickListener: (alert: AlertEntity) -> Unit) {
-        fun onClick(alert: AlertEntity) = clickListener(alert)
-    }
 }
 
-class AlertDiffCallback : DiffUtil.ItemCallback<AlertEntity>() {
+class AlertDiffCallback : DiffUtil.ItemCallback<Alert>() {
 
-    override fun areItemsTheSame(oldItem: AlertEntity, newItem: AlertEntity): Boolean {
+    override fun areItemsTheSame(oldItem: Alert, newItem: Alert): Boolean {
         return oldItem.id == newItem.id
     }
 
-    override fun areContentsTheSame(oldItem: AlertEntity, newItem: AlertEntity): Boolean {
+    override fun areContentsTheSame(oldItem: Alert, newItem: Alert): Boolean {
         return oldItem == newItem
     }
 }
