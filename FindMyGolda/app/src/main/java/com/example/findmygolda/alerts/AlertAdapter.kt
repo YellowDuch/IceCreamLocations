@@ -1,64 +1,74 @@
 package com.example.findmygolda.alerts
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.findmygolda.R
-import com.example.findmygolda.database.AlertEntity
-import java.text.SimpleDateFormat
+import com.example.findmygolda.database.Alert
+import com.example.findmygolda.databinding.ListAlertItemBinding
 
-class AlertAdapter: RecyclerView.Adapter<AlertAdapter.ViewHolder>() {
+class ShareClickListener(val clickListener: (alert: Alert) -> Unit) {
+    fun onClick(alert: Alert) = clickListener(alert)
+}
 
-    var data =  listOf<AlertEntity>()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
-    override fun getItemCount() = data.size
+class ReadClickListener(val clickListener: (alert: Alert) -> Unit) {
+    fun onClick(alert: Alert) = clickListener(alert)
+}
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = data[position]
-        holder.bind(item)
-    }
+class DeleteAlertClickListener(val clickListener: (alert: Alert) -> Unit) {
+    fun onClick(alert: Alert) = clickListener(alert)
+}
+
+class AlertAdapter(
+    private val shareClickListener: ShareClickListener,
+    private val readClickListener: ReadClickListener,
+    private val deleteAlertClickListener: DeleteAlertClickListener): ListAdapter<Alert, AlertAdapter.ViewHolder>(AlertDiffCallback())  {
 
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder.from(parent)
     }
 
-    class ViewHolder private constructor(itemView: View) : RecyclerView.ViewHolder(itemView){
-        private val alertTitle: TextView = itemView.findViewById(R.id.alert_title)
-        private val alertDiscription: TextView = itemView.findViewById(R.id.alert_discription)
-        private val alertTime: TextView = itemView.findViewById(R.id.alert_time)
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val item = getItem(position)
+        holder.bind(item, shareClickListener, readClickListener, deleteAlertClickListener)
+    }
 
+    class ViewHolder private constructor(val binding: ListAlertItemBinding) : RecyclerView.ViewHolder(binding.root){
         fun bind(
-            item: AlertEntity
+            item: Alert,
+            shareClickListener: ShareClickListener,
+            readClickListener: ReadClickListener,
+            deleteAlertClickListener: DeleteAlertClickListener
         ) {
-            alertTitle.text = item.title
-            alertDiscription.text = item.description
-            alertTime.text = convertDate(item.time)
+            binding.alert = item
+            binding.shareClickListener = shareClickListener
+            binding.readClickListener = readClickListener
+            binding.deleteClickListener = deleteAlertClickListener
+            binding.executePendingBindings()
         }
 
         companion object {
             fun from(parent: ViewGroup): ViewHolder {
                 val layoutInflater =
                     LayoutInflater.from(parent.context)
-                val view = layoutInflater
-                    .inflate(
-                        R.layout.list_alert_item,
-                        parent, false
-                    )
-                return ViewHolder(view)
+                val binding = ListAlertItemBinding.inflate(layoutInflater, parent, false)
+
+                return ViewHolder(binding)
             }
         }
-
-        private fun convertDate(systemTime: Long): String {
-            return SimpleDateFormat("HH:mm'\n'dd-MM-yy'\n'")
-                .format(systemTime).toString()
-        }
-
     }
 
+}
+
+class AlertDiffCallback : DiffUtil.ItemCallback<Alert>() {
+
+    override fun areItemsTheSame(oldItem: Alert, newItem: Alert): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    override fun areContentsTheSame(oldItem: Alert, newItem: Alert): Boolean {
+        return oldItem == newItem
+    }
 }

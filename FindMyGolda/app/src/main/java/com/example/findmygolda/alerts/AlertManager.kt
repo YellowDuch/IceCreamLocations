@@ -1,58 +1,218 @@
 package com.example.findmygolda.alerts
 
-import android.app.Application
+import android.app.NotificationManager
+import android.content.Context
+import android.content.SharedPreferences
+import android.graphics.BitmapFactory
 import android.location.Location
 import androidx.preference.PreferenceManager
-import com.example.findmygolda.database.AlertDatabase
-import com.example.findmygolda.database.AlertEntity
+import com.example.findmygolda.*
+import com.example.findmygolda.Constants.Companion.ACTION_DELETE
+import com.example.findmygolda.Constants.Companion.ACTION_MARK_AS_READ
+import com.example.findmygolda.Constants.Companion.GOLDA_CHANNEL_ID
+import com.example.findmygolda.Constants.Companion.DEFAULT_DISTANCE_TO_BRANCH
+import com.example.findmygolda.Constants.Companion.DEFAULT_TIME_BETWEEN_ALERTS
+import com.example.findmygolda.Constants.Companion.GOLADA_NOTIFICATION_CHANEL_DESCRIPTION
+import com.example.findmygolda.Constants.Companion.GOLDA_CHANNEL_NAME
+import com.example.findmygolda.Constants.Companion.GROUP_ID
+import com.example.findmygolda.Constants.Companion.JUMP_IN_METERS
+import com.example.findmygolda.Constants.Companion.JUMP_IN_MINUTES
+import com.example.findmygolda.Constants.Companion.NOTIFICATION_IMAGE_ICON
+import com.example.findmygolda.Constants.Companion.NOT_EXIST
+import com.example.findmygolda.Constants.Companion.RADIUS_FROM_BRANCH_PREFERENCE
+import com.example.findmygolda.Constants.Companion.REQUEST_CODE_DELETE_ALERT
+import com.example.findmygolda.Constants.Companion.REQUEST_CODE_MARK_AS_READ
+import com.example.findmygolda.Constants.Companion.TIME_BETWEEN_NOTIFICATIONS_PREFERENCE
+import com.example.findmygolda.database.DB
+import com.example.findmygolda.database.Alert
 import com.example.findmygolda.location.ILocationChanged
-import com.example.findmygolda.network.BranchManager
+import com.example.findmygolda.branches.BranchManager
+import com.example.findmygolda.location.LocationAdapter
 import kotlinx.coroutines.*
 
-class AlertManager(val application: Application, val branchManager: BranchManager):ILocationChanged {
-    private val dataSource = (AlertDatabase.getInstance(application)).alertDatabaseDAO
+class AlertManager(val context: Context) : ILocationChanged,
+    SharedPreferences.OnSharedPreferenceChangeListener {
+    private val branchManager = BranchManager.getInstance(context)
+    private val dataSource = (DB.getInstance(context)).alertDatabaseDAO
     val alerts = dataSource.getAllAlerts()
-    private var alertManagerJob = Job()
     private val coroutineScope = CoroutineScope(
-        alertManagerJob + Dispatchers.Main )
-    private val preferences = PreferenceManager.getDefaultSharedPreferences(application)
-    private val maxDistanceFromBranch = preferences.getInt("radiusFromBranch", 5).times(100)
-    private val minTimeBetweenAlerts = parseMinutesToMilliseconds(preferences.getInt("timeBetweenNotifications", 1).times(5))
+        Dispatchers.Main
+    )
+    private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+    var maxDistanceFromBranch =
+        preferences.getInt(RADIUS_FROM_BRANCH_PREFERENCE, DEFAULT_DISTANCE_TO_BRANCH)
+            .times(JUMP_IN_METERS)
+    var intervalBetweenIdenticalNotifications = parseMinutesToMilliseconds(
+        preferences.getInt(
+            TIME_BETWEEN_NOTIFICATIONS_PREFERENCE,
+            DEFAULT_TIME_BETWEEN_ALERTS
+        ).times(JUMP_IN_MINUTES)
+    )
+    private val notificationHelper = NotificationHelper(context.applicationContext)
 
-    override fun LocationChanged(location: Location) {
-        alertIfNeeded(location)
+    companion object {
+        @Volatile
+        private var INSTANCE: AlertManager? = null
+
+        fun getInstance(context: Context): AlertManager {
+            synchronized(this) {
+                var instance = INSTANCE
+
+                if (instance == null) {
+                    instance = AlertManager(context)
+                    INSTANCE = instance
+                }
+                return instance
+            }
+        }
     }
 
-    private fun alertIfNeeded(location: Location){
+    init {
+        LocationAdapter.getInstance(context).subscribeToLocationChangeEvent(this)
+        preferences.registerOnSharedPreferenceChangeListener(this)
+        notificationHelper.createChannel(
+            GOLDA_CHANNEL_ID,
+            NotificationManager.IMPORTANCE_HIGH,
+            GOLADA_NOTIFICATION_CHANEL_DESCRIPTION,
+            GOLDA_CHANNEL_NAME
+        )
+    }
+
+    override fun locationChanged(location: Location?) {
+        location ?: return
+        alertIfBranchInRangeAndTimeExceeded(location)
+    }
+
+    private fun alertIfBranchInRangeAndTimeExceeded(location: Location) {
         val branches = branchManager.branches.value
-        val dataSource = (AlertDatabase.getInstance(application)).alertDatabaseDAO
-        branches?.forEach{
-            if(branchManager.isDistanceInRange(location, it, maxDistanceFromBranch)){
-                coroutineScope.launch{
-                    withContext(Dispatchers.IO){
-                        val lastAlert = dataSource.getLastAlertOfBranch(it.id.toInt())
-                        if(hasTimePast(lastAlert)){
-                            dataSource.insert(
-                                AlertEntity(title = it.name,
-                                    description = it.discounts,
-                                    branchId = it.id.toInt())
+        branches?.forEach { branch ->
+            if (branchManager.isDistanceInRange(
+                    location,
+                    getBranchLocation(branch),
+                    maxDistanceFromBranch
+                )
+            ) {
+                coroutineScope.launch {
+                    withContext(Dispatchers.IO) {
+                        val lastAlertOfBranch = dataSource.getLastAlertOfBranch(branch.id)
+
+                        if (lastAlertOfBranch == null || hasIntervalExceeded(
+                                lastAlertOfBranch.time,
+                                System.currentTimeMillis(),
+                                intervalBetweenIdenticalNotifications
                             )
-                            NotificationHelper(application.applicationContext).createNotification(it.name, it.discounts)
+                        ) {
+                            val alertId = dataSource.insert(
+                                Alert(
+                                    title = branch.name,
+                                    description = branch.discounts,
+                                    branchId = branch.id,
+                                    isRead = false
+                                )
+                            )
+                            notify(branch.name, branch.discounts, alertId, NOTIFICATION_IMAGE_ICON)
                         }
                     }
                 }
             }
         }
-
     }
 
-    private fun hasTimePast(lastAlert : AlertEntity?): Boolean {
-        if (lastAlert == null)
-            return true
-        return (System.currentTimeMillis() - lastAlert.time) >= minTimeBetweenAlerts
+    private fun hasIntervalExceeded(startedTime: Long, currentTime: Long, interval: Long): Boolean {
+        return (currentTime - startedTime) >= interval
     }
 
-    private fun parseMinutesToMilliseconds(minutes : Int) : Long{
-        return (minutes * 60000).toLong()
+    private fun notify(name: String, discounts: String, alertId: Long, drawableImage: Int) {
+        val icon = BitmapFactory.decodeResource(
+            context.resources,
+            drawableImage
+        )
+        notificationHelper.notify(
+            alertId,
+            name,
+            discounts,
+            drawableImage,
+            GROUP_ID,
+            GOLDA_CHANNEL_ID,
+            icon,
+            true,
+            getBackToAppPendingIntent(context),
+            getPendingIntent(REQUEST_CODE_DELETE_ALERT, ACTION_DELETE, context, alertId),
+            getAction(context.getString(R.string.shareActionButton), R.drawable.golda_image, getSharePendingIntent(name, discounts, context)),
+            getAction(context.getString(R.string.MarkAsRead),
+                R.drawable.golda_image,
+                getPendingIntent(REQUEST_CODE_MARK_AS_READ, ACTION_MARK_AS_READ, context, alertId))
+
+        )
+    }
+
+    fun changeIsReadToggleStatus(alertId: Long, readStatus: Boolean) {
+        if (alertId != NOT_EXIST) {
+            coroutineScope.launch {
+                withContext(Dispatchers.IO) {
+                    val alert = getAlert(alertId)
+                    alert?.let {
+                        update(
+                            Alert(
+                                alert.id,
+                                alert.time,
+                                alert.title,
+                                alert.description,
+                                alert.branchId,
+                                readStatus
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun update(alert: Alert) {
+        coroutineScope.launch {
+            withContext(Dispatchers.IO) {
+                dataSource.insert(alert)
+            }
+        }
+    }
+
+    fun deleteAlert(id: Long) {
+        coroutineScope.launch {
+            withContext(Dispatchers.IO) {
+                dataSource.deleteAlert(id)
+                notificationHelper.cancelNotification(id.toInt())
+            }
+        }
+    }
+
+    private fun getAlert(id: Long): Alert? {
+        return dataSource.getAlertById(id)
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        when (key) {
+            RADIUS_FROM_BRANCH_PREFERENCE -> {
+                sharedPreferences?.let {
+                    maxDistanceFromBranch = sharedPreferences.getInt(
+                        RADIUS_FROM_BRANCH_PREFERENCE,
+                        DEFAULT_DISTANCE_TO_BRANCH
+                    )
+                        .times(JUMP_IN_METERS)
+
+                }
+            }
+
+            TIME_BETWEEN_NOTIFICATIONS_PREFERENCE -> {
+                sharedPreferences?.let {
+                    val minutesBetweenNotification = sharedPreferences.getInt(
+                        TIME_BETWEEN_NOTIFICATIONS_PREFERENCE,
+                        DEFAULT_TIME_BETWEEN_ALERTS
+                    ).times(JUMP_IN_MINUTES)
+
+                    intervalBetweenIdenticalNotifications =
+                        parseMinutesToMilliseconds(minutesBetweenNotification)
+                }
+            }
+        }
     }
 }

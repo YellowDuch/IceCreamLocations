@@ -1,13 +1,7 @@
 package com.example.findmygolda
 
 import android.app.Application
-import android.content.Context
-import android.content.Intent
-import android.location.LocationManager
 import android.os.Build
-import android.provider.Settings
-import android.view.WindowManager
-import androidx.appcompat.app.AlertDialog
 import androidx.work.*
 import com.example.findmygolda.worker.RefreshDataWorker
 import kotlinx.coroutines.CoroutineScope
@@ -15,8 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
-
-class FindMyGoldaApplication:Application() {
+class FindMyGoldaApplication : Application() {
     private val applicationScope = CoroutineScope(Dispatchers.Default)
 
     override fun onCreate() {
@@ -41,13 +34,13 @@ class FindMyGoldaApplication:Application() {
         WorkManager.getInstance().enqueueUniquePeriodicWork(
             RefreshDataWorker.WORK_NAME,
             ExistingPeriodicWorkPolicy.KEEP,
-            repeatingRequest)
+            repeatingRequest
+        )
 
     }
 
     private fun delayedInit() {
         applicationScope.launch {
-            //Timber.plant(Timber.DebugTree())
             setupRecurringWork()
         }
     }

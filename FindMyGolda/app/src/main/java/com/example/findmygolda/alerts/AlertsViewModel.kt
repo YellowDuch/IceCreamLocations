@@ -2,15 +2,17 @@ package com.example.findmygolda.alerts
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import com.example.findmygolda.database.AlertDatabaseDAO
-import kotlinx.coroutines.*
+import com.example.findmygolda.database.Alert
 
-class AlertsViewModel(
-    val database: AlertDatabaseDAO,
-    application: Application
-) : AndroidViewModel(application)  {
+class AlertsViewModel(application: Application) : AndroidViewModel(application)  {
+    private val alertManager = AlertManager.getInstance(application)
+    val alerts = alertManager.alerts
 
-    val alerts = database.getAllAlerts()
+    fun changeIsReadToggleStatus(alert:Alert){
+        alertManager.changeIsReadToggleStatus(alert.id, !alert.isRead)
+    }
 
+    fun deleteAlert(alert: Alert){
+        alertManager.deleteAlert(alert.id)
+    }
 }

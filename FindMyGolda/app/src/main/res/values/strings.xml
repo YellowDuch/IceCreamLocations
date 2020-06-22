@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">FindMyGolda</string>
-
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="mapbox_access_token">pk.eyJ1IjoibW9yc2t5MiIsImEiOiJjazhlN21tMG4xM2R3M2xtajcxM2s0NW10In0.8TX4Iy3nPrjw9KJR3WzN0w</string>
@@ -9,6 +8,15 @@
     <string name="appNeedLocationPermission">This app needs location permission to be able to show your location on the map</string>
     <string name="cannotShowYourPositionMessage">We can\'t show your position because you disabled the location service for your device.</string>
     <string name="settings">Settings</string>
-    <string name="meters">\" Meters\"</string>
-    <string name="minutes">\" Minutes\"</string>
+    <string name="meters">Meters</string>
+    <string name="minutes">Minutes</string>
+    <string name="shareButton">Share button</string>
+    <string name="branndImage">Brand image</string>
+    <string name="markAsReadButton">markAsReadButton</string>
+    <string name="alerts">Alerts</string>
+    <string name="branches">Branches</string>
+    <string name="home">Home</string>
+    <string name="trashImage">Trash image</string>
+    <string name="shareActionButton">Share</string>
+    <string name="MarkAsRead">Mark as read</string>
 </resources>

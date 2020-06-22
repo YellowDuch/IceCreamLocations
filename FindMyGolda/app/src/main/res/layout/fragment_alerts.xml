@@ -8,7 +8,7 @@
             name="alertsViewModel"
             type="com.example.findmygolda.alerts.AlertsViewModel" />
         <variable
-            name="isThereNotifications"
+            name="isContentEmpty"
             type="boolean"/>
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -16,7 +16,6 @@
         android:layout_height="match_parent"
         tools:context=".alerts.AlertsFragment"
         >
-
         <TextView
             android:id="@+id/empty_alerts_textView"
             android:layout_width="0dp"
@@ -26,13 +25,11 @@
             android:includeFontPadding="false"
             android:text="@string/noNewAlertsMessage"
             android:textSize="24sp"
-            android:visibility="@{!isThereNotifications ? View.VISIBLE : View.GONE}"
+            android:visibility="@{isContentEmpty ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/alerts_list"
             android:layout_width="0dp"
@@ -44,6 +41,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1.0"
-            android:visibility="@{isThereNotifications ? View.VISIBLE : View.GONE}"/>
+            android:visibility="@{isContentEmpty ? View.GONE : View.VISIBLE}"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

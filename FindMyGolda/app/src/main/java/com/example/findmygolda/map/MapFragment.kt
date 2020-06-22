@@ -1,140 +1,145 @@
 package com.example.findmygolda.map
 
+import android.content.ContentValues
 import android.content.Context
-import android.location.Location
 import android.os.Bundle
+import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
-import com.example.findmygolda.MainActivity
+import com.example.findmygolda.Constants.Companion.ANITA_LAYER_ID
+import com.example.findmygolda.Constants.Companion.ANITA_MARKER_IMAGE_ID
+import com.example.findmygolda.Constants.Companion.ANITA_SOURCE_ID
+import com.example.findmygolda.Constants.Companion.MAP_BOX_TOKEN
 import com.example.findmygolda.R
-import com.example.findmygolda.database.BranchEntity
+import com.example.findmygolda.branches.BranchManager
 import com.example.findmygolda.databinding.FragmentMapBinding
-import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.Mapbox
-import com.mapbox.mapboxsdk.annotations.MarkerOptions
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
-import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.location.LocationComponent
-import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
-import com.mapbox.mapboxsdk.location.LocationComponentOptions
-import com.mapbox.mapboxsdk.location.modes.CameraMode
-import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.maps.MapView
-import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
-import com.mapbox.mapboxsdk.maps.Style
+import java.net.URISyntaxException
 
-const val DEFAULT_MAP_ZOOM = 15.0
-
-class MapFragment : Fragment(), OnMapReadyCallback {
-    lateinit var mapView: MapView
-    lateinit var mapViewModel: MapViewModel
-    lateinit var map: MapboxMap
-    var locationComponent: LocationComponent? = null
-    private lateinit var application: Context
-    private lateinit var currentLocation: Location
-    private lateinit var mainActivity: MainActivity
-
+class MapFragment : Fragment() {
+    private lateinit var mapView: MapView
+    private lateinit var mapViewModel: MapViewModel
+    private lateinit var branchManager: BranchManager
+    private lateinit var mapLayerRepository: MapLayerRepository
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val activity = activity as Context
-        Mapbox.getInstance(activity, getString(R.string.mapbox_access_token))
-        application = requireNotNull(this.activity).application
-        val application = requireNotNull(this.activity).application
-        mainActivity = activity as MainActivity
-        val viewModelFactory = MapViewModelFactory(application,
-            mainActivity.alerManager)
+        setHasOptionsMenu(true)
+        Mapbox.getInstance(activity as Context, MAP_BOX_TOKEN)
+        branchManager = BranchManager.getInstance(requireNotNull(this.activity).application)
+        mapLayerRepository =
+            MapLayerRepository.getInstance(requireNotNull(this.activity).application)
         mapViewModel =
-            ViewModelProviders.of(
-                this, viewModelFactory).get(MapViewModel::class.java)
-        val binding = DataBindingUtil.inflate<FragmentMapBinding>(inflater,
-            R.layout.fragment_map,container,false)
+            ViewModelProvider.AndroidViewModelFactory.getInstance(requireNotNull(this.activity).application)
+                .create(MapViewModel::class.java)
+
+        val binding = DataBindingUtil.inflate<FragmentMapBinding>(
+            inflater,
+            R.layout.fragment_map, container, false
+        )
         mapView = binding.mapView
         binding.viewModel = mapViewModel
         mapView.onCreate(savedInstanceState)
-        mapView.getMapAsync(this)
+        mapView.getMapAsync(mapViewModel)
+        navigationToAlertFragmentObserver()
+        observeMapReady()
+        return binding.root
+    }
 
-        mapViewModel.navigateToAlertsFragment.observe(viewLifecycleOwner, Observer {
-            if (it == true) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.top_map_layer_settings, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        item.isChecked = !item.isChecked
+        when (item.itemId) {
+            R.id.golda_check -> {
+                mapViewModel.changeMarkersLayerVisibility(item.isChecked)
+                return true
+            }
+            R.id.anita_check -> {
+                mapViewModel.changeLayerVisibility(ANITA_LAYER_ID, item.isChecked)
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun observeMapReady() {
+        mapViewModel.isMapReady.observe(viewLifecycleOwner, Observer { isMapReady ->
+            if (isMapReady) {
+                initObservers()
+                mapViewModel.doneMapReady()
+            }
+        })
+    }
+
+    private fun addMapLayer(
+        layerId: String,
+        sourceId: String,
+        geoJson: String,
+        imageId: String,
+        image: Int
+    ) {
+        try {
+            mapViewModel.addMapLayer(
+                layerId,
+                sourceId,
+                geoJson,
+                imageId,
+                image
+            )
+        } catch (exception: URISyntaxException) {
+            Log.d(ContentValues.TAG, "exception")
+        }
+    }
+
+    private fun navigationToAlertFragmentObserver() {
+        mapViewModel.shouldNavigateToAlertsFragment.observe(viewLifecycleOwner, Observer {
+            if (it) {
                 NavHostFragment.findNavController(this)
                     .navigate(R.id.action_mapFragment_to_alertsFragment)
                 mapViewModel.doneNavigateToAlertsFragment()
             }
         })
-
-        return binding.root
     }
 
-    override fun onMapReady(mapboxMap: MapboxMap) {
-        map = mapboxMap
-        mainActivity.branchManager.branches.observe(viewLifecycleOwner, Observer { branches ->
-            branches.forEach{
-                addGoldaMarker(it)
+    private fun initObservers(){
+        mapViewModel.isFocusedOnUserLocation.observe(
+            viewLifecycleOwner,
+            Observer {
+                if (it) {
+                    mapViewModel.focusOnUserLocation()
+                }
+            })
+
+        mapLayerRepository.geojson.observe(viewLifecycleOwner, Observer { geoJson ->
+            geoJson?.let {
+                addMapLayer(
+                    ANITA_LAYER_ID,
+                    ANITA_SOURCE_ID,
+                    it,
+                    ANITA_MARKER_IMAGE_ID,
+                    R.drawable.anita_marker
+                )
             }
         })
 
-        mapboxMap.setStyle(Style.MAPBOX_STREETS) {
-            initializeLocationComponent(it)
-            mapViewModel.locationManager.currentLocation.observe(viewLifecycleOwner, Observer { newLocation ->
-                map.locationComponent.forceLocationUpdate(newLocation)
-                if (newLocation != null) {
-                    currentLocation = newLocation
-                }
-            })
-            mapViewModel.focusOnUserLocation.observe(viewLifecycleOwner, Observer {
-                if (it == true) {
-                    setCameraPosition(currentLocation)
-                    mapViewModel.doneFocusOnUserLocation()
-                }
-            })
-        }
-    }
+        branchManager.branches.observe(viewLifecycleOwner, Observer { branches ->
+            mapViewModel.addMarkersOfBranches(branches)
+        })
 
-    @SuppressWarnings("MissingPermission")
-    fun initializeLocationComponent(loadedMapStyle: Style) {
-        val customLocationComponentOptions = LocationComponentOptions.builder(application)
-            .trackingGesturesManagement(true)
-            .build()
-
-        val locationComponentActivationOptions =
-            LocationComponentActivationOptions.builder(application, loadedMapStyle)
-                .locationComponentOptions(customLocationComponentOptions)
-                .build()
-
-        map.locationComponent.apply {
-            activateLocationComponent(locationComponentActivationOptions)
-            isLocationComponentEnabled = true
-            cameraMode = CameraMode.TRACKING
-            renderMode = RenderMode.COMPASS
-        }
-    }
-
-    private fun setCameraPosition(location: Location) {
-        map.animateCamera(
-            CameraUpdateFactory.newLatLngZoom(
-                LatLng(location.latitude,
-                    location.longitude), DEFAULT_MAP_ZOOM))
-    }
-
-    private fun addGoldaMarker(branch: BranchEntity){
-        val point = LatLng(branch.latitude, branch.longtitude)
-        map.addMarker(MarkerOptions().setTitle(branch.name).setSnippet(branch.address).position(point))
     }
 
     override fun onStart() {
         super.onStart()
-        if (PermissionsManager.areLocationPermissionsGranted(activity)) {
-            locationComponent?.onStart()
-        }
         mapView.onStart()
     }
 
@@ -150,7 +155,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onStop() {
         super.onStop()
-        locationComponent?.onStop()
         mapView.onStop()
     }
 

@@ -3,12 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".branches.BranchesFragment">
-
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.findmygolda.branches.BranchesViewModel" />
+    </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/chipGroup"
             android:layout_width="match_parent"
@@ -21,7 +23,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:singleLine="true"
             app:singleSelection="true">
-
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipDistance"
                 style="@style/Widget.MaterialComponents.Chip.Choice"
@@ -31,8 +32,8 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:text="Distance"
+                android:onClick="@{(view) -> viewModel.chipPicked(view)}"
                 app:chipBackgroundColor="@color/chip_bg_states" />
-
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipAtoZ"
                 style="@style/Widget.MaterialComponents.Chip.Choice"
@@ -42,11 +43,9 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:text="A-Z"
-
+                android:onClick="@{(view) -> viewModel.chipPicked(view)}"
                 app:chipBackgroundColor="@color/chip_bg_states" />
-
         </com.google.android.material.chip.ChipGroup>
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/branches_list"
             android:layout_width="0dp"
@@ -60,26 +59,5 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/chipGroup" />
-
-
-
-<!--        <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-<!--            android:id="@+id/filterButton"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_margin="20dp"-->
-<!--            android:layout_marginEnd="16dp"-->
-<!--            android:layout_marginBottom="16dp"-->
-<!--            android:backgroundTint="@color/secondaryColor"-->
-<!--            android:clickable="true"-->
-<!--            app:maxImageSize="45dp"-->
-<!--            android:scaleType="center"-->
-<!--            app:borderWidth="0dp"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:srcCompat="@drawable/filter_image" />-->
-<!--&lt;!&ndash;            android:onClick="@{() -> viewModel.onAlertsButtonClicked()}"&ndash;&gt;-->
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -1,46 +1,63 @@
 package com.example.findmygolda.location
 
-import android.app.Application
+import android.content.Context
 import android.location.Location
 import android.os.Looper
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import com.example.findmygolda.Constants.Companion.INTERVAL_CHECK_LOCATION
+import com.example.findmygolda.Constants.Companion.MAX_RESPONSE_TIME
 import com.mapbox.android.core.location.*
 
-class LocationAdapter(val application: Application,
-                      val listenToLocationChange:ILocationChanged
-                  ) {
+class LocationAdapter(val context: Context) {
     private lateinit var locationEngine: LocationEngine
-    private val callback = LocationChangeListen()
-    private val _currentLocation = MutableLiveData<Location?>()
-    val currentLocation: LiveData<Location?>
-        get() = _currentLocation
+    private val locationChangeListener = LocationChangeListener()
+    private val locationChangedInterested = mutableListOf<ILocationChanged>()
+    var lastLocation: Location? = null
+
+    companion object {
+        @Volatile
+        private var INSTANCE: LocationAdapter? = null
+
+        fun getInstance(context: Context): LocationAdapter {
+            synchronized(this) {
+                var instance =
+                    INSTANCE
+
+                if (instance == null) {
+                    instance =
+                        LocationAdapter(context)
+                    INSTANCE = instance
+                }
+                return instance
+            }
+        }
+    }
 
     init {
         initLocationEngine()
     }
 
     private fun initLocationEngine() {
-        locationEngine = LocationEngineProvider.getBestLocationEngine(application)
         val request = LocationEngineRequest
-            .Builder(1000)
+            .Builder(INTERVAL_CHECK_LOCATION)
             .setPriority(LocationEngineRequest.PRIORITY_HIGH_ACCURACY)
-            .setMaxWaitTime(5000)
+            .setMaxWaitTime(MAX_RESPONSE_TIME)
             .build()
-        locationEngine.requestLocationUpdates(request, callback, Looper.myLooper())
-        locationEngine.getLastLocation(callback)
+
+        locationEngine = LocationEngineProvider.getBestLocationEngine(context)
+        locationEngine.requestLocationUpdates(request, locationChangeListener, Looper.myLooper())
+        locationEngine.getLastLocation(locationChangeListener)
     }
 
-    private inner class LocationChangeListen :
+    fun subscribeToLocationChangeEvent(interested: ILocationChanged) {
+        locationChangedInterested.add(interested)
+    }
+
+    private inner class LocationChangeListener :
         LocationEngineCallback<LocationEngineResult> {
         override fun onSuccess(result: LocationEngineResult?) {
             result?.lastLocation ?: return
-
-            if (result.lastLocation != null) {
-                val newLocation = Location(result.lastLocation)
-                listenToLocationChange.LocationChanged(newLocation)
-                _currentLocation.value = newLocation
-            }
+            lastLocation = Location(result.lastLocation)
+            locationChangedInterested.forEach { it.locationChanged(lastLocation) }
         }
 
         override fun onFailure(exception: Exception) {}

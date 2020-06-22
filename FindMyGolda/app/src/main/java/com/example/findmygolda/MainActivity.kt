@@ -5,105 +5,139 @@ import android.content.Intent
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.navigation.NavDestination
-import androidx.navigation.findNavController
-import androidx.navigation.ui.NavigationUI.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.Navigation
+import androidx.navigation.ui.NavigationUI.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
-import com.example.findmygolda.alerts.AlertManager
+import com.example.findmygolda.Constants.Companion.EXIT_STATUS_CODE
+import com.example.findmygolda.Constants.Companion.LOCATION_SERVICE_NOT_ENABLE
+import com.example.findmygolda.Constants.Companion.PERMISSIONS_GRANTED_AND_LOCATION_SERVICE_ENABLE
+import com.example.findmygolda.Constants.Companion.PERMISSIONS_NOT_GRANTED
 import com.example.findmygolda.databinding.ActivityMainBinding
-import com.example.findmygolda.location.LocationAdapter
-import com.example.findmygolda.network.BranchManager
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.yesButton
+import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity(), PermissionsListener {
-    lateinit var permissionManager: PermissionsManager
+    private lateinit var permissionManager: PermissionsManager
     lateinit var binding: ActivityMainBinding
-    lateinit var branchManager :BranchManager
-    lateinit var alerManager : AlertManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        if (PermissionsManager.areLocationPermissionsGranted(this)) {
-            if (!isLocationEnabled(applicationContext)) {
-                showLocationIsDisabledAlert()
-            } else {
-                branchManager = BranchManager(application)
-                alerManager = AlertManager(application, branchManager)
-                binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-                setupNavigation()
-            }
-        } else {
-            permissionManager = PermissionsManager(this)
-            permissionManager.requestLocationPermissions(this)
+        when (isLocationServicesAndPermissionsGranted()) {
+            LOCATION_SERVICE_NOT_ENABLE -> showLocationServicesDisabledDialog()
+            PERMISSIONS_NOT_GRANTED -> askForPermissions()
+            else -> loadHomePage()
         }
+    }
+
+    private fun createBottomNavigation() {
+        val bottomNavigation = binding.bottomNavigation
+        val onBottomNavigationSelect =
+            BottomNavigationView.OnNavigationItemSelectedListener { item ->
+                onNavDestinationSelected(
+                    item,
+                    Navigation.findNavController(this, R.id.myNavHostFragment)
+                )
+                return@OnNavigationItemSelectedListener true
+            }
+
+        bottomNavigation.setupWithNavController(
+            Navigation.findNavController(
+                this,
+                R.id.myNavHostFragment
+            )
+        )
+        bottomNavigation.setOnNavigationItemSelectedListener(onBottomNavigationSelect)
     }
 
     override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {
-        Toast.makeText(applicationContext,
+        Toast.makeText(
+            applicationContext,
             getString(R.string.appNeedLocationPermission),
-            Toast.LENGTH_SHORT).show()
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     override fun onPermissionResult(granted: Boolean) {
-        if (granted) {
-            setContentView(R.layout.activity_main)
-        } else {
+        if (!granted) {
             finish()
+        }
+
+        loadHomePage()
+
+        if (!isLocationServiceEnabled(applicationContext)) {
+            showLocationServicesDisabledDialog()
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<out String>,
-                                            grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         permissionManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    override fun onSupportNavigateUp() = navigateUp(findNavController(R.id.myNavHostFragment), binding.drawerLayout)
-
-    private fun setupNavigation() {
-        // first find the nav controller
-        val navController = findNavController(R.id.myNavHostFragment)
-        setSupportActionBar(binding.toolbar)
-
-        // then setup the action bar, tell it about the DrawerLayout
-        setupActionBarWithNavController(navController, binding.drawerLayout)
-
-        // finally setup the left drawer (called a NavigationView)
-        binding.navigationView.setupWithNavController(navController)
-
-        navController.addOnDestinationChangedListener { _, destination: NavDestination, _ ->
-            val toolBar = supportActionBar ?: return@addOnDestinationChangedListener
-            toolBar.setDisplayShowTitleEnabled(false)
-            binding.heroImage.visibility = View.VISIBLE
-        }
+    private fun setupActionToolbar() {
+        val toolbar = binding.toolbar
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
     }
 
-     fun isLocationEnabled(mContext: Context): Boolean {
-        val lm = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return lm.isProviderEnabled(LocationManager.GPS_PROVIDER) || lm.isProviderEnabled(
-            LocationManager.NETWORK_PROVIDER)
+    private fun isLocationServiceEnabled(mContext: Context): Boolean {
+        val locationManager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
+            LocationManager.NETWORK_PROVIDER
+        )
     }
 
-    private fun showLocationIsDisabledAlert() {
+    private fun showLocationServicesDisabledDialog() {
         alert(getString(R.string.cannotShowYourPositionMessage)) {
             yesButton {
                 finish()
                 moveTaskToBack(true)
                 android.os.Process.killProcess(android.os.Process.myPid())
-                System.exit(1)
+                exitProcess(EXIT_STATUS_CODE)
             }
             neutralPressed(getString(R.string.settings)) {
                 startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                loadHomePage()
             }
         }.show()
     }
+
+    private fun askForPermissions() {
+        permissionManager = PermissionsManager(this)
+        permissionManager.requestLocationPermissions(this)
+    }
+
+    private fun isLocationServicesAndPermissionsGranted(): Int {
+        return if (areLocationPermissionsGranted()) {
+            if (!isLocationServiceEnabled(applicationContext)) {
+                LOCATION_SERVICE_NOT_ENABLE
+            } else {
+                PERMISSIONS_GRANTED_AND_LOCATION_SERVICE_ENABLE
+            }
+        } else {
+            PERMISSIONS_NOT_GRANTED
+        }
+    }
+
+    private fun areLocationPermissionsGranted(): Boolean {
+        return PermissionsManager.areLocationPermissionsGranted(this)
+    }
+
+    private fun loadHomePage() {
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        setupActionToolbar()
+        createBottomNavigation()
+    }
 }
+
+
